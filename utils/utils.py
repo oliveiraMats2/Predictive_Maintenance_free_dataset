@@ -1,9 +1,6 @@
 import torch
 import os
 from tqdm import tqdm
-from NLP_project_unicamp.save_models import SaveBestModel
-
-save_best_model = SaveBestModel()
 
 
 def set_device():
@@ -75,11 +72,7 @@ def train(model, train_dataloader, valid_dataloader, optimizer, criterion, lr,
                                       f"train_lr_{lr}_batch_size_{batch_size_train}_name_{name_models}.txt".replace("/",
                                                                                                                     ""))
 
-        save_best_model(last_loss,
-                        0, model,
-                        optimizer,
-                        evaluate,
-                        f"lr_{lr}_batch_size_{batch_size_train}_name_{name_models}.pt".replace("/", ""))
+
 
         print(
             f"Epoch: {epoch} | accuracy {accuracy_valid}| valid loss {loss_valid} | exp_loss {torch.Tensor([last_loss])}")

@@ -1,53 +1,79 @@
 from utils.read_dataset import read_h5
 from DataLoaders.data_loaders import DatasetWileC
-from models import LSTM
-import numpy as np
+from utils.utils import set_device
+from models import LSTM, LSTMattn
+from tqdm import tqdm
 import torch
 
-sequence = 30
 
-data_normal = read_h5('X_train_normal.h5')[:1]
-data_failure = read_h5('X_train_failure.h5')[:1]
+def evaluation(model, loader):
+    with torch.no_grad():
+        total = 0
+        acertos = 0
+        for x, y in loader:
+            y_hat = model(x.to(device))
+            y_hat = torch.argmax(y_hat, dim=1)
 
-dataset_train = DatasetWileC(data_normal, data_failure, 10)
-train_loader = torch.utils.data.DataLoader(dataset_train, batch_size=6, shuffle=False)
+            y = y.to(device)
+            y_hat = y_hat.to(device)
 
-input_dim = 8
+            acertos += y[y.squeeze(1) == y_hat].shape[0]
+            total += 1 * x.shape[0]
+
+        mean_accuracy = acertos / total
+
+        print(f'Accuracy: {mean_accuracy}')
+
+
+input_dim = 100
 lr = 1e-4
 epochs = 5
+device = set_device()
 
-model = LSTM(input_dim)
+data_normal_train = read_h5('dataset_free/X_train_normal.h5')[:1]
+data_failure_train = read_h5('dataset_free/X_train_failure.h5')[:1]
 
-criterion = torch.nn.CrossEntropyLoss()
+data_normal_valid = read_h5('dataset_free/X_val_normal.h5')[:1]
+data_failure_valid = read_h5('dataset_free/X_val_failure.h5')[:1]
+
+dataset_train = DatasetWileC(data_normal_train, data_failure_train, 100)
+dataset_valid = DatasetWileC(data_normal_valid, data_failure_valid, 100)
+
+train_loader = torch.utils.data.DataLoader(dataset_train, batch_size=4096, shuffle=True)
+valid_loader = torch.utils.data.DataLoader(dataset_valid, batch_size=512, shuffle=False)
+
+# model = LSTM(input_dim).to(device)
+model = LSTMattn(input_dim, 20).to(device)
+
+criterion = torch.nn.MSELoss()
 optimizer = torch.optim.Adam(model.parameters(), lr=lr, weight_decay=1e-5)
+
+list_loss_train = []
 
 for epoch in range(epochs):
     model.train()
+    train_loss = 0
+    correct = 0
     epoch_loss = 0
 
-    for i, sample_batch in enumerate(train_loader):
+    for i, sample_batch in enumerate(tqdm(train_loader)):
+        optimizer.zero_grad()
 
-        inputs, labels = sample_batch[0], sample_batch[0]
+        inputs, labels = sample_batch[0], sample_batch[1]
 
         inputs = inputs.to(device)
         labels = labels.to(device)
 
-        outputs = model(inputs)
-        # multi-task loss
-        loss = 0
-        for lx in range(len(outputs)):
-            loss += criterion(outputs[lx], labels[:, lx])
+        pred_labels = model(inputs)
+
+        loss = criterion(pred_labels, labels)
         epoch_loss += loss.item()
 
         if i % 10 == 0:
             print(f'epoch = {epoch + 1:d}, iteration = {i:d}/{len(train_loader):d}, loss = {loss.item():.5f}')
-            writer.add_scalar('train_loss_iter', loss.item(), i + len(train_loader) * epoch)
+            evaluation(model, valid_loader)
 
-        optimizer.zero_grad()
         loss.backward()
         optimizer.step()
 
-    print(f'Epoch finished ! Loss: {epoch_loss / i}')
-    # training set accuracy
-    accuracy = eval_batch(model, train_loader, n_labels=len(targets), gpu=gpu)
-    print(f'Accuracy = {accuracy}')
+    # print(f'Epoch {epoch + 1} finished! Loss: {epoch_loss / i}. Accuracy: {correct.item() / len(train_loader.dataset)}')

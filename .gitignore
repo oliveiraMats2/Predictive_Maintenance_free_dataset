@@ -1,6 +1,7 @@
-uci_base_machine_learning.csv
-X_train_failure.h5
-X_train_normal.h5
+dataset_free/uci_base_machine_learning.csv
+dataset_free/X_train_failure.h5
+dataset_free/X_train_normal.h5
 __pycache__/
 .idea/
 .ipynb_checkpoints/
+/dataset_free/
