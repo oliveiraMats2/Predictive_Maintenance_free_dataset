@@ -10,7 +10,7 @@ def evaluation(model, loader):
     with torch.no_grad():
         total = 0
         acertos = 0
-        for x, y in loader:
+        for x, y in tqdm(loader):
             y_hat = model(x.to(device))
             y_hat = torch.argmax(y_hat, dim=1)
 
@@ -25,25 +25,25 @@ def evaluation(model, loader):
         print(f'Accuracy: {mean_accuracy}')
 
 
-input_dim = 100
-lr = 1e-4
-epochs = 5
+input_dim = 1
+lr = 1e-5
+epochs = 2
 device = set_device()
 
-data_normal_train = read_h5('dataset_free/X_train_normal.h5')[:1]
-data_failure_train = read_h5('dataset_free/X_train_failure.h5')[:1]
+data_normal_train = read_h5('dataset_free/X_train_normal.h5')
+data_failure_train = read_h5('dataset_free/X_train_failure.h5')
 
 data_normal_valid = read_h5('dataset_free/X_val_normal.h5')[:1]
 data_failure_valid = read_h5('dataset_free/X_val_failure.h5')[:1]
 
-dataset_train = DatasetWileC(data_normal_train, data_failure_train, 100)
-dataset_valid = DatasetWileC(data_normal_valid, data_failure_valid, 100)
+dataset_train = DatasetWileC(data_normal_train, data_failure_train, context=1)
+dataset_valid = DatasetWileC(data_normal_valid, data_failure_valid, context=1)
 
-train_loader = torch.utils.data.DataLoader(dataset_train, batch_size=4096, shuffle=True)
+train_loader = torch.utils.data.DataLoader(dataset_train, batch_size=2048, shuffle=True)
 valid_loader = torch.utils.data.DataLoader(dataset_valid, batch_size=512, shuffle=False)
 
-# model = LSTM(input_dim).to(device)
-model = LSTMattn(input_dim, 20).to(device)
+model = LSTM(input_dim, 256).to(device)
+#model = LSTMattn(input_dim, 256).to(device)
 
 criterion = torch.nn.MSELoss()
 optimizer = torch.optim.Adam(model.parameters(), lr=lr, weight_decay=1e-5)
@@ -69,7 +69,7 @@ for epoch in range(epochs):
         loss = criterion(pred_labels, labels)
         epoch_loss += loss.item()
 
-        if i % 10 == 0:
+        if i % 10000 == 0:
             print(f'epoch = {epoch + 1:d}, iteration = {i:d}/{len(train_loader):d}, loss = {loss.item():.5f}')
             evaluation(model, valid_loader)
 

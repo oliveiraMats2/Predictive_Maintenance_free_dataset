@@ -4,7 +4,7 @@ import torch.nn.functional as F
 
 
 class LSTM(nn.Module):
-    def __init__(self, input_dim: int, hidden_dim: int = 20, num_layers: int = 2, output_dim: int = 1):
+    def __init__(self, input_dim: int, hidden_dim: int = 20, num_layers: int = 2, output_dim: int = 2):
         """Pytorch vanilla LSTM model for time series classification
 
         Arguments:
@@ -68,7 +68,7 @@ class LSTMattn(nn.Module):
                 number of classification labels
     """
 
-    def __init__(self, input_dim, hidden_dim, num_layers=2, output_dim=1):
+    def __init__(self, input_dim, hidden_dim, num_layers=10, output_dim=2):
         super(LSTMattn, self).__init__()
         self.input_dim = input_dim
         self.hidden_dim = hidden_dim
