@@ -1,6 +1,33 @@
 import torch
 import os
+
+import yaml
 from tqdm import tqdm
+import numpy as np
+from typing import List
+
+
+def or_operation(list_one_hot: List[int]) -> int:
+    or_result = 0
+    for i in range(len(list_one_hot)):
+        or_result = or_result or list_one_hot[i]
+
+    return or_result
+
+
+def create_context(X: np.ndarray, Y: np.ndarray, context: int) -> (list, list):
+    samples = X.shape[1]  # modify
+
+    data_context = []
+    context_labels = []
+
+    for i in range(samples - context):
+        data_context.append(X[:, i:i + context])
+        context_labels.append(Y[i:i + context])
+
+    context_labels = [or_operation(context_) for context_ in context_labels]
+
+    return np.array(data_context), np.array(context_labels)
 
 
 def set_device():
@@ -14,21 +41,28 @@ def set_device():
     return device
 
 
-def evaluate(model, loader, device):
+def read_yaml(file: str) -> yaml.loader.FullLoader:
+    with open(file, "r") as yaml_file:
+        configurations = yaml.load(yaml_file, Loader=yaml.FullLoader)
+
+    return configurations
+
+
+def evaluate(model, loader, device: str) -> None:
     with torch.no_grad():
         total = 0
-        acertos = 0
-        for x, y in tqdm(loader):
+        acc = 0
+        for x, y in loader:
             y_hat = model(x.to(device))
             y_hat = torch.argmax(y_hat, dim=1)
 
             y = y.to(device)
             y_hat = y_hat.to(device)
 
-            acertos += y[y.squeeze(1) == y_hat].shape[0]
+            acc += y[y.squeeze(1) == y_hat].shape[0]
             total += 1 * x.shape[0]
 
-        mean_accuracy = acertos / total
+        mean_accuracy = acc / total
 
         print(f'Accuracy: {mean_accuracy}')
 

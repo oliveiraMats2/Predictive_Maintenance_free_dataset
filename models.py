@@ -48,11 +48,11 @@ class LSTM(nn.Module):
             out: pytorch tensor (batch, labels)
                 batch of labels
         """
-        out, hidden = self.lstm(input)# (batch, channels, sequence) -> [sequence, batch, channels]
-        #out, hidden = self.lstm(input.permute(2, 0, 1))
+        # out, hidden = self.lstm(input)# (batch, channels, sequence) -> [sequence, batch, channels]
+        out, hidden = self.lstm(input.permute(1, 0, 2))
         out = self.fc_block(out[-1])
         out = self.classifier(out)
-        return out
+        return F.softmax(out)
 
 
 class LSTMattn(nn.Module):
@@ -123,7 +123,7 @@ class LSTMattn(nn.Module):
             out: pytorch tensor (batch, labels)
                 batch of labels
         """
-        input = input.permute(2, 0, 1)
+        input = input.permute(1, 0, 2)
         lstm_out, (h, c) = self.lstm(input)
         out = self.attention(lstm_out, h[-1])
         out = self.classifier(out)

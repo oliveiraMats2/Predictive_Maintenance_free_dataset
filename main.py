@@ -1,40 +1,41 @@
 from utils.read_dataset import read_h5, read_csv_uci
 from DataLoaders.data_loaders import DatasetWileC, Dataset_UCI
-from utils.utils import set_device, evaluate
+from utils.utils import set_device, evaluate, create_context, read_yaml
+from sklearn.model_selection import train_test_split
 from models import LSTM, LSTMattn
 from tqdm import tqdm
+from tqdm import trange
 import torch
 
-configs = {'context_size': 10,
-           'batch_size': 128,
-           'batch_size_valid': 64,
-           'learning_rate': 1e-5,
-           'epochs': 2,
-           'LSTM_config': {'hidden_dim': 128,
-                           'num_layers': 15,
-                           'output_dim': 2}}
+configs = read_yaml('configs/config_model.yaml')
 
 device = set_device()
 
 X, y = read_csv_uci('dataset_free/uci_base_machine_learning.csv')
 
-Dataset_UCI
+X, y = create_context(X,
+                      y,
+                      configs['context_size'])
 
-dataset_train = Dataset_UCI(X, y, context=configs['context_size'])
-#dataset_valid = Dataset_UCI(data_normal_valid, data_failure_valid, context=configs['context_size'])
+x_train, x_valid, y_train, y_valid = train_test_split(X,
+                                                      y,
+                                                      test_size=configs['train_test_split']['test_size'],
+                                                      random_state=configs['train_test_split']['random_state'])
 
-train_loader = torch.utils.data.DataLoader(dataset_train, batch_size=configs['batch_size'], shuffle=True)
-#valid_loader = torch.utils.data.DataLoader(dataset_valid, batch_size=configs['batch_size_valid'], shuffle=False)
+dataset_train = Dataset_UCI(x_train, y_train)
+dataset_valid = Dataset_UCI(x_valid, y_valid)
 
-model = LSTM(configs['context_size'],
-             hidden_dim=configs['LSTM_config']['hidden_dim'],
-             num_layers=configs['LSTM_config']['num_layers'],
-             output_dim=configs['LSTM_config']['output_dim']
-             ).to(device)
+train_loader = torch.utils.data.DataLoader(dataset_train, batch_size=configs['batch_size_train'], shuffle=True)
+valid_loader = torch.utils.data.DataLoader(dataset_valid, batch_size=configs['batch_size_valid'], shuffle=False)
 
-# model = LSTMattn(input_dim, 1024).to(device)
+model = LSTMattn(configs['context_size'],
+                 hidden_dim=configs['LSTM_config']['hidden_dim'],
+                 num_layers=configs['LSTM_config']['num_layers'],
+                 output_dim=configs['LSTM_config']['output_dim']
+                 ).to(device)
 
-criterion = torch.nn.MSELoss()
+# criterion = torch.nn.MSELoss()
+criterion = torch.nn.CrossEntropyLoss()
 optimizer = torch.optim.Adam(model.parameters(), lr=configs['learning_rate'], weight_decay=1e-5)
 
 list_loss_train = []
@@ -44,25 +45,28 @@ for epoch in range(configs['epochs']):
     train_loss = 0
     correct = 0
     epoch_loss = 0
+    with trange(len(train_loader), desc='Train Loop') as progress_bar:
+        for batch_idx, sample_batch in zip(progress_bar, train_loader):
+            optimizer.zero_grad()
 
-    for i, sample_batch in enumerate(tqdm(train_loader)):
-        optimizer.zero_grad()
+            inputs, labels = sample_batch[0], sample_batch[1]
 
-        inputs, labels = sample_batch[0], sample_batch[1]
+            inputs = inputs.to(device)
+            labels = labels.to(device)
 
-        inputs = inputs.to(device)
-        labels = labels.to(device)
+            pred_labels = model(inputs)
 
-        pred_labels = model(inputs)
+            _, predicted = torch.max(pred_labels, 1)
+            correct += (predicted == labels).float().sum()
 
-        loss = criterion(pred_labels, labels)
-        epoch_loss += loss.item()
+            loss = criterion(pred_labels, labels[:, 0])
+            epoch_loss += loss.item()
 
-        if (i + 1) % 100 == 0:
-            print(f'epoch = {epoch + 1:d}, iteration = {i:d}/{len(train_loader):d}, loss = {loss.item():.5f}')
-            #evaluate(model, valid_loader, device)
+            progress_bar.set_postfix(
+                desc=f'[epoch: {epoch + 1:d}], iteration: {batch_idx:d}/{len(train_loader):d}, loss: {loss.item():.5f}'
+            )
 
-        loss.backward()
-        optimizer.step()
+            loss.backward()
+            optimizer.step()
 
-    # print(f'Epoch {epoch + 1} finished! Loss: {epoch_loss / i}. Accuracy: {correct.item() / len(train_loader.dataset)}')
+evaluate(model, valid_loader, device)

@@ -5,24 +5,14 @@ from tqdm import tqdm
 
 
 class Dataset_UCI:
-    def __init__(self, data, labels, context: int = 10):
-        self.samples = data.shape[1]
-
-        self.data_context = []
-        self.context_labels = []
-
-        for i in range(self.samples - context):
-            self.data_context.append(data[:, i:i + context])
-
-        for i in range(self.samples - context):
-            self.context_labels.append(labels[i:i + context])
+    def __init__(self, data: np.ndarray, labels : np.ndarray):
+        self.data_context, self.context_labels = data, labels
 
     def __len__(self) -> int:
         return len(self.context_labels)
 
     def __getitem__(self, idx: int) -> (torch.Tensor, torch.Tensor):
-        return torch.Tensor(np.array(self.data_context[idx])), torch.Tensor([self.context_labels[idx]])
-
+        return torch.Tensor(self.data_context[idx]), torch.LongTensor([self.context_labels[idx]])
 
 
 class DatasetWileC:
