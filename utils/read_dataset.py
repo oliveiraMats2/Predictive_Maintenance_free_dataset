@@ -15,8 +15,8 @@ def read_h5(filename: str) -> List[np.ndarray]:
         return data
 
 
-def read_csv_uci(filename: str):
-    dataset = pd.read_csv("uci_base_machine_learning.csv")
+def read_csv_uci(filename: str) -> (np.ndarray, np.ndarray):
+    dataset = pd.read_csv(filename)
 
     x_dataset = dataset.drop(columns=['UDI', 'Product ID', 'Type', 'Tool wear [min]',
                                       'Machine failure', 'TWF', 'HDF', 'PWF', 'OSF',
@@ -24,7 +24,8 @@ def read_csv_uci(filename: str):
 
     y_dataset = dataset.drop(columns=['UDI', 'Product ID', 'Type', 'Air temperature [K]',
                                       'Process temperature [K]', 'Rotational speed [rpm]', 'Torque [Nm]',
-                                      'Tool wear [min]', 'Machine failure'])
+                                      'Tool wear [min]', 'TWF', 'HDF', 'PWF', 'OSF',
+                                      'RNF'])
 
     matrix_channels = np.array([np.array((x_dataset[feature].tolist())) for feature in x_dataset.keys()])
 

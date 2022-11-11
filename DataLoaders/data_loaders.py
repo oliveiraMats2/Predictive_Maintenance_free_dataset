@@ -4,6 +4,27 @@ import torch
 from tqdm import tqdm
 
 
+class Dataset_UCI:
+    def __init__(self, data, labels, context: int = 10):
+        self.samples = data.shape[1]
+
+        self.data_context = []
+        self.context_labels = []
+
+        for i in range(self.samples - context):
+            self.data_context.append(data[:, i:i + context])
+
+        for i in range(self.samples - context):
+            self.context_labels.append(labels[i:i + context])
+
+    def __len__(self) -> int:
+        return len(self.context_labels)
+
+    def __getitem__(self, idx: int) -> (torch.Tensor, torch.Tensor):
+        return torch.Tensor(np.array(self.data_context[idx])), torch.Tensor([self.context_labels[idx]])
+
+
+
 class DatasetWileC:
     def __init__(self, data_normal: List[np.ndarray], data_failure: List[np.ndarray], context: int = 10):
         self.data_normal = np.array(data_normal).reshape(-1, 8)
@@ -29,5 +50,5 @@ class DatasetWileC:
     def __len__(self):
         return len(self.context_data)
 
-    def __getitem__(self, idx):
+    def __getitem__(self, idx: int) -> (torch.Tensor, torch.Tensor):
         return torch.Tensor(np.array(self.context_data[idx])), torch.Tensor([self.data_target[idx]])

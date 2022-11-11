@@ -48,7 +48,8 @@ class LSTM(nn.Module):
             out: pytorch tensor (batch, labels)
                 batch of labels
         """
-        out, hidden = self.lstm(input.permute(2, 0, 1))  # (batch, channels, sequence) -> [sequence, batch, channels]
+        out, hidden = self.lstm(input)# (batch, channels, sequence) -> [sequence, batch, channels]
+        #out, hidden = self.lstm(input.permute(2, 0, 1))
         out = self.fc_block(out[-1])
         out = self.classifier(out)
         return out
