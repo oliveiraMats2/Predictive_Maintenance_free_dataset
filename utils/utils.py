@@ -13,23 +13,24 @@ def set_device():
 
     return device
 
-def evaluate(model, num_examples, valid_dataloader, criterion, device):
-    accuracy = 0
-    acc_loss = 0
 
-    for x, y in tqdm(valid_dataloader):
-        x_ids = x[0].to(device)
-        attention_mask = x[1].to(device)
-        labels = y.to(device)
+def evaluate(model, loader, device):
+    with torch.no_grad():
+        total = 0
+        acertos = 0
+        for x, y in tqdm(loader):
+            y_hat = model(x.to(device))
+            y_hat = torch.argmax(y_hat, dim=1)
 
-        logits = model(x_ids, attention_mask=attention_mask).logits
-        loss_valid = criterion(logits, labels)
+            y = y.to(device)
+            y_hat = y_hat.to(device)
 
-        acc_loss += loss_valid.item()
-        preds = logits.argmax(dim=1)
-        accuracy += (preds == labels).sum()
+            acertos += y[y.squeeze(1) == y_hat].shape[0]
+            total += 1 * x.shape[0]
 
-    return accuracy / num_examples, acc_loss / len(valid_dataloader)
+        mean_accuracy = acertos / total
+
+        print(f'Accuracy: {mean_accuracy}')
 
 
 def train(model, train_dataloader, valid_dataloader, optimizer, criterion, lr,
@@ -71,8 +72,6 @@ def train(model, train_dataloader, valid_dataloader, optimizer, criterion, lr,
         save_scores.save_loss_in_file((train_loss / len(train_dataloader)),
                                       f"train_lr_{lr}_batch_size_{batch_size_train}_name_{name_models}.txt".replace("/",
                                                                                                                     ""))
-
-
 
         print(
             f"Epoch: {epoch} | accuracy {accuracy_valid}| valid loss {loss_valid} | exp_loss {torch.Tensor([last_loss])}")

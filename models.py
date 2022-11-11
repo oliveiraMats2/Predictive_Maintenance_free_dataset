@@ -23,7 +23,9 @@ class LSTM(nn.Module):
         self.num_layers = num_layers
         self.output_dim = output_dim
 
-        self.lstm = nn.LSTM(self.input_dim, self.hidden_dim, self.num_layers)
+        self.lstm = nn.LSTM(self.input_dim,
+                            self.hidden_dim,
+                            self.num_layers)
 
         self.fc_block = nn.Sequential(
             nn.Linear(self.hidden_dim, self.hidden_dim),
