@@ -1,11 +1,17 @@
-from utils.read_dataset import read_h5, read_csv_uci
-from DataLoaders.data_loaders import DatasetWileC, Dataset_UCI
-from utils.utils import set_device, evaluate, create_context, read_yaml
-from sklearn.model_selection import train_test_split
-from models import LSTM, LSTMattn
-from tqdm import tqdm
-from tqdm import trange
 import torch
+import wandb
+from sklearn.model_selection import train_test_split
+from tqdm import trange
+
+from DataLoaders.data_loaders import Dataset_UCI
+from models import LSTMattn
+from utils.read_dataset import read_csv_uci
+from utils.utils import set_device, evaluate, create_context, read_yaml, config_flatten
+
+monitoring_metrics = {
+    "loss": {"train": [], "validation": []},
+    "accuracy": {"train": [], "validation": []}
+}
 
 configs = read_yaml('configs/config_model.yaml')
 
@@ -16,6 +22,15 @@ X, y = read_csv_uci('dataset_free/uci_base_machine_learning.csv')
 X, y = create_context(X,
                       y,
                       configs['context_size'])
+
+f_configurations = {}
+f_configurations = config_flatten(configs, f_configurations)
+if configs['wandb']:
+    wandb.init(project="wileC_free_datasets",
+               reinit=True,
+               config=f_configurations,
+               notes="Testing wandb implementation",
+               entity="oliveira_mats")
 
 x_train, x_valid, y_train, y_valid = train_test_split(X,
                                                       y,
@@ -69,4 +84,10 @@ for epoch in range(configs['epochs']):
             loss.backward()
             optimizer.step()
 
-evaluate(model, valid_loader, device)
+    epoch_acc = evaluate(model, valid_loader, device)
+
+    monitoring_metrics["loss"]["validation"].append(epoch_loss)
+    monitoring_metrics["accuracy"]["validation"].append(epoch_acc)
+
+    if configs['wandb']:
+        wandb.log({'valid_acc': epoch_acc, 'valid_loss': epoch_loss})

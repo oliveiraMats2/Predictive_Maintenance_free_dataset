@@ -48,7 +48,16 @@ def read_yaml(file: str) -> yaml.loader.FullLoader:
     return configurations
 
 
-def evaluate(model, loader, device: str) -> None:
+def config_flatten(config, fconfig):
+    for key in config:
+        if isinstance(config[key], dict):
+            fconfig = config_flatten(config[key], fconfig)
+        else:
+            fconfig[key] = config[key]
+    return fconfig
+
+
+def evaluate(model, loader, device: str) -> float:
     with torch.no_grad():
         total = 0
         acc = 0
@@ -64,7 +73,7 @@ def evaluate(model, loader, device: str) -> None:
 
         mean_accuracy = acc / total
 
-        print(f'Accuracy: {mean_accuracy}')
+        return mean_accuracy
 
 
 def train(model, train_dataloader, valid_dataloader, optimizer, criterion, lr,
