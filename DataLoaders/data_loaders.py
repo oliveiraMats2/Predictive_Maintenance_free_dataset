@@ -37,8 +37,8 @@ class DatasetWileC:
         for i in tqdm(range(self.len_data - context)):
             self.context_data.append(self.data[i:i + context, :])
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self.context_data)
 
     def __getitem__(self, idx: int) -> (torch.Tensor, torch.Tensor):
-        return torch.Tensor(np.array(self.context_data[idx])), torch.Tensor([self.data_target[idx]])
+        return torch.Tensor(np.array(self.context_data[idx])), torch.LongTensor([self.data_target[idx]])

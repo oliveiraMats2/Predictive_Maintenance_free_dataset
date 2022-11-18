@@ -123,7 +123,10 @@ class LSTMattn(nn.Module):
             out: pytorch tensor (batch, labels)
                 batch of labels
         """
-        input = input.permute(1, 0, 2)
+        #Dataset uci
+        #input = input.permute(1, 0, 2)
+        #Dataset malfada
+        input = input.permute(2, 0, 1)
         lstm_out, (h, c) = self.lstm(input)
         out = self.attention(lstm_out, h[-1])
         out = self.classifier(out)

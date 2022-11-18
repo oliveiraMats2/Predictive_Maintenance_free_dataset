@@ -5,6 +5,7 @@ import yaml
 from tqdm import tqdm
 import numpy as np
 from typing import List
+from sklearn.metrics import confusion_matrix
 
 
 def or_operation(list_one_hot: List[int]) -> int:
@@ -57,11 +58,38 @@ def config_flatten(config, fconfig):
     return fconfig
 
 
+def evaluate_matrix_confusion(model, loader, device: str):
+    y_list = []
+    y_hat_list = []
+
+    with torch.no_grad():
+        total = 0
+        acc = 0
+        for x, y in tqdm(loader):
+            y_hat = model(x.to(device))
+            y_hat = torch.argmax(y_hat, dim=1)
+
+            y = y.to(device)
+            y_hat = y_hat.to(device)
+
+            y = np.squeeze(y.numpy())
+            y_hat = np.squeeze(y_hat.numpy())
+
+            y_list.append(y)
+            y_hat_list.append(y_hat)
+
+        y_array = np.concatenate(y_list)
+        y_hat_array = np.concatenate(y_hat_list)
+
+        cm = confusion_matrix(y_array, y_hat_array)
+        return cm
+
+
 def evaluate(model, loader, device: str) -> float:
     with torch.no_grad():
         total = 0
         acc = 0
-        for x, y in loader:
+        for x, y in tqdm(loader):
             y_hat = model(x.to(device))
             y_hat = torch.argmax(y_hat, dim=1)
 
