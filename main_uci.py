@@ -101,7 +101,7 @@ for epoch in range(configs['epochs']):
 from utils.utils import evaluate
 
 epoch_acc = evaluate(model, test_loader, device)
-cm = evaluate_matrix_confusion(model.to('cpu'), test_loader, 'cpu')  # use estrategies class staticmethods
+cm,_ = evaluate_matrix_confusion(model.to('cpu'), test_loader, configs['context_size'], 'cpu')  # use estrategies class staticmethods
 
 print(f"epoca acuraccy {epoch_acc}")
 

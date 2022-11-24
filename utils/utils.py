@@ -58,7 +58,7 @@ def config_flatten(config, fconfig):
     return fconfig
 
 
-def evaluate_matrix_confusion(model, loader, device: str):
+def evaluate_matrix_confusion(model, loader, context_size, device: str):
     y_list = []
     y_hat_list = []
 
@@ -78,11 +78,36 @@ def evaluate_matrix_confusion(model, loader, device: str):
             y_list.append(y)
             y_hat_list.append(y_hat)
 
+            acc += y[y == y_hat].shape[0]
+            total += 1 * x.shape[0]
+
+        mean_accuracy = acc / total
+
         y_array = np.concatenate(y_list)
         y_hat_array = np.concatenate(y_hat_list)
 
         cm = confusion_matrix(y_array, y_hat_array)
-        return cm
+        return cm / context_size, mean_accuracy
+
+
+def evaluate_batch(model, valid_loader, criterion, device):
+    with torch.no_grad():
+        total = 0
+        acc = 0
+        x, y = next(iter(valid_loader))
+        y_hat = model(x.to(device))
+
+        y = y.to(device)
+        loss = criterion(y_hat, y[:, 0])
+
+        y_hat = torch.argmax(y_hat, dim=1)
+
+        acc += y[y.squeeze(1) == y_hat].shape[0]
+        total += 1 * x.shape[0]
+
+        mean_accuracy = acc / total
+
+    return mean_accuracy, loss
 
 
 def evaluate(model, loader, device: str) -> float:
@@ -99,7 +124,7 @@ def evaluate(model, loader, device: str) -> float:
             acc += y[y.squeeze(1) == y_hat].shape[0]
             total += 1 * x.shape[0]
 
-        mean_accuracy = acc / total
+        mean_accuracy = int(acc / total)
 
         return mean_accuracy
 

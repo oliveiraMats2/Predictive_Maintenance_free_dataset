@@ -6,3 +6,4 @@ __pycache__/
 .ipynb_checkpoints/
 /dataset_free/
 /wandb/
+models_h5/

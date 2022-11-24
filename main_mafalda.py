@@ -1,17 +1,19 @@
-from utils.read_dataset import read_h5
+from tqdm import trange
+
 from DataLoaders.data_loaders import DatasetWileC
 from matrix_confusion import plot_confusion_matrix
-from utils.utils import set_device, evaluate, create_context, read_yaml, config_flatten, evaluate_matrix_confusion
 from models import LSTM, LSTMattn
-from tqdm import trange
 from save_models import SaveBestModel
-import torch, wandb
+import torch
+from utils.read_dataset import read_h5
+from utils.utils import *
+import wandb
 
 configs = read_yaml('configs/config_model.yaml')
 
 device = set_device()
 
-save_best_models = SaveBestModel('moodels_h5/')
+save_best_models = SaveBestModel('models_h5/')
 
 f_configurations = {}
 f_configurations = config_flatten(configs, f_configurations)
@@ -42,14 +44,12 @@ model = LSTMattn(configs['context_size'],
 
 parameters = sum(p.numel() for p in model.parameters())
 
-
 criterion = torch.nn.CrossEntropyLoss()
 optimizer = torch.optim.Adam(model.parameters(),
                              lr=configs['learning_rate'],
                              weight_decay=1e-5)
 
 list_loss_train = []
-evaluate_step = 5000
 
 for epoch in range(configs['epochs']):
     model.train()
@@ -80,28 +80,16 @@ for epoch in range(configs['epochs']):
             save_best_models(loss, epoch, model,
                              optimizer, criterion, configs['name_model'])
 
-            with torch.no_grad():
-                total = 0
-                acc = 0
-                for x, y in tqdm(loader):
-                    y_hat = model(x.to(device))
-                    y_hat = torch.argmax(y_hat, dim=1)
-
-                    y = y.to(device)
-                    y_hat = y_hat.to(device)
-
-                    acc += y[y.squeeze(1) == y_hat].shape[0]
-                    total += 1 * x.shape[0]
-
-                mean_accuracy = acc / total
-
             loss.backward()
             optimizer.step()
 
             if configs['wandb']:
+                acc_valid, valid_loss = evaluate_batch(model, valid_loader, criterion, device)
                 wandb.log({'train_loss': loss})
+                wandb.log({'valid_loss': valid_loss})
+                wandb.log({'acc_valid': acc_valid})
 
-            if (batch_idx + 1) % evaluate_step == 0:
+            if (batch_idx + 1) % configs['evaluate_step'] == 0:
                 epoch_acc = evaluate(model, valid_loader, device)
 
                 print(f"acc{epoch_acc}")
@@ -109,18 +97,19 @@ for epoch in range(configs['epochs']):
                 if configs['wandb']:
                     wandb.log({'valid_acc': epoch_acc})
 
-from utils.utils import evaluate
+                cm = evaluate_matrix_confusion(model.to('cpu'), valid_loader, configs['context_size'], 'cpu')  # use estrategies class staticmethods
 
-epoch_acc = evaluate(model, valid_loader, device)
-cm = evaluate_matrix_confusion(model.to('cpu'), valid_loader, 'cpu')  # use estrategies class staticmethods
+                print(f"epoca acuraccy {epoch_acc}")
 
-print(f"epoca acuraccy {epoch_acc}")
+                plot_confusion_matrix(cm, ["não defeito", "defeito"], dir_artifacts='artifacts/matrix_confusion.png')
 
-plot_confusion_matrix(cm, ["não defeito", "defeito"], dir_artifacts='artifacts/matrix_confusion.png')
+                if configs['wandb']:
+                    artifact = wandb.Artifact('artifacts', type='dataset')
+                    artifact.add_dir('artifacts')  # Adds multiple files to artifact
+                    wandb.log_artifact(artifact)
 
-if configs['wandb']:
-    artifact = wandb.Artifact('artifacts', type='dataset')
-    artifact.add_dir('artifacts')  # Adds multiple files to artifact
-    wandb.log_artifact(artifact)
 
-    wandb.finish()
+wandb.finish()
+
+
+
