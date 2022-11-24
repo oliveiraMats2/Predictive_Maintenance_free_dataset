@@ -49,13 +49,7 @@ def read_yaml(file: str) -> yaml.loader.FullLoader:
     return configurations
 
 
-def config_flatten(config, fconfig):
-    for key in config:
-        if isinstance(config[key], dict):
-            fconfig = config_flatten(config[key], fconfig)
-        else:
-            fconfig[key] = config[key]
-    return fconfig
+
 
 
 def evaluate_matrix_confusion(model, loader, context_size, device: str):
