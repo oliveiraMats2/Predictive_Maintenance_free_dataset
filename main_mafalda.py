@@ -1,10 +1,9 @@
 from tqdm import trange
 
-from DataLoaders.data_loaders import DatasetWileC
+from datasets import DatasetWileC
 from matrix_confusion import plot_confusion_matrix
-from models.supervised.models import LSTM, LSTMattn
+from models.supervised.models import LSTMattn
 from save_models import SaveBestModel
-import torch
 from utils.read_dataset import read_h5
 from utils.utils import *
 import wandb

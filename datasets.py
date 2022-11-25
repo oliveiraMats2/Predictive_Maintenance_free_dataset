@@ -2,6 +2,7 @@ import numpy as np
 from typing import List
 import torch
 from tqdm import tqdm
+from utils.read_dataset import ReadDatasets
 
 
 class Dataset_UCI:
@@ -16,7 +17,15 @@ class Dataset_UCI:
 
 
 class DatasetWileC:
-    def __init__(self, data_normal: List[np.ndarray], data_failure: List[np.ndarray], context: int = 10):
+    def __init__(self, **kargs):
+
+        data_normal = kargs['data_normal']
+        data_failure = kargs['data_failure']
+        context = kargs['context']
+
+        data_normal = ReadDatasets.read_h5(data_normal)
+        data_failure = ReadDatasets.read_h5(data_failure)
+
         self.data_normal = np.array(data_normal).reshape(-1, 8)
         self.data_failure = np.array(data_failure).reshape(-1, 8)
 
@@ -36,6 +45,8 @@ class DatasetWileC:
 
         for i in tqdm(range(self.len_data - context)):
             self.context_data.append(self.data[i:i + context, :])
+            if i == 100:
+                break
 
     def __len__(self) -> int:
         return len(self.context_data)

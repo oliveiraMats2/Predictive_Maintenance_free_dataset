@@ -71,12 +71,12 @@ class LSTMattn(nn.Module):
                 number of classification labels
     """
 
-    def __init__(self, input_dim, hidden_dim, num_layers=10, output_dim=2):
+    def __init__(self, **kargs):
         super(LSTMattn, self).__init__()
-        self.input_dim = input_dim
-        self.hidden_dim = hidden_dim
-        self.num_layers = num_layers
-        self.output_dim = output_dim
+        self.input_dim = kargs['input_dim']
+        self.hidden_dim = kargs['hidden_dim']
+        self.num_layers = kargs['num_layers']
+        self.output_dim = kargs['output_dim']
 
         self.lstm = nn.LSTM(self.input_dim, self.hidden_dim, self.num_layers, dropout=0.8)
         self.fc_block = nn.Sequential(

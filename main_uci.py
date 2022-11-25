@@ -3,11 +3,11 @@ import wandb
 from sklearn.model_selection import train_test_split
 from tqdm import trange
 
-from DataLoaders.data_loaders import Dataset_UCI
-from models.supervised.models import LSTM, LSTMattn
+from datasets import Dataset_UCI
+from models.supervised.models import LSTMattn
 from utils.read_dataset import read_csv_uci
 from matrix_confusion import plot_confusion_matrix
-from utils.utils import set_device, evaluate, create_context, read_yaml, config_flatten, evaluate_matrix_confusion
+from utils.utils import set_device, create_context, read_yaml, config_flatten, evaluate_matrix_confusion
 
 monitoring_metrics = {
     "loss": {"train": [], "validation": []},

@@ -1,11 +1,9 @@
 import matplotlib.pyplot as plt
 import itertools
-import numpy as np
-from models import LSTM, LSTMattn
+from models import LSTMattn
 from utils.utils import *
 from utils.read_dataset import read_h5
-from tqdm import trange
-from DataLoaders.data_loaders import DatasetWileC
+from datasets import DatasetWileC
 
 
 def plot_confusion_matrix(cm, classes,

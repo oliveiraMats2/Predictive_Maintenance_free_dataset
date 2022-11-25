@@ -24,3 +24,6 @@ class ToolsWandb:
                           config=f_configurations,
                           notes=notes,
                           entity=entity)
+
+    # wandb.log({'epoch_train_acc': train_acc, 'epoch_train_loss': train_loss,
+    #            'epoch_valid_acc': valid_acc, 'epoch_valid_loss': valid_loss})

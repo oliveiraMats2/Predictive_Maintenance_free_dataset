@@ -170,3 +170,4 @@ def train(model, train_dataloader, valid_dataloader, optimizer, criterion, lr,
         list_loss_valid.append(last_loss)
 
     return list_loss_train, accuracy_list_valid, list_loss_valid
+
