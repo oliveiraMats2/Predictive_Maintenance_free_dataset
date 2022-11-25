@@ -45,8 +45,6 @@ class DatasetWileC:
 
         for i in tqdm(range(self.len_data - context)):
             self.context_data.append(self.data[i:i + context, :])
-            if i == 100:
-                break
 
     def __len__(self) -> int:
         return len(self.context_data)

@@ -48,7 +48,7 @@ def experiment_factory(configs):
     # Construct the dataloaders with any given transformations (if any)
     train_dataset = get_dataset(train_dataset_configs)
     validation_dataset = get_dataset(validation_dataset_configs)
-    test_dataset = get_dataset(test_dataset_configs)
+    # test_dataset = get_dataset(test_dataset_configs)
 
     train_loader = torch.utils.data.DataLoader(
         train_dataset, batch_size=configs["train"]["batch_size"], shuffle=True
@@ -56,9 +56,9 @@ def experiment_factory(configs):
     validation_loader = torch.utils.data.DataLoader(
         validation_dataset, batch_size=configs["valid"]["batch_size"], shuffle=False
     )
-    test_loader = torch.utils.data.DataLoader(
-        test_dataset, batch_size=configs["test"]["batch_size"], shuffle=False
-    )
+    # test_loader = torch.utils.data.DataLoader(
+    #     test_dataset, batch_size=configs["test"]["batch_size"], shuffle=False
+    # )
 
     # Build model
     if type(model_configs) == dict:
@@ -77,13 +77,12 @@ def experiment_factory(configs):
         optimizer, mode='min'
     )
 
-    return model, train_loader, validation_loader, test_loader, optimizer, \
+    return model, train_loader, validation_loader, optimizer, \
            criterion, scheduler
 
 
 def run_train_epoch(model, optimizer, criterion, loader,
                     monitoring_metrics, epoch, valid_loader):
-
     model.to(DEVICE)
     model.train()
     correct = 0
@@ -108,21 +107,21 @@ def run_train_epoch(model, optimizer, criterion, loader,
             loss = criterion(pred_labels, labels[:, 0])
             epoch_loss += loss.item()
 
-            acc += labels[labels.squeeze(1) == torch.argmax(pred_labels, dim=1)].shape[0]
-            total += 1 * inputs.shape[0]
+            acc = labels[labels.squeeze(1) == torch.argmax(pred_labels, dim=1)].shape[0]
+
+            batch_size_len = labels.shape[0]
+            # total += 1 * inputs.shape[0]
 
             progress_bar.set_postfix(
-                desc=f'[epoch: {epoch + 1:d}], iteration: {batch_idx:d}/{len(train_loader):d}, loss: {loss.item():.5f} acc: {acc:.5f} '
+                desc=f'[epoch: {epoch + 1:d}], iteration: {batch_idx:d}/{len(train_loader):d}, loss: {loss.item():.5f} acc: {(acc / batch_size_len):.5f} '
             )
 
             loss.backward()
             optimizer.step()
 
             if configs['wandb']:
-                acc_valid, valid_loss = evaluate_batch(model, valid_loader, criterion, DEVICE)
                 wandb.log({'train_loss': loss})
-                wandb.log({'valid_loss': valid_loss})
-                wandb.log({'acc_valid': acc_valid})
+                wandb.log({'train_acc': (acc / batch_size_len)})
 
             if (batch_idx + 1) % configs['evaluate_step'] == 0:
                 epoch_acc = evaluate(model, valid_loader, DEVICE)
@@ -178,7 +177,7 @@ if __name__ == "__main__":
     f_configurations = {}
     f_configurations = ToolsWandb.config_flatten(configs, f_configurations)
 
-    model, train_loader, validation_loader, test_loader, \
+    model, train_loader, validation_loader, \
     optimizer, criterion, scheduler = experiment_factory(configs)
 
     if configs['wandb']:
