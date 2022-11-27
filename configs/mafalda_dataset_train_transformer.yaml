@@ -1,0 +1,66 @@
+network: "LSTM_attn"
+#-----Organize train, test, validation
+train:
+  batch_size: 512
+
+valid:
+  batch_size: 64
+
+test:
+  batch_size: 1
+
+learning_rate: 0.00005
+
+model:
+  LSTMattn:
+    input_dim: 15000 #<----- it's same context size.
+    hidden_dim: 127
+    num_layers: 5
+    output_dim: 2
+
+optimizer:
+  Adam:
+    lr: 0.0001
+    weight_decay: 0.01
+
+loss:
+  CrossEntropyLoss: CrossEntropyLoss
+
+epochs: 1
+
+
+#----- Train test split
+train_test_split:
+  test_size: 0.15
+  random_state: 42
+
+#--- path save model
+path_save_model: 'models_h5/'
+name_model: 'model_batch_512.h5'
+
+#evaluate step mafalda biggest dataset
+evaluate_step: 20000
+
+#----- wandb
+wandb: False
+
+#---- DIR dataset mafaulda
+train_dataset:
+  DatasetWileC:
+    data_normal: 'dataset_free/X_train_normal.h5'
+    data_failure: 'dataset_free/X_train_failure.h5'
+    context: 15000
+
+valid_dataset:
+  DatasetWileC:
+    data_normal: 'dataset_free/X_val_normal.h5'
+    data_failure: 'dataset_free/X_val_failure.h5'
+    context: 15000
+
+test_dataset:
+  DatasetWileC:
+    data_normal: 'dataset_free/X_val_normal.h5'
+    data_failure: 'dataset_free/X_val_failure.h5'
+    context: 10
+
+path_to_save_model: 'model_h5/'
