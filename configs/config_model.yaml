@@ -21,4 +21,4 @@ train_test_split:
 evaluate_step: 20000
 
 #----- wandb
-wandb: True
+wandb: False
