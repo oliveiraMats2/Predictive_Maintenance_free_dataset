@@ -24,4 +24,4 @@ name_model: 'model_batch_512.h5'
 evaluate_step: 20000
 
 #----- wandb
-wandb: True
+wandb: False
