@@ -1,10 +1,10 @@
 network: "LSTM_attn"
 #-----Organize train, test, validation
 train:
-  batch_size: 512
+  batch_size: 2
 
 valid:
-  batch_size: 64
+  batch_size: 2
 
 test:
   batch_size: 1
@@ -12,11 +12,12 @@ test:
 learning_rate: 0.00005
 
 model:
-  LSTMattn:
-    input_dim: 15000 #<----- it's same context size.
-    hidden_dim: 127
-    num_layers: 5
-    output_dim: 2
+  TimeSeriesTransformers:
+    n_encoder_inputs: 8
+    n_decoder_inputs: 8
+    # source = torch.rand(size=(2, 16, 9))
+    # target_in = torch.rand(size=(2, 16, 8))
+    # target_out = torch.rand(size=(2, 16, 1))
 
 optimizer:
   Adam:
@@ -24,7 +25,7 @@ optimizer:
     weight_decay: 0.01
 
 loss:
-  CrossEntropyLoss: CrossEntropyLoss
+  smape_loss: smape_loss
 
 epochs: 1
 
@@ -46,21 +47,21 @@ wandb: False
 
 #---- DIR dataset mafaulda
 train_dataset:
-  DatasetWileC:
+  DatasetUnsupervisedMafaulda:
     data_normal: 'dataset_free/X_train_normal.h5'
     data_failure: 'dataset_free/X_train_failure.h5'
-    context: 15000
+    context: 8 # x + 1
 
 valid_dataset:
-  DatasetWileC:
+  DatasetUnsupervisedMafaulda:
     data_normal: 'dataset_free/X_val_normal.h5'
     data_failure: 'dataset_free/X_val_failure.h5'
-    context: 15000
+    context: 8 #  x + 1
 
 test_dataset:
-  DatasetWileC:
+  DatasetUnsupervisedMafaulda:
     data_normal: 'dataset_free/X_val_normal.h5'
     data_failure: 'dataset_free/X_val_failure.h5'
-    context: 10
+    context: 8 #  x + 1
 
 path_to_save_model: 'model_h5/'

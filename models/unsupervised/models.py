@@ -2,6 +2,12 @@ import torch
 import torch.nn as nn
 from torch.nn import Linear
 
+
+def smape_loss(y_pred, target):
+    loss = 2 * (y_pred - target).abs() / (y_pred.abs() + target.abs() + 1e-8)
+    return loss.mean()
+
+
 def gen_trg_mask(length, device):
     mask = torch.tril(torch.ones(length, length, device=device)) == 1
 
@@ -14,7 +20,7 @@ def gen_trg_mask(length, device):
     return mask
 
 
-class TimeSeriesForcasting:
+class TimeSeriesTransformers(nn.Module):
     def __init__(
             self,
             n_encoder_inputs,
@@ -57,6 +63,7 @@ class TimeSeriesForcasting:
         self.do = nn.Dropout(p=self.dropout)
 
     def encode_src(self, src):
+        # print(f"src before calc {src.shape}")
         src_start = self.input_projection(src).permute(1, 0, 2)
 
         in_sequence_len, batch_size = src_start.size(0), src_start.size(1)
@@ -75,6 +82,9 @@ class TimeSeriesForcasting:
         return src
 
     def decode_trg(self, trg, memory):
+        # print(f"trg before calc {trg.shape}")
+        # print(f"memory before calc {memory.shape}")
+
         trg_start = self.output_projection(trg).permute(1, 0, 2)
 
         out_sequence_len, batch_size = trg_start.size(0), trg_start.size(1)
@@ -90,6 +100,8 @@ class TimeSeriesForcasting:
 
         trg_mask = gen_trg_mask(out_sequence_len, trg.device)
 
+        # print(f"trg apply decoder {trg.shape}")
+        # print(f"memory apply decoder {memory.shape}")
         out = self.decoder(tgt=trg, memory=memory, tgt_mask=trg_mask) + trg_start
 
         out = out.permute(1, 0, 2)
@@ -99,10 +111,15 @@ class TimeSeriesForcasting:
         return out
 
     def forward(self, x):
-        src, trg = x
+        src = x
 
+        # src = x
+        # print("---------- Encoder")
         src = self.encode_src(src)
+        # print(f"src after calc {src.shape}")
 
+        trg = x
+        # print("---------- Decoder")
         out = self.decode_trg(trg=trg, memory=src)
 
         return out
@@ -124,7 +141,7 @@ class TimeSeriesForcasting:
     def validation_step(self, batch, batch_idx):
         src, trg_in, trg_out = batch
 
-        y_hat = self((src, trg_in))
+        y_hat = self.forward((src, trg_in))
 
         y_hat = y_hat.view(-1)
         y = trg_out.view(-1)
@@ -145,7 +162,6 @@ class TimeSeriesForcasting:
 
         loss = smape_loss(y_hat, y)
 
-        self.log("test_loss", loss)
 
         return loss
 
@@ -163,7 +179,8 @@ class TimeSeriesForcasting:
 
 if __name__ == "__main__":
 
-    source = torch.rand(size=(2, 16, 9))
+    # source = torch.rand(size=(2, 16, 9))
+    source = torch.rand(size=(2, 16, 8))
     target_in = torch.rand(size=(2, 16, 8))
     target_out = torch.rand(size=(2, 16, 1))
 
@@ -171,10 +188,10 @@ if __name__ == "__main__":
     print(f"source target_in: {target_in}")
     print(f"source target_out: {target_out}")
 
-    ts = TimeSeriesForcasting(n_encoder_inputs=9, n_decoder_inputs=8)
+    ts = TimeSeriesTransformers(n_encoder_inputs=8, n_decoder_inputs=8)
 
     pred = ts.forward((source, target_in))
 
-    print(pred.size())
+    # print(pred.size())
 
-    ts.training_step((source, target_in, target_out), batch_idx=1)
+    # ts.training_step((source, target_in, target_out), batch_idx=1)

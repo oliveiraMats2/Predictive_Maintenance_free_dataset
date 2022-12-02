@@ -6,7 +6,7 @@ from utils.read_dataset import ReadDatasets
 
 
 class Dataset_UCI:
-    def __init__(self, data: np.ndarray, labels : np.ndarray):
+    def __init__(self, data: np.ndarray, labels: np.ndarray):
         self.data_context, self.context_labels = data, labels
 
     def __len__(self) -> int:
@@ -16,9 +16,42 @@ class Dataset_UCI:
         return torch.Tensor(self.data_context[idx]), torch.LongTensor([self.context_labels[idx]])
 
 
+class DatasetUnsupervisedMafaulda:
+    def __init__(self, **kargs):
+        data_normal = kargs['data_normal']
+        data_failure = kargs['data_failure']
+        context = kargs['context']
+
+        data_normal = ReadDatasets.read_h5(data_normal)[:1]
+        data_failure = ReadDatasets.read_h5(data_failure)[:1]
+
+        self.data_normal = np.array(data_normal).reshape(-1, 8)
+        self.data_failure = np.array(data_failure).reshape(-1, 8)
+
+        self.len_data_normal = self.data_normal.shape[0]
+        self.len_data_failure = self.data_failure.shape[0]
+
+        self.len_data = self.len_data_normal + self.len_data_failure
+
+        self.data = np.concatenate([self.data_normal, self.data_failure])
+        # self.data = self.data_normal + self.data_failure
+
+        self.context_data = []
+        self.label_data = []
+
+        for i in tqdm(range(self.len_data - context)):
+            self.context_data.append(self.data[i:i + context])
+            self.label_data.append(self.data[i + context])
+
+    def __len__(self) -> int:
+        return len(self.context_data)
+
+    def __getitem__(self, idx: int) -> (torch.Tensor, torch.Tensor):
+        return torch.Tensor((self.context_data[idx])), torch.Tensor([self.label_data[idx]])
+
+
 class DatasetWileC:
     def __init__(self, **kargs):
-
         data_normal = kargs['data_normal']
         data_failure = kargs['data_failure']
         context = kargs['context']

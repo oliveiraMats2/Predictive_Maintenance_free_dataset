@@ -1,6 +1,7 @@
 import argparse
-from datasets import DatasetWileC, Dataset_UCI
-from models.supervised.models import LSTM, LSTMattn
+from datasets import DatasetWileC, Dataset_UCI, DatasetUnsupervisedMafaulda
+from models.unsupervised.models import TimeSeriesTransformers
+from losses import smape_loss
 from save_models import SaveBestModel
 from utils.utils import *
 from tools_wandb import ToolsWandb
@@ -13,18 +14,19 @@ DEVICE = set_device()
 
 FACTORY_DICT = {
     "model": {
-        "LSTM": LSTM,
-        "LSTMattn": LSTMattn,
+        "TimeSeriesTransformers": TimeSeriesTransformers
     },
     "dataset": {
         "DatasetWileC": DatasetWileC,
-        "DatasetUCI": Dataset_UCI
+        "DatasetUCI": Dataset_UCI,
+        "DatasetUnsupervisedMafaulda": DatasetUnsupervisedMafaulda
     },
     "optimizer": {
         "Adam": torch.optim.Adam
     },
     "loss": {
         "CrossEntropyLoss": torch.nn.CrossEntropyLoss(),
+        "smape_loss": smape_loss
     },
 }
 
@@ -85,10 +87,8 @@ def run_train_epoch(model, optimizer, criterion, loader,
                     monitoring_metrics, epoch, valid_loader):
     model.to(DEVICE)
     model.train()
-    correct = 0
+
     epoch_loss = 0
-    acc = 0
-    total = 0
 
     with trange(len(loader), desc='Train Loop') as progress_bar:
         for batch_idx, sample_batch in zip(progress_bar, loader):
@@ -101,19 +101,11 @@ def run_train_epoch(model, optimizer, criterion, loader,
 
             pred_labels = model(inputs)
 
-            _, predicted = torch.max(pred_labels, 1)
-            correct += (predicted == labels).float().sum()
-
             loss = criterion(pred_labels, labels[:, 0])
             epoch_loss += loss.item()
 
-            acc = labels[labels.squeeze(1) == torch.argmax(pred_labels, dim=1)].shape[0]
-
-            batch_size_len = labels.shape[0]
-            # total += 1 * inputs.shape[0]
-
             progress_bar.set_postfix(
-                desc=f'[epoch: {epoch + 1:d}], iteration: {batch_idx:d}/{len(train_loader):d}, loss: {loss.item():.5f} acc: {(acc / batch_size_len):.5f} '
+                desc=f'[epoch: {epoch + 1:d}], iteration: {batch_idx:d}/{len(train_loader):d}, loss: {loss.item():.5f}'
             )
 
             loss.backward()
@@ -121,15 +113,9 @@ def run_train_epoch(model, optimizer, criterion, loader,
 
             if configs['wandb']:
                 wandb.log({'train_loss': loss})
-                wandb.log({'train_acc': (acc / batch_size_len)})
 
-            if (batch_idx + 1) % configs['evaluate_step'] == 0:
-                epoch_acc = evaluate(model, valid_loader, DEVICE)
-
-                print(f"acc{epoch_acc}")
-
-                if configs['wandb']:
-                    wandb.log({'valid_acc': epoch_acc})
+            # if (batch_idx + 1) % configs['evaluate_step'] == 0:
+            #     epoch_acc = evaluate(model, valid_loader, DEVICE)
 
         epoch_loss = (epoch_loss / len(loader))
         monitoring_metrics["loss"]["train"].append(epoch_loss)
@@ -147,7 +133,7 @@ def run_training_experiment(model, train_loader, validation_loader, optimizer,
         "accuracy": {"train": [], "validation": []}
     }
 
-    for epoch in range(1, configs["epochs"] + 1):
+    for epoch in range(0, configs["epochs"] + 1):
         train_loss = run_train_epoch(
             model, optimizer, criterion, train_loader, monitoring_metrics,
             epoch, validation_loader
