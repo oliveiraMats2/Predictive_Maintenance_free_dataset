@@ -3,11 +3,6 @@ import torch.nn as nn
 from torch.nn import Linear
 
 
-def smape_loss(y_pred, target):
-    loss = 2 * (y_pred - target).abs() / (y_pred.abs() + target.abs() + 1e-8)
-    return loss.mean()
-
-
 def gen_trg_mask(length, device):
     mask = torch.tril(torch.ones(length, length, device=device)) == 1
 
@@ -148,7 +143,7 @@ class TimeSeriesTransformers(nn.Module):
 
         loss = smape_loss(y_hat, y)
 
-        #self.log("valid_loss", loss)
+        # self.log("valid_loss", loss)
 
         return loss
 
@@ -161,7 +156,6 @@ class TimeSeriesTransformers(nn.Module):
         y = trg_out.view(-1)
 
         loss = smape_loss(y_hat, y)
-
 
         return loss
 
@@ -178,7 +172,6 @@ class TimeSeriesTransformers(nn.Module):
 
 
 if __name__ == "__main__":
-
     # source = torch.rand(size=(2, 16, 9))
     source = torch.rand(size=(2, 16, 8))
     target_in = torch.rand(size=(2, 16, 8))
