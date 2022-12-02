@@ -1,4 +1,4 @@
-network: "LSTM_attn"
+network: "Transformer- Encoder-Decoder."
 #-----Organize train, test, validation
 train:
   batch_size: 2
@@ -43,20 +43,20 @@ name_model: 'model_batch_512.h5'
 evaluate_step: 20000
 
 #----- wandb
-wandb: False
+wandb: True
 
 #---- DIR dataset mafaulda
 train_dataset:
   DatasetUnsupervisedMafaulda:
     data_normal: 'dataset_free/X_train_normal.h5'
     data_failure: 'dataset_free/X_train_failure.h5'
-    context: 8 # x + 1
+    context: 400 # x + 1
 
 valid_dataset:
   DatasetUnsupervisedMafaulda:
     data_normal: 'dataset_free/X_val_normal.h5'
     data_failure: 'dataset_free/X_val_failure.h5'
-    context: 8 #  x + 1
+    context: 400 #  x + 1
 
 test_dataset:
   DatasetUnsupervisedMafaulda:

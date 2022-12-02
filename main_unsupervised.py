@@ -101,7 +101,7 @@ def run_train_epoch(model, optimizer, criterion, loader,
 
             pred_labels = model(inputs)
 
-            loss = criterion(pred_labels, labels[:, 0])
+            loss = criterion(pred_labels, labels)
             epoch_loss += loss.item()
 
             progress_bar.set_postfix(

@@ -37,17 +37,20 @@ class DatasetUnsupervisedMafaulda:
         # self.data = self.data_normal + self.data_failure
 
         self.context_data = []
-        self.label_data = []
+        self.labels_data = []
 
-        for i in tqdm(range(self.len_data - context)):
+        stride = 1
+
+        for i in tqdm(range(self.len_data - context - stride)):
             self.context_data.append(self.data[i:i + context])
-            self.label_data.append(self.data[i + context])
+            self.labels_data.append(self.data[i + stride:i + context + stride])
 
     def __len__(self) -> int:
         return len(self.context_data)
 
     def __getitem__(self, idx: int) -> (torch.Tensor, torch.Tensor):
-        return torch.Tensor((self.context_data[idx])), torch.Tensor([self.label_data[idx]])
+        #return torch.Tensor((self.context_data[idx])), torch.Tensor([self.labels_data[idx]])
+        return torch.Tensor((self.context_data[idx])), torch.Tensor(self.labels_data[idx])
 
 
 class DatasetWileC:

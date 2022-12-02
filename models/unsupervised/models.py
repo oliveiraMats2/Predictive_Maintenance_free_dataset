@@ -53,7 +53,7 @@ class TimeSeriesTransformers(nn.Module):
         self.input_projection = Linear(n_encoder_inputs, channels)
         self.output_projection = Linear(n_decoder_inputs, channels)
 
-        self.linear = Linear(channels, 1)
+        self.linear = Linear(channels, 8)
 
         self.do = nn.Dropout(p=self.dropout)
 
@@ -119,45 +119,45 @@ class TimeSeriesTransformers(nn.Module):
 
         return out
 
-    def training_step(self, batch, batch_idx):
-        src, trg_in, trg_out = batch
-
-        y_hat = self.forward((src, trg_in))
-
-        y_hat = y_hat.view(-1)
-        y = trg_out.view(-1)
-
-        loss = smape_loss(y_hat, y)
-
-        # self.log("train_loss", loss)
-
-        return loss
-
-    def validation_step(self, batch, batch_idx):
-        src, trg_in, trg_out = batch
-
-        y_hat = self.forward((src, trg_in))
-
-        y_hat = y_hat.view(-1)
-        y = trg_out.view(-1)
-
-        loss = smape_loss(y_hat, y)
-
-        # self.log("valid_loss", loss)
-
-        return loss
-
-    def test_step(self, batch, batch_idx):
-        src, trg_in, trg_out = batch
-
-        y_hat = self.forward((src, trg_in))
-
-        y_hat = y_hat.view(-1)
-        y = trg_out.view(-1)
-
-        loss = smape_loss(y_hat, y)
-
-        return loss
+    # def training_step(self, batch, batch_idx):
+    #     src, trg_in, trg_out = batch
+    #
+    #     y_hat = self.forward((src, trg_in))
+    #
+    #     y_hat = y_hat.view(-1)
+    #     y = trg_out.view(-1)
+    #
+    #     loss = smape_loss(y_hat, y)
+    #
+    #     # self.log("train_loss", loss)
+    #
+    #     return loss
+    #
+    # def validation_step(self, batch, batch_idx):
+    #     src, trg_in, trg_out = batch
+    #
+    #     y_hat = self.forward((src, trg_in))
+    #
+    #     y_hat = y_hat.view(-1)
+    #     y = trg_out.view(-1)
+    #
+    #     loss = smape_loss(y_hat, y)
+    #
+    #     # self.log("valid_loss", loss)
+    #
+    #     return loss
+    #
+    # def test_step(self, batch, batch_idx):
+    #     src, trg_in, trg_out = batch
+    #
+    #     y_hat = self.forward((src, trg_in))
+    #
+    #     y_hat = y_hat.view(-1)
+    #     y = trg_out.view(-1)
+    #
+    #     loss = smape_loss(y_hat, y)
+    #
+    #     return loss
 
     def configure_optimizers(self):
         optimizer = torch.optim.Adam(self.parameters(), lr=self.lr)
