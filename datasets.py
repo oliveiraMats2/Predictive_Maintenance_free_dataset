@@ -22,8 +22,8 @@ class DatasetUnsupervisedMafaulda:
         data_failure = kargs['data_failure']
         context = kargs['context']
 
-        data_normal = ReadDatasets.read_h5(data_normal)[:1]
-        data_failure = ReadDatasets.read_h5(data_failure)[:1]
+        data_normal = ReadDatasets.read_h5(data_normal)[:1] #debug
+        data_failure = ReadDatasets.read_h5(data_failure)[:1] #debug
 
         self.data_normal = np.array(data_normal).reshape(-1, 8)
         self.data_failure = np.array(data_failure).reshape(-1, 8)
@@ -87,3 +87,12 @@ class DatasetWileC:
 
     def __getitem__(self, idx: int) -> (torch.Tensor, torch.Tensor):
         return torch.Tensor(np.array(self.context_data[idx])), torch.LongTensor([self.data_target[idx]])
+
+
+class DatasetTest:
+    def __init__(self):
+        pass
+    def __len__(self):
+        pass
+    def __getitem__(self, item):
+        pass

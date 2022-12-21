@@ -84,6 +84,47 @@ def evaluate_matrix_confusion(model, loader, context_size, device: str):
         return cm / context_size, mean_accuracy
 
 
+def evaluate_batch_next(model, valid_loader, criterion, device):
+    with torch.no_grad():
+        total = 0
+        acc = 0
+        x, y = next(iter(valid_loader))
+        y_hat = model(x.to(device))
+
+        y = y.to(device)
+        loss = criterion(y_hat, y[:, 0])
+
+        # y_hat = torch.argmax(y_hat, dim=1)
+
+        # acc += y[y.squeeze(1) == y_hat].shape[0]
+        # total += 1 * x.shape[0]
+
+        # mean_accuracy = acc / total
+    return loss
+
+
+
+def evaluate_batch(model, valid_loader, criterion, device):
+    with torch.no_grad():
+        total = 0
+        acc = 0
+        x, y = next(iter(valid_loader))
+        y_hat = model(x.to(device))
+
+        y = y.to(device)
+        loss = criterion(y_hat, y[:, 0])
+
+        y_hat = torch.argmax(y_hat, dim=1)
+
+        acc += y[y.squeeze(1) == y_hat].shape[0]
+        total += 1 * x.shape[0]
+
+        mean_accuracy = acc / total
+
+    return mean_accuracy, loss
+
+
+
 def evaluate_batch(model, valid_loader, criterion, device):
     with torch.no_grad():
         total = 0

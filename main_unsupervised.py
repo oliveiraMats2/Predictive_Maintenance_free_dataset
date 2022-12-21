@@ -84,7 +84,7 @@ def experiment_factory(configs):
 
 
 def run_train_epoch(model, optimizer, criterion, loader,
-                    monitoring_metrics, epoch, valid_loader):
+                    monitoring_metrics, epoch, valid_loader, scheduler, run):
     model.to(DEVICE)
     model.train()
 
@@ -114,6 +114,18 @@ def run_train_epoch(model, optimizer, criterion, loader,
             if configs['wandb']:
                 wandb.log({'train_loss': loss})
 
+            if (batch_idx + 1) % 10000 == 0:
+                print("Atualizar schedule loss")
+                scheduler.step(loss)
+
+            name_model = f"{configs['path_to_save_model']}{configs['network']}.pt"
+
+            save_best_model(loss,
+                            batch_idx,
+                            model, optimizer, criterion, name_model)
+
+
+
             # if (batch_idx + 1) % configs['evaluate_step'] == 0:
             #     epoch_acc = evaluate(model, valid_loader, DEVICE)
 
@@ -123,8 +135,14 @@ def run_train_epoch(model, optimizer, criterion, loader,
     return epoch_loss
 
 
+def calculate_parameters(model):
+    qtd_model = sum(p.numel() for p in model.parameters())
+    print(f"quantidade de parametros: {qtd_model}")
+    return
+
+
 def run_training_experiment(model, train_loader, validation_loader, optimizer,
-                            criterion, scheduler, configs
+                            criterion, scheduler, configs, run
                             ):
     os.makedirs(configs["path_to_save_model"], exist_ok=True)
 
@@ -133,10 +151,12 @@ def run_training_experiment(model, train_loader, validation_loader, optimizer,
         "accuracy": {"train": [], "validation": []}
     }
 
+    calculate_parameters(model)
+
     for epoch in range(0, configs["epochs"] + 1):
         train_loss = run_train_epoch(
             model, optimizer, criterion, train_loader, monitoring_metrics,
-            epoch, validation_loader
+            epoch, validation_loader, scheduler, run
         )
         # valid_loss = run_validation(
         #     model, optimizer, criterion, validation_loader, monitoring_metrics,
@@ -144,9 +164,6 @@ def run_training_experiment(model, train_loader, validation_loader, optimizer,
         # )
         scheduler.step(monitoring_metrics["loss"]["train"][-1])
 
-    savingName = f'{configs["network"]}_epoch_{epoch}.pth'
-    savingPath = os.path.join(configs["path_to_save_model"], savingName)
-    torch.save(model.state_dict(), savingPath)
 
 
 if __name__ == "__main__":
@@ -166,6 +183,8 @@ if __name__ == "__main__":
     model, train_loader, validation_loader, \
     optimizer, criterion, scheduler = experiment_factory(configs)
 
+    run = None
+
     if configs['wandb']:
         run = wandb.init(project="wileC_free_datasets",
                          reinit=True,
@@ -175,7 +194,7 @@ if __name__ == "__main__":
 
     run_training_experiment(
         model, train_loader, validation_loader, optimizer,
-        criterion, scheduler, configs
+        criterion, scheduler, configs, run
     )
 
     torch.cuda.empty_cache()

@@ -1,15 +1,19 @@
-network: "Transformer- Encoder-Decoder."
+network: "transformer_encoder_decoder"
 #-----Organize train, test, validation
 train:
-  batch_size: 2
+  batch_size: 1
 
 valid:
-  batch_size: 2
+  batch_size: 1
 
 test:
   batch_size: 1
 
 learning_rate: 0.00005
+
+reload_model:
+  type: True
+  data: "21_dez"
 
 model:
   TimeSeriesTransformers:
@@ -42,8 +46,10 @@ name_model: 'model_batch_512.h5'
 #evaluate step mafalda biggest dataset
 evaluate_step: 20000
 
+schedule: 10000
+
 #----- wandb
-wandb: True
+wandb: False
 
 #---- DIR dataset mafaulda
 train_dataset:
