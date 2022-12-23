@@ -1,13 +1,14 @@
-import numpy as np
 import argparse
-from utils.utils import read_yaml
+
 import torch
-from tools_wandb import ToolsWandb
-from datasets import DatasetWileC, Dataset_UCI, DatasetUnsupervisedMafaulda
-from models.unsupervised.models import TimeSeriesTransformers
-from losses import smape_loss
-from utils.utils import set_device
 from tqdm import trange
+
+from datasets import DatasetWileC, Dataset_UCI, DatasetUnsupervisedMafaulda
+from losses import smape_loss
+from models.unsupervised.models import TimeSeriesTransformers
+from tools_wandb import ToolsWandb
+from utils.utils import read_yaml
+from utils.utils import set_device
 
 DEVICE = set_device()
 
@@ -46,7 +47,6 @@ def eval_epoch(model, criterion, loader, epoch):
 
     with trange(len(loader), desc='Test Loop') as progress_bar:
         for batch_idx, sample_batch in zip(progress_bar, loader):
-
             inputs, labels = sample_batch[0], sample_batch[1]
 
             inputs = inputs.to(DEVICE)
@@ -61,7 +61,7 @@ def eval_epoch(model, criterion, loader, epoch):
                 desc=f'[epoch: {epoch + 1:d}], iteration: {batch_idx:d}/{len(loader):d}, loss: {loss.item():.5f}'
             )
 
-        print(f"\n --- Mean loss {epoch_loss/len(loader)}")
+        print(f"\n --- Mean loss {epoch_loss / len(loader)}")
 
 
 def experiment_factory(configs):
@@ -89,6 +89,32 @@ def experiment_factory(configs):
     return model, test_loader, criterion
 
 
+def generate_n_samples(model,
+                       loader,
+                       name_model,
+                       iter_n_samples=1,
+                       name_txt='predicted_view_plot.pt') -> None:
+    x_test, y_test = next(iter(loader))
+
+    save_dict_tensors = {'begin': x_test}
+
+    load_dict = torch.load(name_model)
+
+    model.load_state_dict(load_dict['model_state_dict'])
+
+    for i in range(iter_n_samples):
+        x_test = model(x_test)
+        x_test_end = x_test[:, -1, :].unsqueeze(1)
+
+        x_test = x_test[:, 1:, :]
+
+        x_test = torch.concat((x_test, x_test_end), dim=1)
+
+        save_dict_tensors[i] = x_test_end
+
+    torch.save(save_dict_tensors, name_txt)
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="unsupervised main WileC")
 
@@ -107,10 +133,5 @@ if __name__ == "__main__":
 
     name_model = f"{configs['path_to_save_model']}{configs['network']}.pt"
 
-    load_dict = torch.load(name_model)
-
-    model.load_state_dict(load_dict['model_state_dict'])
-
-    eval_epoch(model, criterion, test_loader, 0)
-
-
+    # eval_epoch(model, criterion, test_loader, 0)
+    generate_n_samples(model, test_loader, name_model)

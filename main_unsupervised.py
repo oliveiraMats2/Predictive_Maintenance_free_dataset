@@ -80,7 +80,7 @@ def experiment_factory(configs):
     )
 
     return model, train_loader, validation_loader, optimizer, \
-           criterion, scheduler
+        criterion, scheduler
 
 
 def run_train_epoch(model, optimizer, criterion, loader,
@@ -124,8 +124,6 @@ def run_train_epoch(model, optimizer, criterion, loader,
                             batch_idx,
                             model, optimizer, criterion, name_model)
 
-
-
             # if (batch_idx + 1) % configs['evaluate_step'] == 0:
             #     epoch_acc = evaluate(model, valid_loader, DEVICE)
 
@@ -165,7 +163,6 @@ def run_training_experiment(model, train_loader, validation_loader, optimizer,
         scheduler.step(monitoring_metrics["loss"]["train"][-1])
 
 
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="unsupervised main WileC")
 
@@ -181,7 +178,7 @@ if __name__ == "__main__":
     f_configurations = ToolsWandb.config_flatten(configs, f_configurations)
 
     model, train_loader, validation_loader, \
-    optimizer, criterion, scheduler = experiment_factory(configs)
+        optimizer, criterion, scheduler = experiment_factory(configs)
 
     run = None
 

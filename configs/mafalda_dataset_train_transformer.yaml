@@ -7,7 +7,7 @@ valid:
   batch_size: 1
 
 test:
-  batch_size: 1
+  batch_size: 2
 
 learning_rate: 0.00005
 
@@ -68,6 +68,6 @@ test_dataset:
   DatasetUnsupervisedMafaulda:
     data_normal: 'dataset_free/X_val_normal.h5'
     data_failure: 'dataset_free/X_val_failure.h5'
-    context: 8 #  x + 1
+    context: 400 #  x + 1
 
 path_to_save_model: 'model_h5/'
