@@ -9,6 +9,7 @@ from models.unsupervised.models import TimeSeriesTransformers
 from tools_wandb import ToolsWandb
 from utils.utils import read_yaml
 from utils.utils import set_device
+from tqdm import tqdm
 
 DEVICE = set_device()
 
@@ -94,7 +95,10 @@ def generate_n_samples(model,
                        name_model,
                        iter_n_samples=1,
                        name_txt='predicted_view_plot.pt') -> None:
-    x_test, y_test = next(iter(loader))
+
+    x_test, y_test = loader.dataset[0]
+
+    x_test = x_test.unsqueeze(0)
 
     save_dict_tensors = {'begin': x_test}
 
@@ -102,15 +106,24 @@ def generate_n_samples(model,
 
     model.load_state_dict(load_dict['model_state_dict'])
 
-    for i in range(iter_n_samples):
-        x_test = model(x_test)
-        x_test_end = x_test[:, -1, :].unsqueeze(1)
+    model.to(DEVICE)
 
-        x_test = x_test[:, 1:, :]
+    for i in tqdm(range(iter_n_samples)):
 
-        x_test = torch.concat((x_test, x_test_end), dim=1)
+        x_test = x_test.to(DEVICE)
 
-        save_dict_tensors[i] = x_test_end
+        with torch.no_grad():
+            x_test = model(x_test).detach().to('cpu')
+
+            x_test_end = x_test[:, -1, :].unsqueeze(1)
+
+            x_test = x_test[:, 1:, :]
+
+            x_test = torch.concat((x_test, x_test_end), dim=1)
+
+            torch.cuda.empty_cache()
+
+            save_dict_tensors[i] = x_test_end
 
     torch.save(save_dict_tensors, name_txt)
 
@@ -134,4 +147,4 @@ if __name__ == "__main__":
     name_model = f"{configs['path_to_save_model']}{configs['network']}.pt"
 
     # eval_epoch(model, criterion, test_loader, 0)
-    generate_n_samples(model, test_loader, name_model)
+    generate_n_samples(model, test_loader, name_model, iter_n_samples=1000)
