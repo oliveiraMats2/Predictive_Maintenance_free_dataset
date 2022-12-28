@@ -8,3 +8,4 @@ __pycache__/
 /wandb/
 models_h5/
 /model_h5/
+/Datasets/sintetic_data/

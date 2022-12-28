@@ -16,14 +16,42 @@ class Dataset_UCI:
         return torch.Tensor(self.data_context[idx]), torch.LongTensor([self.context_labels[idx]])
 
 
+class DatasetSinteticUnsupervised:
+    def __init__(self, **kargs):
+        dir_data = kargs["dir_data"]
+        context = kargs["context"]
+
+        self.data = ReadDatasets.read_h5(dir_data)
+
+        self.data = np.array(self.data).reshape(-1, 4)
+
+        self.len_data = self.data.shape[0]
+
+        self.context_data = []
+        self.labels_data = []
+
+        stride = 1
+
+        for i in tqdm(range(self.len_data - context)):
+            self.context_data.append(self.data[i:i + context, :])
+            self.labels_data.append(self.data[i + stride:i + context + stride])
+
+    def __len__(self) -> int:
+        return len(self.context_data)
+
+    def __getitem__(self, idx: int) -> (torch.Tensor, torch.Tensor):
+        # return torch.Tensor((self.context_data[idx])), torch.Tensor([self.labels_data[idx]])
+        return torch.Tensor((self.context_data[idx])), torch.Tensor(self.labels_data[idx])
+
+
 class DatasetUnsupervisedMafaulda:
     def __init__(self, **kargs):
         data_normal = kargs['data_normal']
         data_failure = kargs['data_failure']
         context = kargs['context']
 
-        data_normal = ReadDatasets.read_h5(data_normal)[:1] #debug
-        data_failure = ReadDatasets.read_h5(data_failure)[:1] #debug
+        data_normal = ReadDatasets.read_h5(data_normal)[:1]  # debug
+        data_failure = ReadDatasets.read_h5(data_failure)[:1]  # debug
 
         self.data_normal = np.array(data_normal).reshape(-1, 8)
         self.data_failure = np.array(data_failure).reshape(-1, 8)
@@ -49,7 +77,7 @@ class DatasetUnsupervisedMafaulda:
         return len(self.context_data)
 
     def __getitem__(self, idx: int) -> (torch.Tensor, torch.Tensor):
-        #return torch.Tensor((self.context_data[idx])), torch.Tensor([self.labels_data[idx]])
+        # return torch.Tensor((self.context_data[idx])), torch.Tensor([self.labels_data[idx]])
         return torch.Tensor((self.context_data[idx])), torch.Tensor(self.labels_data[idx])
 
 
@@ -92,7 +120,9 @@ class DatasetWileC:
 class DatasetTest:
     def __init__(self):
         pass
+
     def __len__(self):
         pass
+
     def __getitem__(self, item):
         pass

@@ -122,12 +122,6 @@ def run_train_epoch(model, optimizer, criterion, loader,
             if configs['wandb']:
                 wandb.log({'train_loss': loss})
 
-            if (batch_idx + 1) % configs['evaluate_step'] == 0:
-                loss_valid = evaluate_step(model, valid_loader, DEVICE)
-
-                if configs['wandb']:
-                    wandb.log({'loss_valid': loss_valid})
-
         epoch_loss = (epoch_loss / len(loader))
         monitoring_metrics["loss"]["train"].append(epoch_loss)
 

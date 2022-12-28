@@ -47,13 +47,13 @@ class TimeSeriesTransformers(nn.Module):
             dim_feedforward=4 * channels,
         )
 
-        self.encoder = torch.nn.TransformerEncoder(encoder_layer, num_layers=8)
-        self.decoder = torch.nn.TransformerDecoder(decoder_layer, num_layers=8)
+        self.encoder = torch.nn.TransformerEncoder(encoder_layer, num_layers=4)
+        self.decoder = torch.nn.TransformerDecoder(decoder_layer, num_layers=4)
 
         self.input_projection = Linear(n_encoder_inputs, channels)
         self.output_projection = Linear(n_decoder_inputs, channels)
 
-        self.linear = Linear(channels, 8)
+        self.linear = Linear(channels, 4)
 
         self.do = nn.Dropout(p=self.dropout)
 

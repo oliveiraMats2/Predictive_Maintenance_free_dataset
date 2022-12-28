@@ -1,5 +1,5 @@
 import argparse
-from datasets import DatasetWileC, Dataset_UCI, DatasetUnsupervisedMafaulda
+from datasets import DatasetWileC, Dataset_UCI, DatasetUnsupervisedMafaulda, DatasetSinteticUnsupervised
 from models.unsupervised.models import TimeSeriesTransformers
 from losses import smape_loss
 from save_models import SaveBestModel
@@ -12,6 +12,8 @@ save_best_model = SaveBestModel()
 
 DEVICE = set_device()
 
+torch.Tensor([3,2,4])
+
 FACTORY_DICT = {
     "model": {
         "TimeSeriesTransformers": TimeSeriesTransformers
@@ -19,7 +21,8 @@ FACTORY_DICT = {
     "dataset": {
         "DatasetWileC": DatasetWileC,
         "DatasetUCI": Dataset_UCI,
-        "DatasetUnsupervisedMafaulda": DatasetUnsupervisedMafaulda
+        "DatasetUnsupervisedMafaulda": DatasetUnsupervisedMafaulda,
+        "DatasetSinteticUnsupervised": DatasetSinteticUnsupervised
     },
     "optimizer": {
         "Adam": torch.optim.Adam
@@ -42,7 +45,7 @@ def get_dataset(dataset_configs):
 def experiment_factory(configs):
     train_dataset_configs = configs["train_dataset"]
     validation_dataset_configs = configs["valid_dataset"]
-    test_dataset_configs = configs["test_dataset"]
+    # test_dataset_configs = configs["test_dataset"]
     model_configs = configs["model"]
     optimizer_configs = configs["optimizer"]
     criterion_configs = configs["loss"]
@@ -118,7 +121,7 @@ def run_train_epoch(model, optimizer, criterion, loader,
                 print("Atualizar schedule loss")
                 scheduler.step(loss)
 
-            name_model = f"{configs['path_to_save_model']}{configs['network']}.pt"
+            name_model = f"{configs['path_to_save_model']}{configs['network']}_{configs['reload_model']['data']}.pt"
 
             save_best_model(loss,
                             batch_idx,
@@ -183,7 +186,7 @@ if __name__ == "__main__":
     run = None
 
     if configs['wandb']:
-        run = wandb.init(project="wileC_free_datasets",
+        run = wandb.init(project="wile_c_machine_learning_team",
                          reinit=True,
                          config=f_configurations,
                          notes="Testing wandb implementation",

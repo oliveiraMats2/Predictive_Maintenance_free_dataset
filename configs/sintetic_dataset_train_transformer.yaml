@@ -13,12 +13,12 @@ learning_rate: 0.00005
 
 reload_model:
   type: True
-  data: "21_dez"
+  data: "29_dez"
 
 model:
   TimeSeriesTransformers:
-    n_encoder_inputs: 8
-    n_decoder_inputs: 8
+    n_encoder_inputs: 4
+    n_decoder_inputs: 4
     # source = torch.rand(size=(2, 16, 9))
     # target_in = torch.rand(size=(2, 16, 8))
     # target_out = torch.rand(size=(2, 16, 1))
@@ -49,25 +49,17 @@ evaluate_step: 20000
 schedule: 10000
 
 #----- wandb
-wandb: True
+wandb: False
 
 #---- DIR dataset mafaulda
 train_dataset:
-  DatasetUnsupervisedMafaulda:
-    data_normal: 'dataset_free/X_train_normal.h5'
-    data_failure: 'dataset_free/X_train_failure.h5'
-    context: 400 # x + 1
+  DatasetSinteticUnsupervised:
+    dir_data: 'Datasets/sintetic_data/train_compressor_data.h5'
+    context: 400
 
 valid_dataset:
-  DatasetUnsupervisedMafaulda:
-    data_normal: 'dataset_free/X_val_normal.h5'
-    data_failure: 'dataset_free/X_val_failure.h5'
-    context: 400 #  x + 1
-
-test_dataset:
-  DatasetUnsupervisedMafaulda:
-    data_normal: 'dataset_free/X_test_normal.h5'
-    data_failure: 'dataset_free/X_test_failure.h5'
-    context: 400 #  x + 1
+  DatasetSinteticUnsupervised:
+    dir_data: 'Datasets/sintetic_data/train_compressor_data.h5'
+    context: 400
 
 path_to_save_model: 'model_h5/'
