@@ -20,6 +20,7 @@ class DatasetSinteticUnsupervised:
     def __init__(self, **kargs):
         dir_data = kargs["dir_data"]
         context = kargs["context"]
+        stride = kargs["stride"]
 
         self.data = ReadDatasets.read_h5(dir_data)
 
@@ -29,8 +30,6 @@ class DatasetSinteticUnsupervised:
 
         self.context_data = []
         self.labels_data = []
-
-        stride = 1
 
         for i in tqdm(range(self.len_data - context)):
             self.context_data.append(self.data[i:i + context, :])

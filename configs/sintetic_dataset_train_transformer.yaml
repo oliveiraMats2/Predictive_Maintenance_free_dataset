@@ -1,4 +1,4 @@
-network: "transformer_encoder_decoder"
+network: "transformer_encoder_decoder_sintetic"
 #-----Organize train, test, validation
 train:
   batch_size: 3
@@ -7,7 +7,7 @@ valid:
   batch_size: 1
 
 test:
-  batch_size: 1
+  batch_size: 50
 
 learning_rate: 0.00005
 
@@ -49,17 +49,24 @@ evaluate_step: 20000
 schedule: 10000
 
 #----- wandb
-wandb: False
+wandb: True
 
 #---- DIR dataset mafaulda
 train_dataset:
   DatasetSinteticUnsupervised:
     dir_data: 'Datasets/sintetic_data/train_compressor_data.h5'
     context: 400
+    stride: 1
 
 valid_dataset:
   DatasetSinteticUnsupervised:
     dir_data: 'Datasets/sintetic_data/train_compressor_data.h5'
     context: 400
+
+test_dataset:
+  DatasetSinteticUnsupervised:
+    dir_data: 'Datasets/sintetic_data/test_compressor_data.h5'
+    context: 400
+    stride: 400
 
 path_to_save_model: 'model_h5/'

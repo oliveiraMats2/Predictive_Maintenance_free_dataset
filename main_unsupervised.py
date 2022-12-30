@@ -12,8 +12,6 @@ save_best_model = SaveBestModel()
 
 DEVICE = set_device()
 
-torch.Tensor([3,2,4])
-
 FACTORY_DICT = {
     "model": {
         "TimeSeriesTransformers": TimeSeriesTransformers

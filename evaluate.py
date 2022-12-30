@@ -3,7 +3,7 @@ import argparse
 import torch
 from tqdm import trange
 
-from datasets import DatasetWileC, Dataset_UCI, DatasetUnsupervisedMafaulda
+from datasets import DatasetWileC, Dataset_UCI, DatasetUnsupervisedMafaulda, DatasetSinteticUnsupervised
 from losses import smape_loss
 from models.unsupervised.models import TimeSeriesTransformers
 from tools_wandb import ToolsWandb
@@ -20,7 +20,8 @@ FACTORY_DICT = {
     "dataset": {
         "DatasetWileC": DatasetWileC,
         "DatasetUCI": Dataset_UCI,
-        "DatasetUnsupervisedMafaulda": DatasetUnsupervisedMafaulda
+        "DatasetUnsupervisedMafaulda": DatasetUnsupervisedMafaulda,
+        "DatasetSinteticUnsupervised": DatasetSinteticUnsupervised
     },
     "optimizer": {
         "Adam": torch.optim.Adam
@@ -95,7 +96,6 @@ def generate_n_samples(model,
                        name_model,
                        iter_n_samples=1,
                        name_txt='predicted_view_plot.pt') -> None:
-
     x_test, y_test = loader.dataset[0]
 
     x_test = x_test.unsqueeze(0)
@@ -109,7 +109,6 @@ def generate_n_samples(model,
     model.to(DEVICE)
 
     for i in tqdm(range(iter_n_samples)):
-
         x_test = x_test.to(DEVICE)
 
         with torch.no_grad():
@@ -124,6 +123,37 @@ def generate_n_samples(model,
             torch.cuda.empty_cache()
 
             save_dict_tensors[i] = x_test_end
+
+    torch.save(save_dict_tensors, name_txt)
+
+
+def generate_n_samples_parallel(model,
+                                loader,
+                                name_model,
+                                iter_n_samples=1,
+                                name_txt='predicted_view_plot.pt') -> None:
+    save_dict_tensors = {}
+
+    load_dict = torch.load(name_model)
+
+    model.load_state_dict(load_dict['model_state_dict'])
+
+    model.to(DEVICE)
+
+    print(f"len dataset test {len(loader.dataset)}")
+
+    parameters = sum(p.numel() for p in model.parameters())
+
+    print(f"quantidade de parametros: {parameters}")
+
+    for i, (x_test, _) in enumerate(tqdm(loader)):
+        with torch.no_grad():
+
+            x_test = x_test.to(DEVICE)
+
+            predicted = model(x_test)
+
+            save_dict_tensors[i] = predicted
 
     torch.save(save_dict_tensors, name_txt)
 
@@ -144,7 +174,10 @@ if __name__ == "__main__":
 
     model, test_loader, criterion = experiment_factory(configs)
 
-    name_model = f"{configs['path_to_save_model']}{configs['network']}.pt"
+    name_model = f"{configs['path_to_save_model']}{configs['network']}_{configs['reload_model']['data']}.pt"
 
     # eval_epoch(model, criterion, test_loader, 0)
-    generate_n_samples(model, test_loader, name_model, iter_n_samples=1000)
+    # for data sintatic
+    slot = 20
+    # generate_n_samples(model, test_loader, name_model, iter_n_samples=(slot*10*65 - 400), name_txt="sintetic_generate_data.pt")
+    generate_n_samples_parallel(model, test_loader, name_model, iter_n_samples=(slot*10*65 - 400), name_txt="sintetic_generate_data_parallel.pt")

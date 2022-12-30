@@ -9,3 +9,4 @@ __pycache__/
 models_h5/
 /model_h5/
 /Datasets/sintetic_data/
+/sintetic_generate_data.pt
