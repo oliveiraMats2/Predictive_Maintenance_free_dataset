@@ -1,7 +1,7 @@
 network: "transformer_encoder_decoder_sintetic"
 #-----Organize train, test, validation
 train:
-  batch_size: 3
+  batch_size: 8
 
 valid:
   batch_size: 1
@@ -62,6 +62,7 @@ valid_dataset:
   DatasetSinteticUnsupervised:
     dir_data: 'Datasets/sintetic_data/train_compressor_data.h5'
     context: 400
+    stride: 1
 
 test_dataset:
   DatasetSinteticUnsupervised:

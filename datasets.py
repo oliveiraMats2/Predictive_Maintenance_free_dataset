@@ -35,6 +35,8 @@ class DatasetSinteticUnsupervised:
             self.context_data.append(self.data[i:i + context, :])
             self.labels_data.append(self.data[i + stride:i + context + stride])
 
+        print(f"len dataset:{len(self.context_data)}")
+
     def __len__(self) -> int:
         return len(self.context_data)
 

@@ -7,6 +7,7 @@ from utils.utils import *
 from tools_wandb import ToolsWandb
 from tqdm import trange
 import wandb
+import time
 
 save_best_model = SaveBestModel()
 
@@ -119,11 +120,14 @@ def run_train_epoch(model, optimizer, criterion, loader,
                 print("Atualizar schedule loss")
                 scheduler.step(loss)
 
+            if batch_idx==1000:
+                break
+
             name_model = f"{configs['path_to_save_model']}{configs['network']}_{configs['reload_model']['data']}.pt"
 
-            save_best_model(loss,
-                            batch_idx,
-                            model, optimizer, criterion, name_model)
+            # save_best_model(loss,
+            #                 batch_idx,
+            #                 model, optimizer, criterion, name_model)
 
             # if (batch_idx + 1) % configs['evaluate_step'] == 0:
             #     epoch_acc = evaluate(model, valid_loader, DEVICE)
@@ -152,11 +156,15 @@ def run_training_experiment(model, train_loader, validation_loader, optimizer,
 
     calculate_parameters(model)
 
-    for epoch in range(0, configs["epochs"] + 1):
+    for epoch in range(0, configs["epochs"]):
+        start = time.time()
         train_loss = run_train_epoch(
             model, optimizer, criterion, train_loader, monitoring_metrics,
             epoch, validation_loader, scheduler, run
         )
+        end = time.time()
+
+        print(f"time result {(start - end)}")
         # valid_loss = run_validation(
         #     model, optimizer, criterion, validation_loader, monitoring_metrics,
         #     epoch, batch_size=configs["batch_size"]
