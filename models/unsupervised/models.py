@@ -2,6 +2,63 @@ import torch
 import torch.nn as nn
 from torch.nn import Linear
 
+from utils.utils import set_device
+
+DEVICE = set_device()
+
+class LstmModel(nn.Module):
+    def __init__(self, input_dim: int, hidden_dim: int = 20, num_layers: int = 2, output_dim: int = 1):
+        """Pytorch vanilla LSTM model for time series classification
+
+        Arguments:
+            input_dim : int
+                number of channels (sensor time sequences)
+            hidden_dim : int
+                hidden layer size
+            num_layers : int
+                number of layers in LSTM block
+            output_dim : int
+                number of classification labels
+        """
+        super(LstmModel, self).__init__()
+        self.input_dim = input_dim
+        self.hidden_dim = hidden_dim
+        self.num_layers = num_layers
+        self.output_dim = output_dim
+
+        self.lstm = nn.LSTM(self.input_dim,
+                            self.hidden_dim,
+                            self.num_layers)
+
+        self.fc_block = nn.Sequential(
+            nn.Linear(self.hidden_dim, self.hidden_dim),
+            nn.BatchNorm1d(self.hidden_dim),
+            nn.ReLU(inplace=True),
+            nn.Linear(self.hidden_dim, self.output_dim),
+            nn.BatchNorm1d(self.output_dim),
+            nn.ReLU(inplace=True),
+        )
+
+    def forward(self, inputs):
+        """Forward pass of model network
+
+        Inputs:
+            input: pytorch tensor (batch, channels, sequence)
+                batch of input data
+
+        Outputs:
+            out: pytorch tensor (batch, labels)
+                batch of labels
+        """
+        # out, hidden = self.lstm(input)# (batch, channels, sequence) -> [sequence, batch, channels]
+        sensors = inputs.shape[2]
+        h_0 = torch.zeros(self.num_layers, sensors, self.hidden_dim).requires_grad_().to(DEVICE)
+        c_0 = torch.zeros(self.num_layers, sensors, self.hidden_dim).requires_grad_().to(DEVICE)
+
+        _, (h_n, _) = self.lstm(inputs.permute(0, 2, 1), (h_0, c_0))
+        out = self.fc_block(h_n)
+        return out
+
 
 def gen_trg_mask(length, device):
     mask = torch.tril(torch.ones(length, length, device=device)) == 1
