@@ -6,38 +6,37 @@ from utils.utils import set_device
 
 DEVICE = set_device()
 
-class LstmModel(nn.Module):
-    def __init__(self, input_dim: int, hidden_dim: int = 20, num_layers: int = 2, output_dim: int = 1):
-        """Pytorch vanilla LSTM model for time series classification
 
-        Arguments:
-            input_dim : int
-                number of channels (sensor time sequences)
-            hidden_dim : int
-                hidden layer size
-            num_layers : int
-                number of layers in LSTM block
-            output_dim : int
-                number of classification labels
-        """
-        super(LstmModel, self).__init__()
-        self.input_dim = input_dim
-        self.hidden_dim = hidden_dim
+class LstmModel(nn.Module):
+    def __init__(self, num_sensors: int, hidden_units: int = 20, num_layers: int = 1, output_dim: int = 1):
+        self.num_sensors = num_sensors
+        self.hidden_units = hidden_units
         self.num_layers = num_layers
         self.output_dim = output_dim
 
-        self.lstm = nn.LSTM(self.input_dim,
-                            self.hidden_dim,
-                            self.num_layers)
+        super(LstmModel, self).__init__()
 
-        self.fc_block = nn.Sequential(
-            nn.Linear(self.hidden_dim, self.hidden_dim),
-            nn.BatchNorm1d(self.hidden_dim),
-            nn.ReLU(inplace=True),
-            nn.Linear(self.hidden_dim, self.output_dim),
-            nn.BatchNorm1d(self.output_dim),
-            nn.ReLU(inplace=True),
-        )
+        self.lstm_0 = nn.LSTM(input_size=self.num_sensors,
+                              hidden_size=self.hidden_units,
+                              batch_first=True,  # <<< very important
+                              num_layers=self.num_layers)
+
+        self.lstm_1 = nn.LSTM(input_size=self.num_sensors,
+                              hidden_size=self.hidden_units,
+                              batch_first=True,  # <<< very important
+                              num_layers=self.num_layers)
+
+        self.lstm_2 = nn.LSTM(input_size=self.num_sensors,
+                              hidden_size=self.hidden_units,
+                              batch_first=True,  # <<< very important
+                              num_layers=self.num_layers)
+
+        self.lstm_3 = nn.LSTM(input_size=self.num_sensors,
+                              hidden_size=self.hidden_units,
+                              batch_first=True,  # <<< very important
+                              num_layers=self.num_layers)
+
+        self.fc = nn.Linear(self.hidden_units, self.output_dim)
 
     def forward(self, inputs):
         """Forward pass of model network
@@ -51,13 +50,113 @@ class LstmModel(nn.Module):
                 batch of labels
         """
         # out, hidden = self.lstm(input)# (batch, channels, sequence) -> [sequence, batch, channels]
-        sensors = inputs.shape[2]
-        h_0 = torch.zeros(self.num_layers, sensors, self.hidden_dim).requires_grad_().to(DEVICE)
-        c_0 = torch.zeros(self.num_layers, sensors, self.hidden_dim).requires_grad_().to(DEVICE)
+        batch_size = inputs.shape[0]
+        h_0 = torch.zeros(self.num_layers, batch_size, self.hidden_units).requires_grad_().to(DEVICE)
+        c_0 = torch.zeros(self.num_layers, batch_size, self.hidden_units).requires_grad_().to(DEVICE)
 
-        _, (h_n, _) = self.lstm(inputs.permute(0, 2, 1), (h_0, c_0))
-        out = self.fc_block(h_n)
-        return out
+        sensor_0 = inputs[..., 0].unsqueeze(-1)
+        sensor_1 = inputs[..., 1].unsqueeze(-1)
+        sensor_2 = inputs[..., 2].unsqueeze(-1)
+        sensor_3 = inputs[..., 3].unsqueeze(-1)
+
+        output_0, (h_n_0, _) = self.lstm_0(sensor_0, (h_0, c_0))
+        output_1, (h_n_1, _) = self.lstm_1(sensor_1, (h_0, c_0))
+        output_2, (h_n_2, _) = self.lstm_2(sensor_2, (h_0, c_0))
+        output_3, (h_n_3, _) = self.lstm_3(sensor_3, (h_0, c_0))
+
+        out_embbeding_0 = self.fc(h_n_0[-1])
+        out_embbeding_1 = self.fc(h_n_1[-1])
+        out_embbeding_2 = self.fc(h_n_2[-1])
+        out_embbeding_3 = self.fc(h_n_3[-1])
+
+        out_sensors = torch.cat([out_embbeding_0,
+                                 out_embbeding_1,
+                                 out_embbeding_2,
+                                 out_embbeding_3], axis=1)
+
+        return out_sensors
+
+
+class LstmModelConv(nn.Module):
+    def __init__(self, num_sensors: int, hidden_units: int = 20, hidden_dim: int = 640, num_layers: int = 1,
+                 output_dim: int = 1):
+        self.num_sensors = num_sensors
+        self.hidden_units = hidden_units
+        self.num_layers = num_layers
+        self.output_dim = output_dim
+        self.hidden_dim = hidden_dim
+
+        super(LstmModelConv, self).__init__()
+
+        self.lstm_0 = nn.LSTM(input_size=self.num_sensors,
+                              hidden_size=self.hidden_units,
+                              batch_first=True,  # <<< very important
+                              num_layers=self.num_layers)
+
+        self.lstm_1 = nn.LSTM(input_size=self.num_sensors,
+                              hidden_size=self.hidden_units,
+                              batch_first=True,  # <<< very important
+                              num_layers=self.num_layers)
+
+        self.lstm_2 = nn.LSTM(input_size=self.num_sensors,
+                              hidden_size=self.hidden_units,
+                              batch_first=True,  # <<< very important
+                              num_layers=self.num_layers)
+
+        self.lstm_3 = nn.LSTM(input_size=self.num_sensors,
+                              hidden_size=self.hidden_units,
+                              batch_first=True,  # <<< very important
+                              num_layers=self.num_layers)
+
+        self.fc = nn.Linear(self.hidden_dim, self.output_dim + 2) # somar mais dois para casar a conta no final.
+
+        self.conv_1 = nn.Conv2d(1, 32, (3, 3), padding=0)
+
+    def forward(self, inputs):
+        """Forward pass of model network
+
+        Inputs:
+            input: pytorch tensor (batch, channels, sequence)
+                batch of input data
+
+        Outputs:
+            out: pytorch tensor (batch, labels)
+                batch of labels
+        """
+        # out, hidden = self.lstm(input)# (batch, channels, sequence) -> [sequence, batch, channels]
+        batch_size = inputs.shape[0]
+        h_0 = torch.zeros(self.num_layers, batch_size, self.hidden_units).requires_grad_().to(DEVICE)
+        c_0 = torch.zeros(self.num_layers, batch_size, self.hidden_units).requires_grad_().to(DEVICE)
+
+        sensor_0 = inputs[..., 0].unsqueeze(-1)
+        sensor_1 = inputs[..., 1].unsqueeze(-1)
+        sensor_2 = inputs[..., 2].unsqueeze(-1)
+        sensor_3 = inputs[..., 3].unsqueeze(-1)
+
+        output_0, (h_n_0, _) = self.lstm_0(sensor_0, (h_0, c_0))
+        output_1, (h_n_1, _) = self.lstm_1(sensor_1, (h_0, c_0))
+        output_2, (h_n_2, _) = self.lstm_2(sensor_2, (h_0, c_0))
+        output_3, (h_n_3, _) = self.lstm_3(sensor_3, (h_0, c_0))
+
+        out_embbeding_0 = self.fc(h_n_0[-1])
+        out_embbeding_1 = self.fc(h_n_1[-1])
+        out_embbeding_2 = self.fc(h_n_2[-1])
+        out_embbeding_3 = self.fc(h_n_3[-1])
+
+        vector_ones = torch.ones(batch_size, out_embbeding_0.shape[1], 1).to(DEVICE)
+
+        out_sensors = torch.cat([out_embbeding_0.unsqueeze(-1),
+                                 out_embbeding_1.unsqueeze(-1),
+                                 out_embbeding_2.unsqueeze(-1),
+                                 out_embbeding_3.unsqueeze(-1),
+                                 vector_ones,# in the end, I need vector 8x4
+                                 vector_ones], axis=2)
+
+
+        #https://madebyollin.github.io/convnet-calculator/
+        out_sensors = self.conv_1(out_sensors.unsqueeze(1))# put channel = 1
+
+        return out_sensors.mean(axis=1).mean(axis=1)
 
 
 def gen_trg_mask(length, device):
