@@ -45,6 +45,34 @@ class DatasetSinteticUnsupervised:
         return torch.Tensor((self.context_data[idx])), torch.Tensor(self.labels_data[idx])
 
 
+class DatasetSinteticUnsupervisedLSTM:
+    def __init__(self, **kargs):
+        dir_data = kargs["dir_data"]
+        context = kargs["context"]
+        stride = kargs["stride"]
+
+        self.data = ReadDatasets.read_h5(dir_data)
+
+        self.data = np.array(self.data).reshape(-1, 4)[:1000]
+
+        self.len_data = self.data.shape[0]
+
+        self.context_data = []
+        self.labels_data = []
+
+        for i in tqdm(range(self.len_data - context)):
+            self.context_data.append(self.data[i:i + context, :])
+
+        print(f"len dataset:{len(self.context_data)}")
+
+    def __len__(self) -> int:
+        return len(self.context_data)
+
+    def __getitem__(self, idx: int) -> (torch.Tensor, torch.Tensor):
+        # return torch.Tensor((self.context_data[idx])), torch.Tensor([self.labels_data[idx]])
+        return torch.Tensor((self.context_data[idx])), torch.Tensor(self.context_data[idx][-1])
+
+
 class DatasetUnsupervisedMafaulda:
     def __init__(self, **kargs):
         data_normal = kargs['data_normal']
