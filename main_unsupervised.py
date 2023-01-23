@@ -1,6 +1,7 @@
 import argparse
-from datasets import DatasetWileC, Dataset_UCI, DatasetUnsupervisedMafaulda, DatasetSinteticUnsupervised
-from models.unsupervised.models import TimeSeriesTransformers
+from datasets import DatasetUnsupervisedMafaulda, DatasetSinteticUnsupervised, DatasetSinteticUnsupervisedLSTM
+from datasets import DatasetWileC, Dataset_UCI
+from models.unsupervised.models import TimeSeriesTransformers, LstmModel
 from losses import smape_loss
 from save_models import SaveBestModel
 from utils.utils import *
@@ -15,20 +16,23 @@ DEVICE = set_device()
 
 FACTORY_DICT = {
     "model": {
-        "TimeSeriesTransformers": TimeSeriesTransformers
+        "TimeSeriesTransformers": TimeSeriesTransformers,
+        "LstmModel": LstmModel
     },
     "dataset": {
         "DatasetWileC": DatasetWileC,
         "DatasetUCI": Dataset_UCI,
         "DatasetUnsupervisedMafaulda": DatasetUnsupervisedMafaulda,
-        "DatasetSinteticUnsupervised": DatasetSinteticUnsupervised
+        "DatasetSinteticUnsupervised": DatasetSinteticUnsupervised,
+        "DatasetSinteticUnsupervisedLSTM": DatasetSinteticUnsupervisedLSTM
     },
     "optimizer": {
         "Adam": torch.optim.Adam
     },
     "loss": {
         "CrossEntropyLoss": torch.nn.CrossEntropyLoss(),
-        "smape_loss": smape_loss
+        "smape_loss": smape_loss,
+        "MSELoss": torch.nn.MSELoss(),
     },
 }
 
