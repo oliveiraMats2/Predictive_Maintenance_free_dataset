@@ -17,9 +17,9 @@ reload_model:
 
 model:
   LstmModel:
-    input_dim: 400
-    hidden_dim: 20
-    num_layers: 2
+    num_sensors: 1 #input_dim
+    hidden_units: 20
+    num_layers: 3
     output_dim: 1
 
 optimizer:

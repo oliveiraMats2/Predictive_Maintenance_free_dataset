@@ -49,7 +49,7 @@ evaluate_step: 20000
 schedule: 10000
 
 #----- wandb
-wandb: True
+wandb: False
 
 #---- DIR dataset mafaulda
 train_dataset:

@@ -53,7 +53,7 @@ class DatasetSinteticUnsupervisedLSTM:
 
         self.data = ReadDatasets.read_h5(dir_data)
 
-        self.data = np.array(self.data).reshape(-1, 4)[:1000]
+        self.data = np.array(self.data).reshape(-1, 4)
 
         self.len_data = self.data.shape[0]
 

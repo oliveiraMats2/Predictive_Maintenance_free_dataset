@@ -1,7 +1,7 @@
-network: "LSTM_decoder_sintetic"
+network: "LSTM_conv_decoder_sintetic"
 #-----Organize train, test, validation
 train:
-  batch_size: 8
+  batch_size: 32
 
 valid:
   batch_size: 1
@@ -16,11 +16,12 @@ reload_model:
   data: "23_jan"
 
 model:
-  LstmModel:
+  LstmModelConv:
     num_sensors: 1 #input_dim
-    hidden_units: 20
-    num_layers: 3
-    output_dim: 1
+    hidden_units: 255
+    hidden_dim: 255
+    num_layers: 5
+    output_dim: 480
 
 optimizer:
   Adam:
