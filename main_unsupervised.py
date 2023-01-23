@@ -1,7 +1,7 @@
 import argparse
 from datasets import DatasetUnsupervisedMafaulda, DatasetSinteticUnsupervised, DatasetSinteticUnsupervisedLSTM
 from datasets import DatasetWileC, Dataset_UCI
-from models.unsupervised.models import TimeSeriesTransformers, LstmModel
+from models.unsupervised.models import TimeSeriesTransformers, LstmModel, LstmModelConv
 from losses import smape_loss
 from save_models import SaveBestModel
 from utils.utils import *
@@ -17,7 +17,8 @@ DEVICE = set_device()
 FACTORY_DICT = {
     "model": {
         "TimeSeriesTransformers": TimeSeriesTransformers,
-        "LstmModel": LstmModel
+        "LstmModel": LstmModel,
+        "LstmModelConv": LstmModelConv
     },
     "dataset": {
         "DatasetWileC": DatasetWileC,
