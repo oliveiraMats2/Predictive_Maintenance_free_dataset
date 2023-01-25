@@ -103,6 +103,19 @@ def evaluate_batch_next(model, valid_loader, criterion, device):
     return loss
 
 
+def union_vector_predicted_dict(data_predict: dict):
+    x_concat = data_predict['begin']
+
+    del data_predict['begin']
+
+    keys_predicted = list(data_predict.keys())
+
+    for key in keys_predicted:
+        x_concat = torch.concat((x_concat, data_predict[key]), dim=1)
+
+        del data_predict[key]
+
+    return x_concat
 
 def evaluate_batch(model, valid_loader, criterion, device):
     with torch.no_grad():

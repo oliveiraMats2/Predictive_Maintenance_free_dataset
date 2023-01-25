@@ -3,32 +3,38 @@ import argparse
 import torch
 from tqdm import trange
 
-from datasets import DatasetWileC, Dataset_UCI, DatasetUnsupervisedMafaulda, DatasetSinteticUnsupervised
+from datasets import DatasetUnsupervisedMafaulda, DatasetSinteticUnsupervised, DatasetSinteticUnsupervisedLSTM
 from losses import smape_loss
-from models.unsupervised.models import TimeSeriesTransformers
+from datasets import DatasetWileC, Dataset_UCI
+from models.unsupervised.models import TimeSeriesTransformers, LstmModel, LstmModelConv
 from tools_wandb import ToolsWandb
 from utils.utils import read_yaml
-from utils.utils import set_device
+from utils.utils import set_device, union_vector_predicted_dict
 from tqdm import tqdm
+import wandb
 
 DEVICE = set_device()
 
 FACTORY_DICT = {
     "model": {
-        "TimeSeriesTransformers": TimeSeriesTransformers
+        "TimeSeriesTransformers": TimeSeriesTransformers,
+        "LstmModel": LstmModel,
+        "LstmModelConv": LstmModelConv
     },
     "dataset": {
         "DatasetWileC": DatasetWileC,
         "DatasetUCI": Dataset_UCI,
         "DatasetUnsupervisedMafaulda": DatasetUnsupervisedMafaulda,
-        "DatasetSinteticUnsupervised": DatasetSinteticUnsupervised
+        "DatasetSinteticUnsupervised": DatasetSinteticUnsupervised,
+        "DatasetSinteticUnsupervisedLSTM": DatasetSinteticUnsupervisedLSTM
     },
     "optimizer": {
         "Adam": torch.optim.Adam
     },
     "loss": {
         "CrossEntropyLoss": torch.nn.CrossEntropyLoss(),
-        "smape_loss": smape_loss
+        "smape_loss": smape_loss,
+        "MSELoss": torch.nn.MSELoss(),
     },
 }
 
@@ -75,7 +81,7 @@ def experiment_factory(configs):
     test_dataset = get_dataset(test_dataset_configs)
 
     test_loader = torch.utils.data.DataLoader(
-        test_dataset, batch_size=configs["test"]["batch_size"], shuffle=False
+        test_dataset, batch_size=configs["test_batch_size"], shuffle=False
     )
 
     # Build model
@@ -94,7 +100,7 @@ def experiment_factory(configs):
 def generate_n_samples(model,
                        loader,
                        name_model,
-                       iter_n_samples=1,
+                       iter_n_samples=2000,
                        name_txt='predicted_view_plot.pt') -> None:
     x_test, y_test = loader.dataset[0]
 
@@ -112,17 +118,17 @@ def generate_n_samples(model,
         x_test = x_test.to(DEVICE)
 
         with torch.no_grad():
-            x_test = model(x_test).detach().to('cpu')
+            predicted = model(x_test).detach().to('cpu')
 
-            x_test_end = x_test[:, -1, :].unsqueeze(1)
+            predicted = predicted.unsqueeze(1) #transformers
 
             x_test = x_test[:, 1:, :]
 
-            x_test = torch.concat((x_test, x_test_end), dim=1)
+            x_test = torch.concat((x_test.to("cpu"), predicted), dim=1)
 
             torch.cuda.empty_cache()
 
-            save_dict_tensors[i] = x_test_end
+            save_dict_tensors[i] = predicted
 
     torch.save(save_dict_tensors, name_txt)
 
@@ -130,7 +136,6 @@ def generate_n_samples(model,
 def generate_n_samples_parallel(model,
                                 loader,
                                 name_model,
-                                iter_n_samples=1,
                                 name_txt='predicted_view_plot.pt') -> None:
     save_dict_tensors = {}
 
@@ -148,7 +153,6 @@ def generate_n_samples_parallel(model,
 
     for i, (x_test, _) in enumerate(tqdm(loader)):
         with torch.no_grad():
-
             x_test = x_test.to(DEVICE)
 
             predicted = model(x_test)
@@ -169,15 +173,37 @@ if __name__ == "__main__":
 
     configs = read_yaml(args.config_file)
 
-    f_configurations = {}
-    f_configurations = ToolsWandb.config_flatten(configs, f_configurations)
-
     model, test_loader, criterion = experiment_factory(configs)
 
     name_model = f"{configs['path_to_save_model']}{configs['network']}_{configs['reload_model']['data']}.pt"
 
-    # eval_epoch(model, criterion, test_loader, 0)
-    # for data sintatic
-    slot = 20
-    # generate_n_samples(model, test_loader, name_model, iter_n_samples=(slot*10*65 - 400), name_txt="sintetic_generate_data.pt")
-    generate_n_samples_parallel(model, test_loader, name_model, iter_n_samples=(slot*10*65 - 400), name_txt="sintetic_generate_data_parallel.pt")
+    generate_n_samples(model, test_loader, name_model,
+                                name_txt="sintetic_generate_data_LSTM.pt")
+
+    #generate_n_samples_parallel(model, test_loader, name_model,
+    #                            name_txt="sintetic_generate_data_LSTM.pt")
+    #
+    # f_configurations = {}
+    # f_configurations = ToolsWandb.config_flatten(configs, f_configurations)
+    #
+    # run = None
+    #
+    # if configs['wandb']:
+    #     run = wandb.init(project="wile_c_machine_learning_team",
+    #                      reinit=True,
+    #                      config=f_configurations,
+    #                      notes="Testing wandb implementation",
+    #                      entity="oliveira_mats")
+    #
+    # test_dataset = DatasetSinteticUnsupervisedLSTM(
+    #     dir_data=configs["DatasetSinteticUnsupervisedLSTM"]["dir_data"],
+    #     context=configs["DatasetSinteticUnsupervisedLSTM"]["context"],
+    #     stride=configs["DatasetSinteticUnsupervisedLSTM"]["stride"])
+    #
+    # test_loader = torch.utils.data.DataLoader(
+    #     test_dataset, batch_size=1, shuffle=False
+    # )
+    #
+    # data_predict = torch.load(f"../sintetic_generate_data_LSTM.pt")
+    #
+    # vet_predict = union_vector_predicted_dict(data_predict)

@@ -10,3 +10,6 @@ models_h5/
 /model_h5/
 /Datasets/sintetic_data/
 /sintetic_generate_data.pt
+/transformer_encoder_decoder_sintetic_29_dez.pt
+
+results_predicted/

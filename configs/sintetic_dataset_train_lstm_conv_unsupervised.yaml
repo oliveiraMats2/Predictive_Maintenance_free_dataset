@@ -1,19 +1,16 @@
 network: "LSTM_conv_decoder_sintetic"
 #-----Organize train, test, validation
-train:
-  batch_size: 32
+train_batch_size: 52
 
-valid:
-  batch_size: 1
+valid_batch_size: 1
 
-test:
-  batch_size: 50
+test_batch_size: 50
 
-learning_rate: 0.00005
+learning_rate: 0.0005
 
 reload_model:
   type: True
-  data: "23_jan"
+  data: "25_jan"
 
 model:
   LstmModelConv:
@@ -31,7 +28,7 @@ optimizer:
 loss:
   MSELoss: MSEloss
 
-epochs: 1
+epochs: 20
 
 
 #----- Train test split
@@ -49,7 +46,7 @@ evaluate_step: 20000
 schedule: 10000
 
 #----- wandb
-wandb: False
+wandb: True
 
 #---- DIR dataset mafaulda
 train_dataset:
