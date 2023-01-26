@@ -6,7 +6,7 @@ valid_batch_size: 1
 
 test_batch_size: 50
 
-learning_rate: 0.000005
+learning_rate: 0.00005
 
 reload_model:
   type: True
@@ -21,7 +21,7 @@ model:
 
 optimizer:
   Adam:
-    lr: 0.00001
+    lr: 0.0001
     weight_decay: 0.01
 
 loss:

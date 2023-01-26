@@ -33,6 +33,8 @@ FACTORY_DICT = {
         "CrossEntropyLoss": torch.nn.CrossEntropyLoss(),
         "smape_loss": smape_loss,
         "MSELoss": torch.nn.MSELoss(),
+        "HingeLoss": torch.nn.HingeEmbeddingLoss(),
+        "KullbackLeibler": torch.nn.KLDivLoss(reduction='batchmean')
     },
 }
 
@@ -189,6 +191,13 @@ if __name__ == "__main__":
 
     model, train_loader, validation_loader, \
         optimizer, criterion, scheduler = experiment_factory(configs)
+
+    if configs['reload_model']['type']:
+        name_model = f"{configs['path_to_save_model']}backup/{configs['network']}_{configs['reload_model']['data']}.pt"
+
+        load_dict = torch.load(name_model)
+
+        model.load_state_dict(load_dict['model_state_dict'])
 
     run = None
 
