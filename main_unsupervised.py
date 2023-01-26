@@ -107,7 +107,7 @@ def run_train_epoch(model, optimizer, criterion, loader,
 
             pred_labels = model(inputs)
 
-            loss = criterion(pred_labels, labels)
+            loss = criterion(pred_labels, labels[:, 0].unsqueeze(1))
             epoch_loss += loss.item()
 
             progress_bar.set_postfix(
@@ -124,7 +124,7 @@ def run_train_epoch(model, optimizer, criterion, loader,
                 print("Atualizar schedule loss")
                 scheduler.step(loss)
 
-            if batch_idx==1000:
+            if batch_idx == 1000:
                 break
 
             name_model = f"{configs['path_to_save_model']}{configs['network']}_{configs['reload_model']['data']}.pt"

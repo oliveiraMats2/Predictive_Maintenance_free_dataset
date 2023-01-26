@@ -1,22 +1,22 @@
-network: "LSTM_decoder_sintetic"
+network: "just_LSTM_sintetic"
 #-----Organize train, test, validation
-train_batch_size: 52
+train_batch_size: 16
 
 valid_batch_size: 1
 
 test_batch_size: 50
 
-learning_rate: 0.0005
+learning_rate: 0.00005
 
 reload_model:
   type: True
-  data: "23_jan"
+  data: "25_jan"
 
 model:
   LstmModel:
     num_sensors: 1 #input_dim
-    hidden_units: 20
-    num_layers: 3
+    hidden_units: 512
+    num_layers: 15
     output_dim: 1
 
 optimizer:
@@ -27,7 +27,7 @@ optimizer:
 loss:
   MSELoss: MSEloss
 
-epochs: 1
+epochs: 20
 
 
 #----- Train test split
@@ -45,7 +45,7 @@ evaluate_step: 20000
 schedule: 10000
 
 #----- wandb
-wandb: False
+wandb: True
 
 #---- DIR dataset mafaulda
 train_dataset:

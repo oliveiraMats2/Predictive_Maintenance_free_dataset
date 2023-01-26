@@ -20,21 +20,21 @@ class LstmModel(nn.Module):
                               hidden_size=self.hidden_units,
                               batch_first=True,  # <<< very important
                               num_layers=self.num_layers)
-
-        self.lstm_1 = nn.LSTM(input_size=self.num_sensors,
-                              hidden_size=self.hidden_units,
-                              batch_first=True,  # <<< very important
-                              num_layers=self.num_layers)
-
-        self.lstm_2 = nn.LSTM(input_size=self.num_sensors,
-                              hidden_size=self.hidden_units,
-                              batch_first=True,  # <<< very important
-                              num_layers=self.num_layers)
-
-        self.lstm_3 = nn.LSTM(input_size=self.num_sensors,
-                              hidden_size=self.hidden_units,
-                              batch_first=True,  # <<< very important
-                              num_layers=self.num_layers)
+        #
+        # self.lstm_1 = nn.LSTM(input_size=self.num_sensors,
+        #                       hidden_size=self.hidden_units,
+        #                       batch_first=True,  # <<< very important
+        #                       num_layers=self.num_layers)
+        #
+        # self.lstm_2 = nn.LSTM(input_size=self.num_sensors,
+        #                       hidden_size=self.hidden_units,
+        #                       batch_first=True,  # <<< very important
+        #                       num_layers=self.num_layers)
+        #
+        # self.lstm_3 = nn.LSTM(input_size=self.num_sensors,
+        #                       hidden_size=self.hidden_units,
+        #                       batch_first=True,  # <<< very important
+        #                       num_layers=self.num_layers)
 
         self.fc = nn.Linear(self.hidden_units, self.output_dim)
 
@@ -51,30 +51,39 @@ class LstmModel(nn.Module):
         """
         # out, hidden = self.lstm(input)# (batch, channels, sequence) -> [sequence, batch, channels]
         batch_size = inputs.shape[0]
-        h_0 = torch.zeros(self.num_layers, batch_size, self.hidden_units).requires_grad_().to(DEVICE)
-        c_0 = torch.zeros(self.num_layers, batch_size, self.hidden_units).requires_grad_().to(DEVICE)
+        h_0_0 = torch.zeros(self.num_layers, batch_size, self.hidden_units).requires_grad_().to(DEVICE)
+        c_0_0 = torch.zeros(self.num_layers, batch_size, self.hidden_units).requires_grad_().to(DEVICE)
+
+        # h_0_1 = torch.zeros(self.num_layers, batch_size, self.hidden_units).requires_grad_().to(DEVICE)
+        # c_0_1 = torch.zeros(self.num_layers, batch_size, self.hidden_units).requires_grad_().to(DEVICE)
+        #
+        # h_0_2 = torch.zeros(self.num_layers, batch_size, self.hidden_units).requires_grad_().to(DEVICE)
+        # c_0_2 = torch.zeros(self.num_layers, batch_size, self.hidden_units).requires_grad_().to(DEVICE)
+        #
+        # h_0_3 = torch.zeros(self.num_layers, batch_size, self.hidden_units).requires_grad_().to(DEVICE)
+        # c_0_3 = torch.zeros(self.num_layers, batch_size, self.hidden_units).requires_grad_().to(DEVICE)
 
         sensor_0 = inputs[..., 0].unsqueeze(-1)
-        sensor_1 = inputs[..., 1].unsqueeze(-1)
-        sensor_2 = inputs[..., 2].unsqueeze(-1)
-        sensor_3 = inputs[..., 3].unsqueeze(-1)
+        # sensor_1 = inputs[..., 1].unsqueeze(-1)
+        # sensor_2 = inputs[..., 2].unsqueeze(-1)
+        # sensor_3 = inputs[..., 3].unsqueeze(-1)
 
-        output_0, (h_n_0, _) = self.lstm_0(sensor_0, (h_0, c_0))
-        output_1, (h_n_1, _) = self.lstm_1(sensor_1, (h_0, c_0))
-        output_2, (h_n_2, _) = self.lstm_2(sensor_2, (h_0, c_0))
-        output_3, (h_n_3, _) = self.lstm_3(sensor_3, (h_0, c_0))
+        output_0, (h_n_0, _) = self.lstm_0(sensor_0, (h_0_0, c_0_0))
+        # output_1, (h_n_1, _) = self.lstm_1(sensor_1, (h_0_1, c_0_1))
+        # output_2, (h_n_2, _) = self.lstm_2(sensor_2, (h_0_2, c_0_2))
+        # output_3, (h_n_3, _) = self.lstm_3(sensor_3, (h_0_3, c_0_3))
 
-        out_embbeding_0 = self.fc(h_n_0[-1])
-        out_embbeding_1 = self.fc(h_n_1[-1])
-        out_embbeding_2 = self.fc(h_n_2[-1])
-        out_embbeding_3 = self.fc(h_n_3[-1])
+        out_embbeding_0 = self.fc(h_n_0[0])
+        # out_embbeding_1 = self.fc(h_n_1[0])
+        # out_embbeding_2 = self.fc(h_n_2[0])
+        # out_embbeding_3 = self.fc(h_n_3[0])
 
-        out_sensors = torch.cat([out_embbeding_0,
-                                 out_embbeding_1,
-                                 out_embbeding_2,
-                                 out_embbeding_3], axis=1)
+        # out_sensors = torch.cat([out_embbeding_0,
+        #                          out_embbeding_1,
+        #                          out_embbeding_2,
+        #                          out_embbeding_3], axis=1)
 
-        return out_sensors
+        return out_embbeding_0
 
 
 class LstmModelConv(nn.Module):

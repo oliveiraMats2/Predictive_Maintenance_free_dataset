@@ -100,7 +100,7 @@ def experiment_factory(configs):
 def generate_n_samples(model,
                        loader,
                        name_model,
-                       iter_n_samples=2000,
+                       iter_n_samples=5000,
                        name_txt='predicted_view_plot.pt') -> None:
     x_test, y_test = loader.dataset[0]
 
@@ -114,21 +114,35 @@ def generate_n_samples(model,
 
     model.to(DEVICE)
 
-    for i in tqdm(range(iter_n_samples)):
-        x_test = x_test.to(DEVICE)
+    with trange(len(loader), desc='evaluate Loop') as progress_bar:
+        for idx, sample_batch in zip(progress_bar, loader):
 
-        with torch.no_grad():
-            predicted = model(x_test).detach().to('cpu')
+            if idx == iter_n_samples:
+                break
 
-            predicted = predicted.unsqueeze(1) #transformers
+            x_test = x_test.to(DEVICE)
 
-            x_test = x_test[:, 1:, :]
+            with torch.no_grad():
+                predicted = model(x_test).detach().to('cpu')
 
-            x_test = torch.concat((x_test.to("cpu"), predicted), dim=1)
+                predicted = predicted.unsqueeze(1)
 
-            torch.cuda.empty_cache()
+                x_test = x_test[:, 1:, :]
 
-            save_dict_tensors[i] = predicted
+                predicted_concat = torch.cat([predicted,
+                                       predicted,
+                                       predicted,
+                                       predicted],axis=2)
+
+                x_test = torch.concat((x_test.to("cpu"), predicted_concat), dim=1)
+
+                torch.cuda.empty_cache()
+
+                save_dict_tensors[idx] = predicted_concat
+
+                progress_bar.set_postfix(
+                    desc=f'iteration: {idx:d} value: {predicted_concat.view(1,4)[0]}'
+                )
 
     torch.save(save_dict_tensors, name_txt)
 
@@ -176,6 +190,8 @@ if __name__ == "__main__":
     model, test_loader, criterion = experiment_factory(configs)
 
     name_model = f"{configs['path_to_save_model']}{configs['network']}_{configs['reload_model']['data']}.pt"
+
+    print(name_model)
 
     generate_n_samples(model, test_loader, name_model,
                                 name_txt="sintetic_generate_data_LSTM.pt")
