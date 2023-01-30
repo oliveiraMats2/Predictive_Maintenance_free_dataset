@@ -1,4 +1,4 @@
-network: "transformer_sintetic_test"
+network: "transformer_sintetic_test_debug"
 #-----Organize train, test, validation
 train_batch_size: 7
 
