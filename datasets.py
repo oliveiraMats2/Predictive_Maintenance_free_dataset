@@ -44,7 +44,6 @@ class DatasetSinteticUnsupervised:
         # return torch.Tensor((self.context_data[idx])), torch.Tensor([self.labels_data[idx]])
         return torch.Tensor((self.context_data[idx])), torch.Tensor(self.labels_data[idx])
 
-
 class DatasetSinteticUnsupervisedLSTM:
     def __init__(self, **kargs):
         dir_data = kargs["dir_data"]
@@ -53,7 +52,7 @@ class DatasetSinteticUnsupervisedLSTM:
 
         self.data = ReadDatasets.read_h5(dir_data)
 
-        self.data = np.array(self.data).reshape(-1, 4)
+        self.data = np.array(self.data).reshape(-1, 1)
 
         self.len_data = self.data.shape[0]
 

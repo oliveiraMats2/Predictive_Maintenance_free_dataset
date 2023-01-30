@@ -61,7 +61,7 @@ def experiment_factory(configs):
     # test_dataset = get_dataset(test_dataset_configs)
 
     train_loader = torch.utils.data.DataLoader(
-        train_dataset, batch_size=configs["train_batch_size"], shuffle=True
+        train_dataset, batch_size=configs["train_batch_size"], shuffle=False
     )
     validation_loader = torch.utils.data.DataLoader(
         validation_dataset, batch_size=configs["valid_batch_size"], shuffle=False
@@ -109,7 +109,8 @@ def run_train_epoch(model, optimizer, criterion, loader,
 
             pred_labels = model(inputs)
 
-            loss = criterion(pred_labels, labels[:, 0].unsqueeze(1))
+            loss = criterion(pred_labels[:, -1, :], labels)
+            #loss = criterion(pred_labels, labels[:, 0].unsqueeze(1))
             epoch_loss += loss.item()
 
             progress_bar.set_postfix(
@@ -126,8 +127,6 @@ def run_train_epoch(model, optimizer, criterion, loader,
                 print("Atualizar schedule loss")
                 scheduler.step(loss)
 
-            if batch_idx == 1000:
-                break
 
             name_model = f"{configs['path_to_save_model']}{configs['network']}_{configs['reload_model']['data']}.pt"
 

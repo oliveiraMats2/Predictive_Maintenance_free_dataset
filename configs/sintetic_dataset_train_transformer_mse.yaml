@@ -1,0 +1,69 @@
+network: "transformer_sintetic_test"
+#-----Organize train, test, validation
+train_batch_size: 7
+
+
+valid_batch_size: 1
+
+test_batch_size: 1
+
+learning_rate: 0.00005
+
+reload_model:
+  type: False
+  data: "27_jan"
+
+model:
+  TimeSeriesTransformers:
+    n_encoder_inputs: 4
+    n_decoder_inputs: 4
+
+optimizer:
+  Adam:
+    lr: 0.0001
+    weight_decay: 0.01
+
+loss:
+  MSELoss: MSEloss
+  # KullbackLeibler: KullbackLeibler
+
+epochs: 20
+
+
+#----- Train test split
+train_test_split:
+  test_size: 0.15
+  random_state: 42
+
+#--- path save model
+path_save_model: 'models_h5/'
+name_model: 'model_batch_4.h5'
+
+#evaluate step mafalda biggest dataset
+evaluate_step: 20000
+
+schedule: 100
+
+#----- wandb
+wandb: False
+
+#---- DIR dataset mafaulda
+train_dataset:
+  DatasetSinteticUnsupervisedLSTM:
+    dir_data: 'Datasets/sintetic_data/train_compressor_data.h5'
+    context: 400
+    stride: 1
+
+valid_dataset:
+  DatasetSinteticUnsupervisedLSTM:
+    dir_data: 'Datasets/sintetic_data/train_compressor_data.h5'
+    context: 400
+    stride: 1
+
+test_dataset:
+  DatasetSinteticUnsupervisedLSTM:
+    dir_data: 'Datasets/sintetic_data/train_compressor_data.h5'
+    context: 400
+    stride: 1
+
+path_to_save_model: 'model_h5/'

@@ -129,19 +129,19 @@ def generate_n_samples(model,
 
                 x_test = x_test[:, 1:, :]
 
-                predicted_concat = torch.cat([predicted,
-                                       predicted,
-                                       predicted,
-                                       predicted],axis=2)
+                # predicted_concat = torch.cat([predicted,
+                #                        predicted,
+                #                        predicted,
+                #                        predicted],axis=2)
 
-                x_test = torch.concat((x_test.to("cpu"), predicted_concat), dim=1)
+                x_test = torch.concat((x_test.to("cpu"), predicted[:, :, -1, :]), dim=1)  # transformer
 
                 torch.cuda.empty_cache()
 
-                save_dict_tensors[idx] = predicted_concat
+                save_dict_tensors[idx] = predicted[:, :, -1, :]
 
                 progress_bar.set_postfix(
-                    desc=f'iteration: {idx:d} value: {predicted_concat.view(1,4)[0]}'
+                    desc=f'iteration: {idx:d} value: {x_test[:,395:,0][0]}'
                 )
 
     torch.save(save_dict_tensors, name_txt)
@@ -194,9 +194,9 @@ if __name__ == "__main__":
     print(name_model)
 
     generate_n_samples(model, test_loader, name_model,
-                                name_txt="sintetic_generate_data_LSTM.pt")
+                       name_txt="sintetic_generate_data_LSTM.pt")
 
-    #generate_n_samples_parallel(model, test_loader, name_model,
+    # generate_n_samples_parallel(model, test_loader, name_model,
     #                            name_txt="sintetic_generate_data_LSTM.pt")
     #
     # f_configurations = {}
