@@ -207,7 +207,8 @@ if __name__ == "__main__":
                          reinit=True,
                          config=f_configurations,
                          notes="Testing wandb implementation",
-                         entity="oliveira_mats")
+                         entity="oliveira_mats",
+                         dir=None)
 
     run_training_experiment(
         model, train_loader, validation_loader, optimizer,

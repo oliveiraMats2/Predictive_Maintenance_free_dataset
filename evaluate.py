@@ -193,8 +193,21 @@ if __name__ == "__main__":
 
     print(name_model)
 
+    f_configurations = {}
+    f_configurations = ToolsWandb.config_flatten(configs, f_configurations)
+
+    run = None
+
+    if configs['wandb']:
+        run = wandb.init(project="wile_c_machine_learning_team",
+                         reinit=True,
+                         config=f_configurations,
+                         notes="Testing wandb implementation",
+                         entity="oliveira_mats",
+                         dir=None)
+
     generate_n_samples(model, test_loader, name_model,
-                       name_txt="sintetic_generate_data_LSTM.pt")
+                       name_txt=f"models_h5/generate_evaluate/sintetic_generate_data_LSTM.pt")
 
     # generate_n_samples_parallel(model, test_loader, name_model,
     #                            name_txt="sintetic_generate_data_LSTM.pt")
