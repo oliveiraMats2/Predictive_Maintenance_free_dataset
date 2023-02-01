@@ -1,4 +1,9 @@
-#Symmetric mean absolute percentage error
+from soft_dtw_cuda import SoftDTW
+
+sdtw = SoftDTW(use_cuda=True, gamma=0.1)
+
+
+# #https://towardsdatascience.com/time-series-forecast-error-metrics-you-should-know-cc88b8c67f27centage error
 def smape_loss(y_pred, target):
     """
     O erro percentual absoluto médio simétrico é uma medida de precisão baseada em erros percentuais.
@@ -11,3 +16,6 @@ def smape_loss(y_pred, target):
     loss = 2 * (y_pred - target).abs() / (y_pred.abs() + target.abs() + 1e-8)
     return loss.mean()
 
+
+def soft_dtw(y_pred, target):
+    return sdtw(y_pred, target)
