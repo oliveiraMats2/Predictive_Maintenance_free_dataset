@@ -13,3 +13,4 @@ models_h5/
 /transformer_encoder_decoder_sintetic_29_dez.pt
 
 results_predicted/
+/models_h5/generate_evaluate/sintetic_generate_data_LSTM.pt
