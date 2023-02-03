@@ -4,7 +4,7 @@ import torch
 from tqdm import trange
 
 from datasets import DatasetUnsupervisedMafaulda, DatasetSinteticUnsupervised, DatasetSinteticUnsupervisedLSTM
-from losses import smape_loss
+from losses import smape_loss, soft_dtw
 from datasets import DatasetWileC, Dataset_UCI
 from models.unsupervised.models import TimeSeriesTransformers, LstmModel, LstmModelConv
 from tools_wandb import ToolsWandb
@@ -35,6 +35,9 @@ FACTORY_DICT = {
         "CrossEntropyLoss": torch.nn.CrossEntropyLoss(),
         "smape_loss": smape_loss,
         "MSELoss": torch.nn.MSELoss(),
+        "HingeLoss": torch.nn.HingeEmbeddingLoss(),
+        "KullbackLeibler": torch.nn.KLDivLoss(reduction='batchmean'),
+        "soft_dtw": soft_dtw
     },
 }
 
@@ -196,15 +199,15 @@ if __name__ == "__main__":
     f_configurations = {}
     f_configurations = ToolsWandb.config_flatten(configs, f_configurations)
 
-    run = None
-
-    if configs['wandb']:
-        run = wandb.init(project="wile_c_machine_learning_team",
-                         reinit=True,
-                         config=f_configurations,
-                         notes="Testing wandb implementation",
-                         entity="oliveira_mats",
-                         dir=None)
+    # run = None
+    #
+    # if configs['wandb']:
+    #     run = wandb.init(project="wile_c_machine_learning_team",
+    #                      reinit=True,
+    #                      config=f_configurations,
+    #                      notes="Testing wandb implementation",
+    #                      entity="oliveira_mats",
+    #                      dir=None)
 
     generate_n_samples(model, test_loader, name_model,
                        name_txt=f"models_h5/generate_evaluate/sintetic_generate_data_LSTM.pt")
