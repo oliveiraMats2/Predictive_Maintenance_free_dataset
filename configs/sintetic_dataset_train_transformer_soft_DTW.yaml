@@ -1,4 +1,4 @@
-network: "transformer_sintetic_test_debug"
+network: "transformer_sintetic_soft_dtw"
 #-----Organize train, test, validation
 train_batch_size: 7
 
@@ -10,8 +10,8 @@ test_batch_size: 1
 learning_rate: 0.00005
 
 reload_model:
-  type: False
-  data: "27_jan"
+  type: True
+  data: "1_fev"
 
 model:
   TimeSeriesTransformers:
@@ -24,7 +24,7 @@ optimizer:
     weight_decay: 0.01
 
 loss:
-  MSELoss: MSEloss
+  soft_dtw: soft_dtw
   # KullbackLeibler: KullbackLeibler
 
 epochs: 20
@@ -45,7 +45,7 @@ evaluate_step: 20000
 schedule: 100
 
 #----- wandb
-wandb: False
+wandb: True
 
 #---- DIR dataset mafaulda
 train_dataset:

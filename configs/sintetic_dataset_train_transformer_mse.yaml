@@ -1,4 +1,4 @@
-network: "transformer_sintetic_test_debug"
+network: "transformer_sintetic_soft_dtw"
 #-----Organize train, test, validation
 train_batch_size: 7
 
@@ -11,7 +11,7 @@ learning_rate: 0.00005
 
 reload_model:
   type: False
-  data: "27_jan"
+  data: "1_fev"
 
 model:
   TimeSeriesTransformers:
@@ -45,7 +45,7 @@ evaluate_step: 20000
 schedule: 100
 
 #----- wandb
-wandb: False
+wandb: True
 
 #---- DIR dataset mafaulda
 train_dataset:
