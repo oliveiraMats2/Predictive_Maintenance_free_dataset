@@ -18,4 +18,5 @@ def smape_loss(y_pred, target):
 
 
 def soft_dtw(y_pred, target):
-    return sdtw(y_pred, target)
+    loss = sdtw(y_pred.unsqueeze(2), target.unsqueeze(2))
+    return loss.mean()
