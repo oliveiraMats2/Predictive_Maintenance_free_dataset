@@ -1,13 +1,16 @@
 import argparse
+import os
+import shutil
+from tqdm import trange
+
+import wandb
 from datasets import DatasetUnsupervisedMafaulda, DatasetSinteticUnsupervised, DatasetSinteticUnsupervisedLSTM
 from datasets import DatasetWileC, Dataset_UCI
+from losses import smape_loss, soft_dtw
 from models.unsupervised.models import TimeSeriesTransformers, LstmModel, LstmModelConv
-from losses import smape_loss
 from save_models import SaveBestModel
-from utils.utils import *
 from tools_wandb import ToolsWandb
-from tqdm import trange
-import wandb
+from utils.utils import *
 
 save_best_model = SaveBestModel()
 
@@ -34,7 +37,8 @@ FACTORY_DICT = {
         "smape_loss": smape_loss,
         "MSELoss": torch.nn.MSELoss(),
         "HingeLoss": torch.nn.HingeEmbeddingLoss(),
-        "KullbackLeibler": torch.nn.KLDivLoss(reduction='batchmean')
+        "KullbackLeibler": torch.nn.KLDivLoss(reduction='batchmean'),
+        "soft_dtw": soft_dtw
     },
 }
 
@@ -134,7 +138,7 @@ def run_train_epoch(model, optimizer, criterion, loader,
 
             save_best_model(loss,
                             batch_idx,
-                            model, optimizer, criterion, name_model)
+                            model, optimizer, criterion, name_model, run)
 
             # if (batch_idx + 1) % configs['evaluate_step'] == 0:
             #     epoch_acc = evaluate(model, valid_loader, DEVICE)
@@ -182,6 +186,14 @@ if __name__ == "__main__":
     parser.add_argument(
         "config_file", type=str, help="Path to YAML configuration file"
     )
+
+    print("============ Delete .wandb path ============")
+    try:
+        shutil.rmtree("wandb/")
+    except:
+        raise ValueError("especific directory .wandb")
+
+
 
     args = parser.parse_args()
 
