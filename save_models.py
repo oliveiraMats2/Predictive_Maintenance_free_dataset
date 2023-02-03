@@ -11,7 +11,7 @@ class SaveBestModel:
 
     def __call__(
             self, current_valid_loss,
-            epoch, model, optimizer, criterion, name_model
+            epoch, model, optimizer, criterion, name_model, run
     ):
         if current_valid_loss < self.best_valid_loss:
             self.best_valid_loss = current_valid_loss
@@ -22,3 +22,7 @@ class SaveBestModel:
                 'optimizer_state_dict': optimizer.state_dict(),
                 'loss': criterion
             }, f'{self.dir_model}{name_model}')
+
+            if run is not None:
+                run.save(f'{self.dir_model}{name_model}')
+
