@@ -4,43 +4,14 @@ import shutil
 from tqdm import trange
 
 import wandb
-from datasets import DatasetUnsupervisedMafaulda, DatasetSinteticUnsupervised, DatasetSinteticUnsupervisedLSTM
-from datasets import DatasetWileC, Dataset_UCI
-from losses import smape_loss, soft_dtw
-from models.unsupervised.models import TimeSeriesTransformers, LstmModel, LstmModelConv
 from save_models import SaveBestModel
 from tools_wandb import ToolsWandb
 from utils.utils import *
+from constants import *
 
 save_best_model = SaveBestModel()
 
 DEVICE = set_device()
-
-FACTORY_DICT = {
-    "model": {
-        "TimeSeriesTransformers": TimeSeriesTransformers,
-        "LstmModel": LstmModel,
-        "LstmModelConv": LstmModelConv
-    },
-    "dataset": {
-        "DatasetWileC": DatasetWileC,
-        "DatasetUCI": Dataset_UCI,
-        "DatasetUnsupervisedMafaulda": DatasetUnsupervisedMafaulda,
-        "DatasetSinteticUnsupervised": DatasetSinteticUnsupervised,
-        "DatasetSinteticUnsupervisedLSTM": DatasetSinteticUnsupervisedLSTM
-    },
-    "optimizer": {
-        "Adam": torch.optim.Adam
-    },
-    "loss": {
-        "CrossEntropyLoss": torch.nn.CrossEntropyLoss(),
-        "smape_loss": smape_loss,
-        "MSELoss": torch.nn.MSELoss(),
-        "HingeLoss": torch.nn.HingeEmbeddingLoss(),
-        "KullbackLeibler": torch.nn.KLDivLoss(reduction='batchmean'),
-        "soft_dtw": soft_dtw
-    },
-}
 
 
 def get_dataset(dataset_configs):
@@ -113,7 +84,7 @@ def run_train_epoch(model, optimizer, criterion, loader,
 
             pred_labels = model(inputs)
 
-            try:# concertar mais tarde.
+            try:  # concertar mais tarde.
                 loss = criterion(pred_labels[:, -1, :], labels)
             except:
                 loss = criterion(pred_labels, labels[:, 0].unsqueeze(1))
@@ -191,9 +162,7 @@ if __name__ == "__main__":
     try:
         shutil.rmtree("wandb/")
     except:
-        raise ValueError("especific directory .wandb")
-
-
+        print("especific directory .wandb")
 
     args = parser.parse_args()
 

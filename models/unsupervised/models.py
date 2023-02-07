@@ -1,11 +1,63 @@
 import positional_encoder as pe
+from neuralprophet import NeuralProphet
 import torch
+import math
 from torch import nn, Tensor
 from torch.nn import Linear
 
 from utils.utils import set_device
 
 DEVICE = set_device()
+
+
+class PositionalEncoding(nn.Module):
+
+    def __init__(self, d_model, max_len=5000):
+        super(PositionalEncoding, self).__init__()
+        pe = torch.zeros(max_len, d_model)
+        position = torch.arange(0, max_len, dtype=torch.float).unsqueeze(1)
+        div_term = torch.exp(torch.arange(0, d_model, 2).float() * (-math.log(10000.0) / d_model))
+        pe[:, 0::2] = torch.sin(position * div_term)
+        pe[:, 1::2] = torch.cos(position * div_term)
+        pe = pe.unsqueeze(0).transpose(0, 1)
+        self.register_buffer('pe', pe)
+
+    def forward(self, x):
+        return x + self.pe[:x.size(0), :]
+
+
+class TransAm(nn.Module):
+    def __init__(self, feature_size=250, num_layers=8, dropout=0.1):
+        super(TransAm, self).__init__()
+        self.model_type = 'Transformer'
+
+        self.src_mask = None
+        self.pos_encoder = PositionalEncoding(feature_size)
+        self.encoder_layer = nn.TransformerEncoderLayer(d_model=feature_size, nhead=10, dropout=dropout)
+        self.transformer_encoder = nn.TransformerEncoder(self.encoder_layer, num_layers=num_layers)
+        self.decoder = nn.Linear(feature_size, 1)
+        self.init_weights()
+
+    def init_weights(self):
+        initrange = 0.1
+        self.decoder.bias.data.zero_()
+        self.decoder.weight.data.uniform_(-initrange, initrange)
+
+    def forward(self, src):
+        if self.src_mask is None or self.src_mask.size(0) != len(src):
+            device = src.device
+            mask = self._generate_square_subsequent_mask(len(src)).to(device)
+            self.src_mask = mask
+
+        src = self.pos_encoder(src)
+        output = self.transformer_encoder(src, self.src_mask)
+        output = self.decoder(output)
+        return output
+
+    def _generate_square_subsequent_mask(self, sz):
+        mask = (torch.triu(torch.ones(sz, sz)) == 1).transpose(0, 1)
+        mask = mask.float().masked_fill(mask == 0, float('-inf')).masked_fill(mask == 1, float(0.0))
+        return mask
 
 
 class LstmModel(nn.Module):
@@ -118,7 +170,7 @@ class LstmModelConv(nn.Module):
                               batch_first=True,  # <<< very important
                               num_layers=self.num_layers)
 
-        self.fc = nn.Linear(self.hidden_dim, self.output_dim + 2) # somar mais dois para casar a conta no final.
+        self.fc = nn.Linear(self.hidden_dim, self.output_dim + 2)  # somar mais dois para casar a conta no final.
 
         self.conv_1 = nn.Conv2d(1, 32, (3, 3), padding=0)
 
@@ -159,12 +211,11 @@ class LstmModelConv(nn.Module):
                                  out_embbeding_1.unsqueeze(-1),
                                  out_embbeding_2.unsqueeze(-1),
                                  out_embbeding_3.unsqueeze(-1),
-                                 vector_ones,# in the end, I need vector 8x4
+                                 vector_ones,  # in the end, I need vector 8x4
                                  vector_ones], axis=2)
 
-
-        #https://madebyollin.github.io/convnet-calculator/
-        out_sensors = self.conv_1(out_sensors.unsqueeze(1))# put channel = 1
+        # https://madebyollin.github.io/convnet-calculator/
+        out_sensors = self.conv_1(out_sensors.unsqueeze(1))  # put channel = 1
 
         return out_sensors.mean(axis=1).mean(axis=1)
 
@@ -179,6 +230,7 @@ def gen_trg_mask(length, device):
     )
 
     return mask
+
 
 class TimeSeriesTransformer(nn.Module):
 
@@ -364,9 +416,10 @@ class TimeSeriesTransformer(nn.Module):
 class TimeSeriesTransformers(nn.Module):
     def __init__(
             self,
-            n_encoder_inputs,
-            n_decoder_inputs,
-            channels=512,
+            n_encoder_layers,
+            n_decoder_layers,
+            embedding_dim=512,
+            n_heads=8,
             dropout=0.1,
             lr=1e-4,
     ):
@@ -377,29 +430,29 @@ class TimeSeriesTransformers(nn.Module):
         self.lr = lr
         self.dropout = dropout
 
-        self.input_pos_embedding = torch.nn.Embedding(1024, embedding_dim=channels)
-        self.target_pos_embedding = torch.nn.Embedding(1024, embedding_dim=channels)
+        self.input_pos_embedding = torch.nn.Embedding(1024, embedding_dim=embedding_dim)
+        self.target_pos_embedding = torch.nn.Embedding(1024, embedding_dim=embedding_dim)
 
         encoder_layer = nn.TransformerEncoderLayer(
-            d_model=channels,
-            nhead=8,
+            d_model=embedding_dim,
+            nhead=n_heads,
             dropout=self.dropout,
-            dim_feedforward=4 * channels,
+            dim_feedforward=4 * embedding_dim,
         )
         decoder_layer = nn.TransformerDecoderLayer(
-            d_model=channels,
-            nhead=8,
+            d_model=embedding_dim,
+            nhead=n_heads,
             dropout=self.dropout,
-            dim_feedforward=4 * channels,
+            dim_feedforward=4 * embedding_dim,
         )
 
-        self.encoder = torch.nn.TransformerEncoder(encoder_layer, num_layers=4)
-        self.decoder = torch.nn.TransformerDecoder(decoder_layer, num_layers=4)
+        self.encoder = torch.nn.TransformerEncoder(encoder_layer, num_layers=n_encoder_layers)
+        self.decoder = torch.nn.TransformerDecoder(decoder_layer, num_layers=n_decoder_layers)
 
-        self.input_projection = Linear(1, channels)# 1 de sensores
-        self.output_projection = Linear(1, channels)
+        self.input_projection = Linear(1, embedding_dim)  # 1 de sensores
+        self.output_projection = Linear(1, embedding_dim)
 
-        self.linear = Linear(channels, 1)
+        self.linear = Linear(embedding_dim, 1)
 
         self.do = nn.Dropout(p=self.dropout)
 

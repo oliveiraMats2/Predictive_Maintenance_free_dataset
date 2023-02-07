@@ -1,5 +1,7 @@
 import numpy as np
 from typing import List
+
+import pandas as pd
 import torch
 from tqdm import tqdm
 from utils.read_dataset import ReadDatasets
@@ -43,6 +45,7 @@ class DatasetSinteticUnsupervised:
     def __getitem__(self, idx: int) -> (torch.Tensor, torch.Tensor):
         # return torch.Tensor((self.context_data[idx])), torch.Tensor([self.labels_data[idx]])
         return torch.Tensor((self.context_data[idx])), torch.Tensor(self.labels_data[idx])
+
 
 class DatasetSinteticUnsupervisedLSTM:
     def __init__(self, **kargs):
@@ -143,6 +146,63 @@ class DatasetWileC:
 
     def __getitem__(self, idx: int) -> (torch.Tensor, torch.Tensor):
         return torch.Tensor(np.array(self.context_data[idx])), torch.LongTensor([self.data_target[idx]])
+
+
+class DatasetProphetTransformer:
+    def __init__(self, **kargs):
+        dir_data = kargs["dir_data"]
+        self.context = kargs["context"]
+        stride = kargs["stride"]
+
+        df_prophet = pd.read_csv(dir_data)
+        self.data = np.array(df_prophet["yhat_upper"].tolist())
+
+        self.context_data = []
+        self.labels_data = []
+
+        self.len_data = len(self.data)
+
+        for i in tqdm(range(self.len_data - self.context)):
+            self.context_data.append(self.data[i:i + self.context])
+            self.labels_data.append(self.data[i + stride:i + self.context + stride])
+
+        print(f"len dataset:{len(self.context_data)}")
+
+    def __len__(self) -> int:
+        return len(self.context_data)
+
+    def __getitem__(self, idx: int) -> (torch.Tensor, torch.Tensor):
+        # return torch.Tensor((self.context_data[idx])), torch.Tensor([self.labels_data[idx]])
+        return torch.Tensor((self.context_data[idx])).unsqueeze(1).view(-1, self.context),\
+            torch.Tensor(self.labels_data[idx])
+
+
+class DatasetProphetTest:
+    def __init__(self, **kargs):
+        dir_data = kargs["dir_data"]
+        context = kargs["context"]
+        stride = kargs["stride"]
+
+        df_prophet = pd.read_csv(dir_data)
+        self.data = np.array(df_prophet["yhat_upper"].tolist())
+
+        self.context_data = []
+        self.labels_data = []
+
+        self.len_data = len(self.data)
+
+        for i in tqdm(range(self.len_data - context)):
+            self.context_data.append(self.data[i:i + context])
+            self.labels_data.append(self.data[i + stride:i + context + stride])
+
+        print(f"len dataset:{len(self.context_data)}")
+
+    def __len__(self) -> int:
+        return len(self.context_data)
+
+    def __getitem__(self, idx: int) -> (torch.Tensor, torch.Tensor):
+        # return torch.Tensor((self.context_data[idx])), torch.Tensor([self.labels_data[idx]])
+        return torch.Tensor((self.context_data[idx])).unsqueeze(1), torch.Tensor(self.labels_data[idx])
 
 
 class DatasetTest:

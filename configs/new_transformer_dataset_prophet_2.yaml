@@ -1,0 +1,70 @@
+network: "new_transformer_dataset_prophet"
+#-----Organize train, test, validation
+train_batch_size: 250 #7
+
+valid_batch_size: 1
+
+test_batch_size: 1
+
+learning_rate: 0.0005
+
+reload_model:
+  type: False
+  data: "6_fev"
+
+model:
+  TransAm:
+    feature_size: 100
+    num_layers: 1
+    dropout: 0.1
+
+optimizer:
+  Adam:
+    lr: 0.0001
+    weight_decay: 0.01
+
+loss:
+  #OZELoss: OZELoss
+  soft_dtw: soft_dtw
+  # KullbackLeibler: KullbackLeibler
+
+epochs: 120
+
+
+#----- Train test split
+train_test_split:
+  test_size: 0.15
+  random_state: 42
+
+#--- path save model
+path_save_model: 'models_h5/'
+name_model: 'model_batch_4.h5'
+
+#evaluate step mafalda biggest dataset
+evaluate_step: 20000
+
+schedule: 100
+
+#----- wandb
+wandb: False
+
+#---- DIR dataset mafaulda
+train_dataset:
+  DatasetProphetTransformer:
+    dir_data: 'Datasets/compare_prophet.csv'
+    context: 100
+    stride: 1
+
+valid_dataset:
+  DatasetProphetTransformer:
+    dir_data: 'Datasets/compare_prophet.csv'
+    context: 100
+    stride: 1
+
+test_dataset:
+  DatasetProphetTransformer:
+    dir_data: 'Datasets/compare_prophet.csv'
+    context: 100
+    stride: 1
+
+path_to_save_model: 'model_h5/'

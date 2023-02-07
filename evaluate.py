@@ -1,45 +1,14 @@
 import argparse
 
-import torch
 from tqdm import trange
 
-from datasets import DatasetUnsupervisedMafaulda, DatasetSinteticUnsupervised, DatasetSinteticUnsupervisedLSTM
-from losses import smape_loss, soft_dtw
-from datasets import DatasetWileC, Dataset_UCI
-from models.unsupervised.models import TimeSeriesTransformers, LstmModel, LstmModelConv
 from tools_wandb import ToolsWandb
 from utils.utils import read_yaml
-from utils.utils import set_device, union_vector_predicted_dict
+from utils.utils import set_device
 from tqdm import tqdm
-import wandb
+from constants import *
 
 DEVICE = set_device()
-
-FACTORY_DICT = {
-    "model": {
-        "TimeSeriesTransformers": TimeSeriesTransformers,
-        "LstmModel": LstmModel,
-        "LstmModelConv": LstmModelConv
-    },
-    "dataset": {
-        "DatasetWileC": DatasetWileC,
-        "DatasetUCI": Dataset_UCI,
-        "DatasetUnsupervisedMafaulda": DatasetUnsupervisedMafaulda,
-        "DatasetSinteticUnsupervised": DatasetSinteticUnsupervised,
-        "DatasetSinteticUnsupervisedLSTM": DatasetSinteticUnsupervisedLSTM
-    },
-    "optimizer": {
-        "Adam": torch.optim.Adam
-    },
-    "loss": {
-        "CrossEntropyLoss": torch.nn.CrossEntropyLoss(),
-        "smape_loss": smape_loss,
-        "MSELoss": torch.nn.MSELoss(),
-        "HingeLoss": torch.nn.HingeEmbeddingLoss(),
-        "KullbackLeibler": torch.nn.KLDivLoss(reduction='batchmean'),
-        "soft_dtw": soft_dtw
-    },
-}
 
 
 def get_dataset(dataset_configs):
@@ -130,21 +99,31 @@ def generate_n_samples(model,
 
                 predicted = predicted.unsqueeze(1)
 
-                x_test = x_test[:, 1:, :]
+                #comentar
+                # x_test = x_test[:, 1:, :]
+                x_test = x_test[:, :, 1:]
+
 
                 # predicted_concat = torch.cat([predicted,
                 #                        predicted,
                 #                        predicted,
                 #                        predicted],axis=2)
 
-                x_test = torch.concat((x_test.to("cpu"), predicted[:, :, -1, :]), dim=1)  # transformer
+                #x_test = torch.concat((x_test.to("cpu"), predicted[:, :, -1, :]), dim=1)  # transformer
+                x_test = torch.concat((x_test.to("cpu"), predicted[:, :, -1, :]), dim=2)  # transformer
 
                 torch.cuda.empty_cache()
 
                 save_dict_tensors[idx] = predicted[:, :, -1, :]
 
+                # progress_bar.set_postfix(
+                #     desc=f'iteration: {idx:d} value: {x_test[:, 395:, 0][0]}'
+                # )
+                # progress_bar.set_postfix(
+                #     desc=f'iteration: {idx:d} value: {x_test[:, 95:, 0][0]}'
+                # )
                 progress_bar.set_postfix(
-                    desc=f'iteration: {idx:d} value: {x_test[:,395:,0][0]}'
+                    desc=f'iteration: {idx:d} value: {x_test[:, 0, 95:][0]}'
                 )
 
     torch.save(save_dict_tensors, name_txt)
