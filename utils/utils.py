@@ -1,4 +1,5 @@
 import torch
+import matplotlib.pyplot as plt
 import os
 
 import yaml
@@ -49,9 +50,6 @@ def read_yaml(file: str) -> yaml.loader.FullLoader:
     return configurations
 
 
-
-
-
 def evaluate_matrix_confusion(model, loader, context_size, device: str):
     y_list = []
     y_hat_list = []
@@ -82,6 +80,13 @@ def evaluate_matrix_confusion(model, loader, context_size, device: str):
 
         cm = confusion_matrix(y_array, y_hat_array)
         return cm / context_size, mean_accuracy
+
+
+def save_validation_figure(losses: list, name: str):
+    plt.plot(losses)
+    plt.savefig(name)
+    plt.clf()
+    return
 
 
 def evaluate_batch_next(model, valid_loader, criterion, device):
@@ -117,6 +122,7 @@ def union_vector_predicted_dict(data_predict: dict):
 
     return x_concat
 
+
 def evaluate_batch(model, valid_loader, criterion, device):
     with torch.no_grad():
         total = 0
@@ -135,7 +141,6 @@ def evaluate_batch(model, valid_loader, criterion, device):
         mean_accuracy = acc / total
 
     return mean_accuracy, loss
-
 
 
 def evaluate_batch(model, valid_loader, criterion, device):
@@ -224,4 +229,3 @@ def train(model, train_dataloader, valid_dataloader, optimizer, criterion, lr,
         list_loss_valid.append(last_loss)
 
     return list_loss_train, accuracy_list_valid, list_loss_valid
-

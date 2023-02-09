@@ -418,7 +418,7 @@ class TimeSeriesTransformers(nn.Module):
             self,
             n_encoder_layers,
             n_decoder_layers,
-            embedding_dim=512,
+            embedding_dim=1024,
             n_heads=8,
             dropout=0.1,
             lr=1e-4,

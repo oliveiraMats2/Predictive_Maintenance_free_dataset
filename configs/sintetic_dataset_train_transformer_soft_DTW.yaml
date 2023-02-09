@@ -1,7 +1,6 @@
 network: "transformer_sintetic_soft_dtw"
 #-----Organize train, test, validation
-train_batch_size: 7
-
+train_batch_size: 1
 
 valid_batch_size: 1
 
@@ -10,13 +9,13 @@ test_batch_size: 1
 learning_rate: 0.00005
 
 reload_model:
-  type: True
-  data: "1_fev"
+  type: False
+  data: "9_fev"
 
 model:
   TimeSeriesTransformers:
-    n_encoder_inputs: 4
-    n_decoder_inputs: 4
+    n_encoder_layers: 5
+    n_decoder_layers: 5
 
 optimizer:
   Adam:
@@ -27,8 +26,7 @@ loss:
   soft_dtw: soft_dtw
   # KullbackLeibler: KullbackLeibler
 
-epochs: 20
-
+epochs: 150
 
 #----- Train test split
 train_test_split:
@@ -39,8 +37,8 @@ train_test_split:
 path_save_model: 'models_h5/'
 name_model: 'model_batch_4.h5'
 
-#evaluate step mafalda biggest dataset
-evaluate_step: 20000
+
+evaluate_step: 1000
 
 schedule: 100
 
@@ -51,19 +49,19 @@ wandb: True
 train_dataset:
   DatasetSinteticUnsupervisedLSTM:
     dir_data: 'Datasets/sintetic_data/train_compressor_data.h5'
-    context: 400
+    context: 100
     stride: 1
 
 valid_dataset:
   DatasetSinteticUnsupervisedLSTM:
-    dir_data: 'Datasets/sintetic_data/train_compressor_data.h5'
-    context: 400
+    dir_data: 'Datasets/sintetic_data/test_compressor_data.h5'
+    context: 100
     stride: 1
 
 test_dataset:
   DatasetSinteticUnsupervisedLSTM:
-    dir_data: 'Datasets/sintetic_data/train_compressor_data.h5'
-    context: 400
+    dir_data: 'Datasets/sintetic_data/test_compressor_data.h5'
+    context: 100
     stride: 1
 
 path_to_save_model: 'model_h5/'

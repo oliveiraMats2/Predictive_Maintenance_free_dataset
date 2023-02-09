@@ -100,17 +100,16 @@ def generate_n_samples(model,
                 predicted = predicted.unsqueeze(1)
 
                 #comentar
-                # x_test = x_test[:, 1:, :]
-                x_test = x_test[:, :, 1:]
-
+                x_test = x_test[:, 1:, :]# transformer old
+                # x_test = x_test[:, :, 1:] #transformer new
 
                 # predicted_concat = torch.cat([predicted,
                 #                        predicted,
                 #                        predicted,
                 #                        predicted],axis=2)
 
-                #x_test = torch.concat((x_test.to("cpu"), predicted[:, :, -1, :]), dim=1)  # transformer
-                x_test = torch.concat((x_test.to("cpu"), predicted[:, :, -1, :]), dim=2)  # transformer
+                x_test = torch.concat((x_test.to("cpu"), predicted[:, :, -1, :]), dim=1)  # transformer old
+                #x_test = torch.concat((x_test.to("cpu"), predicted[:, :, -1, :]), dim=2)  # transformer new
 
                 torch.cuda.empty_cache()
 
@@ -119,12 +118,12 @@ def generate_n_samples(model,
                 # progress_bar.set_postfix(
                 #     desc=f'iteration: {idx:d} value: {x_test[:, 395:, 0][0]}'
                 # )
-                # progress_bar.set_postfix(
-                #     desc=f'iteration: {idx:d} value: {x_test[:, 95:, 0][0]}'
-                # )
                 progress_bar.set_postfix(
-                    desc=f'iteration: {idx:d} value: {x_test[:, 0, 95:][0]}'
+                    desc=f'iteration: {idx:d} value: {x_test[:, 95:, 0][0]}'
                 )
+                # progress_bar.set_postfix(
+                #     desc=f'iteration: {idx:d} value: {x_test[:, 0, 95:][0]}'
+                # )
 
     torch.save(save_dict_tensors, name_txt)
 

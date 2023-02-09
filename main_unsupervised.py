@@ -1,15 +1,21 @@
+import gc
 import argparse
 import os
 import shutil
 from tqdm import trange
-
+from utils.utils import save_validation_figure
 import wandb
 from save_models import SaveBestModel
 from tools_wandb import ToolsWandb
 from utils.utils import *
 from constants import *
+import torch.nn as nn
 
 save_best_model = SaveBestModel()
+
+loss_smooth_l1 = nn.SmoothL1Loss()
+
+loss_mse = nn.MSELoss(size_average=None, reduce=None, reduction='mean')
 
 DEVICE = set_device()
 
@@ -73,7 +79,7 @@ def run_train_epoch(model, optimizer, criterion, loader,
 
     epoch_loss = 0
 
-    with trange(len(loader), desc='Train Loop') as progress_bar:
+    with trange(len(loader), desc='Train Loop', leave=True) as progress_bar:
         for batch_idx, sample_batch in zip(progress_bar, loader):
             optimizer.zero_grad()
 
@@ -86,13 +92,17 @@ def run_train_epoch(model, optimizer, criterion, loader,
 
             try:  # concertar mais tarde.
                 loss = criterion(pred_labels[:, -1, :], labels)
+                result_loss_mse = loss_mse(pred_labels[:, -1, :], labels)
+                result_loss_smape = smape_loss(pred_labels[:, -1, :], labels)
+                result_loss_smooth_l1 = loss_smooth_l1(pred_labels[:, -1, :], labels)
             except:
                 loss = criterion(pred_labels, labels[:, 0].unsqueeze(1))
 
             epoch_loss += loss.item()
 
             progress_bar.set_postfix(
-                desc=f'[epoch: {epoch + 1:d}], iteration: {batch_idx:d}/{len(train_loader):d}, loss: {loss.item():.5f}'
+                desc=f'[epoch: {epoch + 1:d}], iteration: {batch_idx:d}/{len(train_loader):d},\
+                 loss: {loss.item():.5f} | loss_mse: {result_loss_mse:.5f} | loss_smape: {result_loss_smape:.5f} loss smooth: {result_loss_smooth_l1:.5f}'
             )
 
             loss.backward()
@@ -100,6 +110,9 @@ def run_train_epoch(model, optimizer, criterion, loader,
 
             if configs['wandb']:
                 wandb.log({'train_loss': loss})
+                wandb.log({"loss_mse": result_loss_mse})
+                wandb.log({"result_loss_smape": result_loss_smape})
+                wandb.log({"result_loss_smooth_l1": result_loss_smooth_l1})
 
             if (batch_idx + 1) % 10000 == 0:
                 print("Atualizar schedule loss")
@@ -112,12 +125,60 @@ def run_train_epoch(model, optimizer, criterion, loader,
                             model, optimizer, criterion, name_model, run)
 
             # if (batch_idx + 1) % configs['evaluate_step'] == 0:
-            #     epoch_acc = evaluate(model, valid_loader, DEVICE)
+            #     valid_loss = run_validation(
+            #         model, optimizer, criterion, valid_loader, monitoring_metrics,
+            #         epoch, batch_size=configs["valid_batch_size"], iter=batch_idx
+            #     )
+
+            progress_bar.update()
 
         epoch_loss = (epoch_loss / len(loader))
         monitoring_metrics["loss"]["train"].append(epoch_loss)
 
     return epoch_loss
+
+
+def run_validation(model, optimizer, criterion, loader, monitoring_metrics,
+                   epoch, batch_size, iter):
+    with torch.no_grad():
+        torch.cuda.empty_cache()
+        gc.collect()
+
+        model.to(DEVICE)
+        model.eval()
+        running_loss = []
+        #with trange(len(loader), desc='Valid Loop', leave=True) as progress_bar:
+        for batch_idx, sample_batch in enumerate(loader):
+            inputs, labels = sample_batch[0], sample_batch[1]
+
+            inputs = inputs.to(DEVICE)
+            labels = labels.to(DEVICE)
+
+            pred_labels = model(inputs)
+
+            try:  # concertar mais tarde.
+                loss = criterion(pred_labels[:, -1, :], labels)
+            except:
+                loss = criterion(pred_labels, labels[:, 0].unsqueeze(1))
+
+            running_loss.append(loss.item())
+
+        save_validation_figure(running_loss, f"artifacts/loss/epoch_{epoch}_iter_{iter}_validation")
+
+        mean_loss = sum(running_loss) / len(running_loss)
+
+        print(f"mean loss: {mean_loss}")
+
+        if configs['wandb']:
+            wandb.log({'valid_loss': mean_loss})
+
+        name_model = f"{configs['path_to_save_model']}{configs['network']}_{configs['reload_model']['data']}.pt"
+
+        save_best_model(mean_loss,
+                        batch_idx,
+                        model, optimizer, criterion, name_model, run)
+
+    return running_loss
 
 
 def calculate_parameters(model):
@@ -144,10 +205,6 @@ def run_training_experiment(model, train_loader, validation_loader, optimizer,
             epoch, validation_loader, scheduler, run
         )
 
-        # valid_loss = run_validation(
-        #     model, optimizer, criterion, validation_loader, monitoring_metrics,
-        #     epoch, batch_size=configs["batch_size"]
-        # )
         scheduler.step(monitoring_metrics["loss"]["train"][-1])
 
 
