@@ -26,7 +26,7 @@ from pytorch_forecasting.data.encoders import GroupNormalizer
 # )
 #
 #
-# dataloader = dataset.to_dataloader(batch_size=1)
+# dataloader = dataset.to_dataloader(batch_size=5)
 #
 # #load the first batch
 # x, y = next(iter(dataloader))
@@ -34,8 +34,8 @@ from pytorch_forecasting.data.encoders import GroupNormalizer
 # print(x['groups'])
 # print('\n')
 # print(x['decoder_target'])
-
-data = pd.read_csv('Datasets/dataset_fusion_transfomers/LD2011_2014.txt', index_col=0, sep=';', decimal=',')
+dir_dataset = 'Datasets/dataset_fusion_transfomers/LD2011_2014.txt'
+data = pd.read_csv(dir_dataset, index_col=0, sep=';', decimal=',')
 data.index = pd.to_datetime(data.index)
 data.sort_index(inplace=True)
 
@@ -44,7 +44,8 @@ print(data.head(5))
 # down sampling of the information
 data = data.resample('1h').mean().replace(0., np.nan)
 earliest_time = data.index.min()
-df = data[['MT_002', 'MT_004', 'MT_005', 'MT_006', 'MT_008']]
+#df = data[['MT_002', 'MT_004', 'MT_005', 'MT_006', 'MT_008']]
+df = data[['MT_004']]
 
 df_list = []
 
@@ -74,7 +75,7 @@ for label in df:
 time_df = tmp
 
 max_prediction_length = 24
-max_encoder_length = 7*24
+max_encoder_length = 7 * 24
 training_cutoff = time_df["hours_from_start"].max() - max_prediction_length
 
 training = TimeSeriesDataSet(
@@ -87,7 +88,7 @@ training = TimeSeriesDataSet(
     min_prediction_length=1,
     max_prediction_length=max_prediction_length,
     static_categoricals=["consumer_id"],
-    time_varying_known_reals=["hours_from_start","day","day_of_week", "month", 'hour'],
+    time_varying_known_reals=["hours_from_start", "day", "day_of_week", "month", 'hour'],
     time_varying_unknown_reals=['power_usage'],
     target_normalizer=GroupNormalizer(
         groups=["consumer_id"], transformation="softplus"
@@ -104,7 +105,6 @@ batch_size = 64
 # if you have a strong GPU, feel free to increase the number of workers
 train_dataloader = training.to_dataloader(train=True, batch_size=batch_size, num_workers=0)
 val_dataloader = validation.to_dataloader(train=False, batch_size=batch_size * 10, num_workers=0)
-
 
 from pytorch_forecasting.models.temporal_fusion_transformer import TemporalFusionTransformer
 from pytorch_lightning.callbacks.early_stopping import EarlyStopping
@@ -134,7 +134,6 @@ tft = TemporalFusionTransformer.from_dataset(
 
 trainer.fit(
     tft,
-    train_dataloaders=train_dataloader)
-
-
-print()
+    train_dataloaders=train_dataloader,
+    val_dataloaders=val_dataloader,
+)

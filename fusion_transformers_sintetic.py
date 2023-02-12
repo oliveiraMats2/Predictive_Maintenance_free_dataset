@@ -17,39 +17,12 @@ df.index = pd.to_datetime(df.index)
 earliest_time = df.index.min()
 df.sort_index(inplace=True)
 
-print(df.head(20))
+print(df.head(8))
 
 # down sampling of the information
 
-df_list = []
-
-for label in df:
-    ts = df[label]
-
-    start_date = min(ts.fillna(method='ffill').dropna().index)
-    end_date = max(ts.fillna(method='bfill').dropna().index)
-
-    active_range = (ts.index >= start_date) & (ts.index <= end_date)
-    ts = ts[active_range].fillna(0.)
-
-    tmp = pd.DataFrame({'power_usage': ts})
-    date = tmp.index
-
-    tmp['hours_from_start'] = (date - earliest_time).seconds / 60 / 60 + (date - earliest_time).days * 24
-    tmp['hours_from_start'] = tmp['hours_from_start'].astype('int')
-
-    tmp['date'] = date
-    tmp['consumer_id'] = label
-    tmp['hour'] = date.hour
-    tmp['day'] = date.day
-    tmp['day_of_week'] = date.dayofweek
-    tmp['month'] = date.month
-
-time_df = tmp
-
-max_prediction_length = 24
-max_encoder_length = 7 * 24
-training_cutoff = abs(time_df["hours_from_start"].max() - max_prediction_length)
+max_prediction_length = 5
+max_encoder_length = 10
 
 training = TimeSeriesDataSet(
     df,
@@ -61,8 +34,8 @@ training = TimeSeriesDataSet(
     min_prediction_length=1,
     max_prediction_length=max_prediction_length,
     static_categoricals=[],
-    time_varying_known_reals=[],
-    time_varying_unknown_reals=[],
+    time_varying_known_reals=["ds"],
+    time_varying_unknown_reals=["temp_series"],
     target_normalizer=GroupNormalizer(
         groups=["group_id"], transformation="softplus"
     ),  # we normalize by group
@@ -74,15 +47,16 @@ training = TimeSeriesDataSet(
 validation = TimeSeriesDataSet.from_dataset(training, df, predict=True, stop_randomization=True)
 
 # create dataloaders for  our model
-batch_size = 64
+batch_size = 128
 # if you have a strong GPU, feel free to increase the number of workers
 train_dataloader = training.to_dataloader(train=True, batch_size=batch_size, num_workers=0)
+val_dataloader = validation.to_dataloader(train=False, batch_size=batch_size, num_workers=0)
 
 from pytorch_forecasting.models.temporal_fusion_transformer import TemporalFusionTransformer
 from pytorch_forecasting.metrics.quantile import QuantileLoss
 
 trainer = pl.Trainer(
-    max_epochs=45,
+    max_epochs=20,
     accelerator='gpu',
     devices=1,
     enable_model_summary=True,
@@ -90,9 +64,9 @@ trainer = pl.Trainer(
 
 tft = TemporalFusionTransformer.from_dataset(
     training,
-    learning_rate=0.001,
-    hidden_size=160,
-    attention_head_size=4,
+    learning_rate=0.0001,
+    hidden_size=512,
+    attention_head_size=8,
     dropout=0.1,
     hidden_continuous_size=160,
     output_size=7,  # there are 7 quantiles by default: [0.02, 0.1, 0.25, 0.5, 0.75, 0.9, 0.98]
@@ -103,3 +77,7 @@ tft = TemporalFusionTransformer.from_dataset(
 trainer.fit(
     tft,
     train_dataloaders=train_dataloader)
+
+best_model_path = trainer.checkpoint_callback.best_model_path
+print(best_model_path)
+
