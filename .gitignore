@@ -14,3 +14,8 @@ models_h5/
 
 results_predicted/
 /models_h5/generate_evaluate/sintetic_generate_data_LSTM.pt
+/notebooks/tmp
+/notebooks/tmp.csv
+/Datasets/dataset_fusion_transfomers/
+/Datasets/
+/lightning_logs/

@@ -137,3 +137,6 @@ trainer.fit(
     train_dataloaders=train_dataloader,
     val_dataloaders=val_dataloader,
 )
+
+best_model_path = trainer.checkpoint_callback.best_model_path
+print(best_model_path)
