@@ -1,0 +1,5 @@
+outs:
+- md5: 9eea33ab296b73874422c3788b671117.dir
+  size: 711030553
+  nfiles: 3
+  path: dataset_fusion_transfomers

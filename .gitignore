@@ -8,7 +8,6 @@ __pycache__/
 /wandb/
 models_h5/
 /model_h5/
-/Datasets/sintetic_data/
 /sintetic_generate_data.pt
 /transformer_encoder_decoder_sintetic_29_dez.pt
 
@@ -16,6 +15,4 @@ results_predicted/
 /models_h5/generate_evaluate/sintetic_generate_data_LSTM.pt
 /notebooks/tmp
 /notebooks/tmp.csv
-/Datasets/dataset_fusion_transfomers/
-/Datasets/
 /lightning_logs/

@@ -24,7 +24,8 @@ df = pd.read_csv(f"Datasets/saida/ite/payloadITE.csv")
 
 vector_series = df["temperature"].tolist()
 
-vector_series = vector_series[600:800]
+#vector_series = vector_series[600:800]
+vector_series = vector_series[:1500]
 
 df = pd.DataFrame({"temp_series": np.array(vector_series).astype(np.float),
                    "ds": np.arange(len(vector_series)),
@@ -73,8 +74,8 @@ dir_model = "/mnt/arquivos_linux/wile_C/Predictive_Maintenance_free_dataset/ligh
 
 best_tft = TemporalFusionTransformer.load_from_checkpoint(dir_model)
 
-# actuals = torch.cat([y[0] for x, y in tqdm(iter(val_dataloader))])
-# predictions = best_tft.predict(val_dataloader, show_progress_bar=True)
+actuals = torch.cat([y[0] for x, y in tqdm(iter(val_dataloader))])
+predictions = best_tft.predict(val_dataloader, show_progress_bar=True)
 
 x, y = next(iter(val_dataloader))
 
@@ -93,13 +94,13 @@ x, y = next(iter(val_dataloader))
 # average p50 loss per time series
 # print((actuals - predictions).abs().mean(axis=1))
 
-raw_predictions, x = best_tft.predict(val_dataloader, mode="raw", return_x=True)
+# raw_predictions, x = best_tft.predict(val_dataloader, mode="raw", return_x=True)
 
 
 print('\n')
 
 
-best_tft.plot_prediction(x, raw_predictions, idx=0, add_loss_to_title=True)
+# best_tft.plot_prediction(x, raw_predictions, idx=0, add_loss_to_title=True)
 #predictions_vs_actuals = best_tft.calculate_prediction_actual_by_variable(x, predictions)
 #best_tft.plot_prediction_actual_by_variable(predictions_vs_actuals)
 plt.show()
