@@ -34,7 +34,7 @@ configs = {"max_prediction_length": 1000,
 
 # dir_data = 'Datasets/sintetic_data/train_compressor_data.h5'
 
-df = pd.read_csv(f"Datasets/saida/ite/payloadITE.csv")
+df = pd.read_csv(f"Datasets/dataset_TPV_sensors/ite/payloadITE.csv")
 
 # vector_series = ReadDatasets.read_h5(dir_data)
 #
