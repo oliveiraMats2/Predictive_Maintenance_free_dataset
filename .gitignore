@@ -10,7 +10,7 @@ models_h5/
 /model_h5/
 /sintetic_generate_data.pt
 /transformer_encoder_decoder_sintetic_29_dez.pt
-
+ notebooks/lightning_logs
 results_predicted/
 /models_h5/generate_evaluate/sintetic_generate_data_LSTM.pt
 /notebooks/tmp
