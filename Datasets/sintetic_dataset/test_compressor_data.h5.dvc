@@ -1,0 +1,4 @@
+outs:
+- md5: 3d425d431ed21361c4d7588c50c495c9
+  size: 21648
+  path: test_compressor_data.h5
