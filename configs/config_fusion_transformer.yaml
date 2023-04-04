@@ -1,0 +1,6 @@
+max_prediciton_length: 1000
+max_encoder_length: 30
+batch_size: 10
+transformation: "softplus"
+trainer:
+  max_epochs:
