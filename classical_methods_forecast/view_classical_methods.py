@@ -12,7 +12,7 @@ def view_filter_low_pass():
 
     df = pd.read_csv(payload_hex)
 
-    feature = "InletPressure"
+    feature = "InverterSpeed"
 
     x = df[feature].tolist()
 
@@ -22,6 +22,11 @@ def view_filter_low_pass():
     y = filters_avoid_low_freq.apply(x)
 
     t = np.linspace(0, 1, fs, endpoint=False)
+
+    # 'InletPressure',
+    # 'OutletPressure',
+    # 'OutletTemperature',
+    # 'InverterSpeed'
 
     plt.figure()
     plt.plot(t, x, 'b', alpha=0.5)
@@ -76,13 +81,12 @@ def vector_autoRegressive_model():
 
     test_original = df[:-split_test]
     test_original.index = pd.to_datetime(test_original.index)
-
     # 'InletPressure',
     # 'OutletPressure',
     # 'OutletTemperature',
     # 'InverterSpeed'
 
-    feature = 'InletPressure'
+    feature = 'OutletTemperature'
 
     print((test_original[feature].shape,
            df_forecast[f'{feature}_forecast'].shape))
@@ -126,5 +130,5 @@ def vector_autoRegressive_model():
 
 
 if __name__ == '__main__':
-    # view_filter_low_pass()
-    vector_autoRegressive_model()
+    view_filter_low_pass()
+    # vector_autoRegressive_model()
