@@ -16,3 +16,4 @@ results_predicted/
 /notebooks/tmp
 /notebooks/tmp.csv
 /lightning_logs/
+notebooks/lightning_logs/version_4

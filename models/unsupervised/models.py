@@ -1,6 +1,6 @@
 import positional_encoder as pe
-from matrix_confusion import plot_confusion_matrix
-from neuralprophet import NeuralProphet
+#from matrix_confusion import plot_confusion_matrix
+#from neuralprophet import NeuralProphet
 import torch
 import math
 from torch import nn, Tensor
@@ -419,7 +419,7 @@ class TimeSeriesTransformers(nn.Module):
             self,
             n_encoder_layers,
             n_decoder_layers,
-            embedding_dim=1024,
+            embedding_dim=512,
             n_heads=8,
             dropout=0.1,
             lr=1e-4,

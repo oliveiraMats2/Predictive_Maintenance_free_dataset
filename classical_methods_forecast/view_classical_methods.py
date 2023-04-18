@@ -37,16 +37,19 @@ def view_filter_low_pass():
 
 
 def vector_autoRegressive_model():
-    payload_hex = "../Datasets/dataset_TPV_sensors/hex/payloadHex.csv"
+    #payload_hex = "../Datasets/dataset_TPV_sensors/hex/payloadHex.csv"
+    payload_ite = "../Datasets/dataset_TPV_sensors/ite/payloadITE.csv"
 
-    df = pd.read_csv(payload_hex)
+    #df = pd.read_csv(payload_hex)
+    df = pd.read_csv(payload_ite)
 
     split_test = 5000
     split_test_end = 16000
 
-    df = df.drop(labels=["Time"], axis=1)
+    # df = df.drop(labels=["Time"], axis=1)
 
-    inlet_pressure = df["InletPressure"].tolist()
+    #'temperature', 'frequency'
+    inlet_pressure = df["temperature"].tolist()
 
     fs = len(inlet_pressure)
 
@@ -62,7 +65,7 @@ def vector_autoRegressive_model():
     train = df[:split_test]
     test = df[split_test:split_test_end]
 
-    for i in range(20):
+    for i in range(5):
         model = VAR(train)
         results = model.fit(i)
         print('Order =', i)
@@ -70,7 +73,7 @@ def vector_autoRegressive_model():
         print('BIC: ', results.bic)
         print()
 
-    window = 500
+    window = 100
     result = model.fit(window)
     # print(result.summary())
 

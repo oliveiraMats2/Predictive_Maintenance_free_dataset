@@ -1,6 +1,6 @@
-network: "transformer_sintetic_soft_dtw"
+network: "transformer_simple"
 #-----Organize train, test, validation
-train_batch_size: 7
+train_batch_size: 8
 
 
 valid_batch_size: 1
@@ -15,8 +15,8 @@ reload_model:
 
 model:
   TimeSeriesTransformers:
-    n_encoder_inputs: 4
-    n_decoder_inputs: 4
+    n_encoder_layers: 3
+    n_decoder_layers: 3
 
 optimizer:
   Adam:
@@ -45,18 +45,18 @@ evaluate_step: 20000
 schedule: 100
 
 #----- wandb
-wandb: True
+wandb: False
 
 #---- DIR dataset mafaulda
 train_dataset:
   DatasetSinteticUnsupervisedLSTM:
-    dir_data: 'Datasets/sintetic_data/train_compressor_data.h5'
+    dir_data: 'Datasets/sintetic_dataset/train_compressor_data.h5'
     context: 400
     stride: 1
 
 valid_dataset:
   DatasetSinteticUnsupervisedLSTM:
-    dir_data: 'Datasets/sintetic_data/train_compressor_data.h5'
+    dir_data: 'Datasets/sintetic_dataset/test_compressor_data.h5'
     context: 400
     stride: 1
 
