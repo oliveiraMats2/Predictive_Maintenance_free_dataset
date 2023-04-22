@@ -119,7 +119,7 @@ def generate_n_samples(model,
                 #     desc=f'iteration: {idx:d} value: {x_test[:, 395:, 0][0]}'
                 # )
                 progress_bar.set_postfix(
-                    desc=f'iteration: {idx:d} value: {x_test[:, 95:, 0][0]}'
+                    desc=f'iteration: {idx:d} value: {x_test[:, 395:, 0][0]}'
                 )
                 # progress_bar.set_postfix(
                 #     desc=f'iteration: {idx:d} value: {x_test[:, 0, 95:][0]}'
@@ -188,7 +188,7 @@ if __name__ == "__main__":
     #                      dir=None)
 
     generate_n_samples(model, test_loader, name_model,
-                       name_txt=f"models_h5/generate_evaluate/sintetic_generate_data_LSTM.pt")
+                       name_txt=f"models_h5/generate_evaluate/sintetic_generate_data_transformer.pt")
 
     # generate_n_samples_parallel(model, test_loader, name_model,
     #                            name_txt="sintetic_generate_data_LSTM.pt")

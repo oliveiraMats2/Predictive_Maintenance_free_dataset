@@ -1,0 +1,5 @@
+outs:
+- md5: afa4d23d4c06e98faa806b50b2c30c6a.dir
+  size: 7835841
+  nfiles: 3
+  path: fusion_transformer_result

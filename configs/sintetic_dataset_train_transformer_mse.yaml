@@ -62,7 +62,7 @@ valid_dataset:
 
 test_dataset:
   DatasetSinteticUnsupervisedLSTM:
-    dir_data: 'Datasets/sintetic_data/train_compressor_data.h5'
+    dir_data: 'Datasets/sintetic_dataset/test_compressor_data.h5'
     context: 400
     stride: 1
 

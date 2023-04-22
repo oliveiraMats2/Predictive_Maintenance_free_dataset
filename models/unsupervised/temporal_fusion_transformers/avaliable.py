@@ -13,10 +13,16 @@ from pytorch_forecasting.data.encoders import GroupNormalizer
 
 weights_path = "../../../models_h5/lightning_logs/version_21/checkpoints/epoch=22-step=4048.ckpt"
 
-dir_data = "../../../Datasets/sintetic_dataset/train_compressor_data.h5"
+dir_data = "../../../Datasets/sintetic_dataset/test_compressor_data.h5"
 dir_model = "../../../models_h5/"
 
 vector_series = ReadDatasets.read_h5(dir_data)
+
+length_vector_series = len(vector_series)
+
+#vector_series = vector_series[:length_vector_series//2]
+
+print(f"base test length: {length_vector_series}")
 
 df = pd.DataFrame({"temp_series": np.array(vector_series).astype(np.float),
                    "ds": np.arange(len(vector_series)),
@@ -58,13 +64,13 @@ test_dataloader = training.to_dataloader(train=True, batch_size=batch_size, num_
 best_tft = TemporalFusionTransformer.load_from_checkpoint(weights_path)
 
 actuals = torch.cat([y[0] for x, y in tqdm(iter(test_dataloader))])
-predictions = best_tft.predict(test_dataloader, show_progress_bar=True)
+# predictions = best_tft.predict(test_dataloader, show_progress_bar=True)
 
-print((actuals - torch.nan_to_num((predictions)).abs().mean().item()))
-# raw_predictions, x = best_tft.predict(test_dataloader, mode="raw", return_x=True, show_progress_bar=True)
+# print((actuals - torch.nan_to_num((predictions)).abs().mean().item()))
+raw_predictions, x = best_tft.predict(test_dataloader, mode="raw", return_x=True, show_progress_bar=True)
 
 # print('\n')
 
-# for idx in range(5):  # plot all 5 consumers
-#     fig, ax = plt.subplots(figsize=(10, 4))
-#     best_tft.plot_prediction(x, raw_predictions, idx=idx, add_loss_to_title=True, ax=ax)
+for idx in range(5):  # plot all 5 consumers
+    fig, ax = plt.subplots(figsize=(10, 4))
+    best_tft.plot_prediction(x, raw_predictions, idx=idx, add_loss_to_title=True, ax=ax)
