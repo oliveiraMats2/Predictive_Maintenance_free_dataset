@@ -4,14 +4,18 @@ from utils.read_dataset import ReadDatasets
 import numpy as np
 from statsmodels.tsa.vector_ar.var_model import VAR
 
+
 def smape_loss(y_pred, target):
     # y_pred = y_pred.squeeze(2)
     loss = 2 * abs((y_pred - target)) / (abs(y_pred) + abs(target) + 1e-8)
-    return loss.mean()*100
+    return loss.mean() * 100
+
 
 def mean_absolute_error(slice_data_true, slice_data_pred):
     abs_data = abs(slice_data_true - slice_data_pred)
     return abs_data.mean()
+
+
 # Mean absolut error
 
 def mean_square_error(slice_data_true, slice_data_pred):
@@ -22,12 +26,14 @@ def mean_square_error(slice_data_true, slice_data_pred):
     sum_square = sum_square / (i + 1)
 
     return sum_square
+
+
 def define_df(vector_series):
-    return pd.DataFrame({"temp_series": np.array(vector_series).astype(np.float),#)
+    return pd.DataFrame({"temp_series": np.array(vector_series).astype(np.float),  # )
                          "ds": np.arange(len(vector_series))})
 
-def avaliable_vector_auto_regressive_model(truth, prediction):
 
+def avaliable_vector_auto_regressive_model(truth, prediction):
     mae = mean_absolute_error(truth, prediction)
     smape = smape_loss(prediction, truth)
     mse = mean_square_error(truth, prediction)
@@ -35,6 +41,7 @@ def avaliable_vector_auto_regressive_model(truth, prediction):
     print(f"Mean absolut error: {mae}")
     print(f"smape_loss: {smape}")
     print(f"mean absolute error: {mse}")
+
 
 def vector_autoRegressive_model():
     absolut_path = "../../../Datasets/sintetic_dataset"
@@ -70,7 +77,7 @@ def vector_autoRegressive_model():
     window = 50
     result = model.fit(window)
 
-    lagged_Values = df_train.values[-window:]
+    lagged_Values = df_test.values[-window:]
     pred = result.forecast(y=lagged_Values, steps=split_test_end - split_test)
 
     df_forecast = pd.DataFrame(data=pred, columns=["temp_series_forecast", 'ds_forecast'])

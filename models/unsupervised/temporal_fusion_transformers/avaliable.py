@@ -13,7 +13,7 @@ from pytorch_forecasting.data.encoders import GroupNormalizer
 
 weights_path = "../../../models_h5/lightning_logs/version_21/checkpoints/epoch=22-step=4048.ckpt"
 
-dir_data = "../../../Datasets/sintetic_dataset/test_compressor_data.h5"
+dir_data = "../../../Datasets/sintetic_dataset/910_points/test_compressor_data.h5"
 dir_model = "../../../models_h5/"
 
 vector_series = ReadDatasets.read_h5(dir_data)

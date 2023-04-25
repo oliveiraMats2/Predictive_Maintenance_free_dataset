@@ -10,7 +10,7 @@ from pytorch_forecasting.metrics.quantile import QuantileLoss
 from configs import *
 
 
-dir_data = "../../../Datasets/sintetic_dataset/train_compressor_data.h5"
+dir_data = "../../../Datasets/sintetic_dataset/910_points/train_compressor_data.h5"
 dir_model = "../../../models_h5/"
 
 vector_series = ReadDatasets.read_h5(dir_data)

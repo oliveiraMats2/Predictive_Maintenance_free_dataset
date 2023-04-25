@@ -17,3 +17,6 @@ results_predicted/
 /notebooks/tmp.csv
 /lightning_logs/
 notebooks/lightning_logs/version_4
+/notebooks/lightning_logs/
+Datasets/sintetic_dataset/2600_points/test_compressor_data.h5
+Datasets/sintetic_dataset/2600_points/train_compressor_data.h5

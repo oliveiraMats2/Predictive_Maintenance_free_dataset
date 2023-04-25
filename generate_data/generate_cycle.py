@@ -39,11 +39,11 @@ if __name__ == "__main__":
 
     plt.scatter(np.arange(len(data)), data, s=12)
 
-    SaveData.save_data(data, dir_data='../Datasets/sintetic_dataset/train_compressor_data.h5')
+    SaveData.save_data(data, dir_data='../Datasets/sintetic_dataset/910_points/train_compressor_data.h5')
 
     # data = noise_signal.apply_noise_on_signal(data)
 
     # lt.plot(np.arange(len(data)), data)#, s=1)
 
-    SaveData.save_data(data, dir_data='../Datasets/sintetic_dataset/test_compressor_data.h5')
+    SaveData.save_data(data[:len(data)//2], dir_data='../Datasets/sintetic_dataset/910_points/test_compressor_data.h5')
     plt.show()
