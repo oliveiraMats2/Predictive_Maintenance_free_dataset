@@ -89,8 +89,8 @@ def generate_n_samples(model,
     with trange(len(loader), desc='evaluate Loop') as progress_bar:
         for idx, sample_batch in zip(progress_bar, loader):
 
-            if idx == iter_n_samples:
-                break
+            # if idx == iter_n_samples:
+            #     break
 
             x_test = x_test.to(DEVICE)
 
@@ -188,7 +188,7 @@ if __name__ == "__main__":
     #                      dir=None)
 
     generate_n_samples(model, test_loader, name_model,
-                       name_txt=f"models_h5/generate_evaluate/sintetic_generate_data_transformer.pt")
+                       name_txt=f"models_h5/generate_evaluate/sintetic_generate_data_transformer_9100.pt")
 
     # generate_n_samples_parallel(model, test_loader, name_model,
     #                            name_txt="sintetic_generate_data_LSTM.pt")

@@ -13,7 +13,7 @@ from pytorch_forecasting.data.encoders import GroupNormalizer
 
 weights_path = "../../../models_h5/lightning_logs/version_21/checkpoints/epoch=22-step=4048.ckpt"
 
-dir_data = "../../../Datasets/sintetic_dataset/910_points/test_compressor_data.h5"
+dir_data = "../../../Datasets/sintetic_dataset/9100_points/test_compressor_data.h5"
 dir_model = "../../../models_h5/"
 
 vector_series = ReadDatasets.read_h5(dir_data)
@@ -69,7 +69,7 @@ actuals = torch.cat([y[0] for x, y in tqdm(iter(test_dataloader))])
 # print((actuals - torch.nan_to_num((predictions)).abs().mean().item()))
 raw_predictions, x = best_tft.predict(test_dataloader, mode="raw", return_x=True, show_progress_bar=True)
 
-# print('\n')
+print('\n')
 
 for idx in range(5):  # plot all 5 consumers
     fig, ax = plt.subplots(figsize=(10, 4))

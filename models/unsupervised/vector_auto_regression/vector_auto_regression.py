@@ -44,7 +44,8 @@ def avaliable_vector_auto_regressive_model(truth, prediction):
 
 
 def vector_autoRegressive_model():
-    absolut_path = "../../../Datasets/sintetic_dataset"
+    #absolut_path = "../../../Datasets/sintetic_dataset/"
+    absolut_path = "../../../Datasets/sintetic_dataset/26000_points/"
 
     vector_series = ReadDatasets.read_h5(f"{absolut_path}/train_compressor_data.h5")
 
@@ -56,6 +57,10 @@ def vector_autoRegressive_model():
 
     split_test = 5000
     split_test_end = 16000
+
+    steps = split_test_end - split_test
+
+    steps = 26000
 
     # df = df.drop(labels=["Time"], axis=1)
 
@@ -78,7 +83,7 @@ def vector_autoRegressive_model():
     result = model.fit(window)
 
     lagged_Values = df_test.values[-window:]
-    pred = result.forecast(y=lagged_Values, steps=split_test_end - split_test)
+    pred = result.forecast(y=lagged_Values, steps=steps)
 
     df_forecast = pd.DataFrame(data=pred, columns=["temp_series_forecast", 'ds_forecast'])
 
@@ -98,8 +103,8 @@ def vector_autoRegressive_model():
 
     plt.savefig(f'{feature}.png')
 
-    ground_truth = np.array(df_test["temp_series"].tolist()[400:600])
-    pred = np.array(df_forecast[f'{feature}_forecast'].tolist()[400:600])
+    ground_truth = np.array(df_test["temp_series"].tolist())
+    pred = np.array(df_forecast[f'{feature}_forecast'].tolist())
 
     return ground_truth, pred
 

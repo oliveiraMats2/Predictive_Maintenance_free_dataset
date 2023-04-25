@@ -1,6 +1,6 @@
 from pytorch_forecasting.metrics.quantile import QuantileLoss
 
-configs = {"max_prediction_length": 200,
+configs = {"max_prediction_length": 100,
            "max_encoder_length": 30,
            "batch_size": 8,
            "transformation": "softplus",
