@@ -58,7 +58,7 @@ batch_size = 32
 
 # train_dataloader = training.to_dataloader(train=True, batch_size=batch_size, num_workers=0, stop_randomization=True)
 # validation = TimeSeriesDataSet.from_dataset(training, df, predict=True, stop_randomization=True)
-test_dataloader = training.to_dataloader(train=True, batch_size=batch_size, num_workers=0)
+test_dataloader = training.to_dataloader(train=True, batch_size=batch_size, num_workers=4)
 
 
 best_tft = TemporalFusionTransformer.load_from_checkpoint(weights_path)
@@ -69,8 +69,14 @@ actuals = torch.cat([y[0] for x, y in tqdm(iter(test_dataloader))])
 # print((actuals - torch.nan_to_num((predictions)).abs().mean().item()))
 raw_predictions, x = best_tft.predict(test_dataloader, mode="raw", return_x=True, show_progress_bar=True)
 
-print('\n')
+torch.save(raw_predictions["prediction"],
+           "../../../Datasets/sintetic_dataset/fusion_transformer_result/26000/predicted.pt")
 
-for idx in range(5):  # plot all 5 consumers
-    fig, ax = plt.subplots(figsize=(10, 4))
-    best_tft.plot_prediction(x, raw_predictions, idx=idx, add_loss_to_title=True, ax=ax)
+torch.save(actuals,
+           "../../../Datasets/sintetic_dataset/fusion_transformer_result/26000/actuals.pt")
+
+# print('\n')
+#
+# for idx in range(5):  # plot all 5 consumers
+#     fig, ax = plt.subplots(figsize=(10, 4))
+#     best_tft.plot_prediction(x, raw_predictions, idx=idx, add_loss_to_title=True, ax=ax)
