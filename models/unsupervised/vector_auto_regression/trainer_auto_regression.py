@@ -11,11 +11,17 @@ def define_df(vector_series):
 
 
 def vector_autoRegressive_model_real(data_,
-                                     window=50,
-                                     steps=500,
+                                     window=3000,
+                                     steps=200,
                                      order=50,
-                                     calcs_range_model=10):
+                                     calcs_range_model=10,
+                                     first_limiar=2000,
+                                     sub_path="payloadITE"):
     df = pd.read_csv(data_)
+
+    print(f"samples: {df.shape[0]}, begin: {df.Time[0]}, end: {df.Time[df.shape[0] - 1]}")
+    print(f"samples test: {df.shape[0]//4} | samples train: {3*(df.shape[0]//4)}")
+    raise("error")
 
     df = df.drop('Time', axis=1)
 
@@ -51,12 +57,19 @@ def vector_autoRegressive_model_real(data_,
     # print((just_temperature_test[feature].shape,
     #        df_forecast[f'{feature}_forecast'].shape))
 
-    SaveFigures.save(df_test=just_temperature_test,df_pred=df_forecast, lim_end=steps)
+    SaveFigures.save(df_test=just_temperature_test,
+                     df_pred=df_forecast,
+                     lim_end=steps,
+                     first_limiar=first_limiar,
+                     sub_path=sub_path)
 
     # ground_truth = np.array(just_temperature_test[feature].tolist())
     # pred = np.array(df_forecast[f'{feature}_forecast'].tolist())
 
-    ground_truth, pred = None, None
+    ground_truth, pred = just_temperature_test, df_forecast
+
+    pred_slice = pred.shape[0]
+    ground_truth = ground_truth[:pred_slice]
 
     return ground_truth, pred
 
