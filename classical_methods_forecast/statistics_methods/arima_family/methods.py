@@ -60,7 +60,7 @@ def seasonal_Autoregressive_integrated_moving_average_with_exogenous_regressors(
 
 def vector_autoregression_moving_average(train, test):
     # fit model
-    model = VARMAX(train, order=(1, 2))
+    model = VARMAX(train, order=(0, 1, 2))
     model_fit = model.fit(disp=False)
     # make prediction
     yhat = model_fit.forecast(steps=len(test))

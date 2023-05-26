@@ -17,20 +17,40 @@ import matplotlib.pyplot as plt
 # 2023-02-16 02:30:31
 #Fim: 2023-03-09 17:22:07
 from matplotlib.pyplot import figure
+import pandas as pd
 
 figure(figsize=(16, 4), dpi=80)
 
 df = pd.read_csv('../../Datasets/dataset_TPV_sensors/ite/payloadITE.csv')
 
-#2023-02-16 02:30:31
-#Fim: 2023-03-09 17:22:07
+# df = df[["phaseA_current", "phaseB_current", "phaseC_current",
+#          "phaseA_voltage", "phaseB_voltage", "phaseC_voltage", "time"]]
 
-df["Time"] = df["time"]
+# df_1 = pd.read_csv('../../Datasets/dataset_TPV_sensors/wise/x.csv')
+# df_2 = pd.read_csv('../../Datasets/dataset_TPV_sensors/wise/y.csv')
+# df_3 = pd.read_csv('../../Datasets/dataset_TPV_sensors/wise/z.csv')
+#
+# df = pd.DataFrame()
+# df["OAVelocity_x"] = df_1["OAVelocity"].astype('float64')
+# df["OAVelocity_y"] = df_2["OAVelocity"].astype('float64')
+# df["OAVelocity_z"] = df_3["OAVelocity"].astype('float64')
+
+# df["time"] = df_3["Time"]
+# Exibir o DataFrame resultante
+print(df)
+
+# Pegando os sensores temos. Temperatura (Outlet Temperature no hexa),
+# Pressão de Entrada (Inlet Pressure no hexa),
+# Pressão de Saída (Outlet Pressure no hexa),
+gitg
+# e Vibração (OAVelocity eixos x, y e z no wise)
+
+df["time"] = df["Time"]
 df = df.drop("time", axis=1)
 
-df = df.drop("phaseA_tc_config", axis=1)
-df = df.drop("phaseB_tc_config", axis=1)
-df = df.drop("phaseC_tc_config", axis=1)
+# df = df.drop("phaseA_tc_config", axis=1)
+# df = df.drop("phaseB_tc_config", axis=1)
+# df = df.drop("phaseC_tc_config", axis=1)
 
 df = filter_dataframe(df,
                       "2023-02-16 02:30:31",
