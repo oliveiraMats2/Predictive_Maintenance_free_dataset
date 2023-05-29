@@ -73,7 +73,7 @@ torch-summary
 torchaudio
 torchvision
 tqdm~=4.62.3
-Twisted==18.9.0
+Twisted==22.10.0
 wandb==0.12.21
 wasabi==0.9.1
 wcwidth==0.2.5
