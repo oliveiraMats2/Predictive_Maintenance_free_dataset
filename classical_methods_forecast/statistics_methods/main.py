@@ -42,7 +42,7 @@ print(df)
 # Pegando os sensores temos. Temperatura (Outlet Temperature no hexa),
 # Pressão de Entrada (Inlet Pressure no hexa),
 # Pressão de Saída (Outlet Pressure no hexa),
-gitg
+
 # e Vibração (OAVelocity eixos x, y e z no wise)
 
 df["time"] = df["Time"]
