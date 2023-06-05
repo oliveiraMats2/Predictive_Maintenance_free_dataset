@@ -3,16 +3,16 @@ from orbit.models import DLT
 from orbit.diagnostics.plot import plot_predicted_data
 import pandas as pd
 
-df_1 = pd.read_csv('../../Datasets/dataset_TPV_sensors/wise/x.csv')
-df_2 = pd.read_csv('../../Datasets/dataset_TPV_sensors/wise/y.csv')
-df_3 = pd.read_csv('../../Datasets/dataset_TPV_sensors/wise/z.csv')
+df_1 = pd.read_csv('../../Datasets/dataset_TPV_sensors/wise/x.csv')[:4000]
+df_2 = pd.read_csv('../../Datasets/dataset_TPV_sensors/wise/y.csv')[:4000]
+df_3 = pd.read_csv('../../Datasets/dataset_TPV_sensors/wise/z.csv')[:4000]
 
 # Combina as colunas relevantes dos DataFrames
 df = pd.DataFrame()
 df["OAVelocity_x"] = df_1["OAVelocity"].astype('float64')
 df["OAVelocity_y"] = df_2["OAVelocity"].astype('float64')
 df["OAVelocity_z"] = df_3["OAVelocity"].astype('float64')
-df["ds"] = pd.to_datetime(df_1["Time"])
+df["ds"] = pd.to_datetime(df_1["Time"])[:4000]
 
 # Remove as datas duplicadas
 df = df.drop_duplicates(subset=["ds"])
@@ -27,7 +27,7 @@ df = df.reset_index(drop=True)
 print("DataFrame com datas organizadas:")
 print(df)
 
-splitter = 10000
+splitter = 2000
 
 train_df = df[:splitter]
 test_df = df[splitter:]
