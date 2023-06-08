@@ -3,6 +3,7 @@ import itertools
 #from models import LSTMattn
 from utils.utils import *
 #from utils.read_dataset import read_h5
+from classical_methods_forecast.statistics_methods.metrics import avaliable_vector_auto_regressive_model
 from datasets import DatasetWileC
 
 
