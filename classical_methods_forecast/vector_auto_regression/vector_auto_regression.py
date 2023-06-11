@@ -1,5 +1,14 @@
 from trainer_auto_regression import VectorAutoRegressionModel
 import pandas as pd
+import numpy as np
+
+
+def normalize_z(data):
+    mean = np.mean(data)
+    std = np.std(data)
+    normalized_data = (data - mean) / std
+    return normalized_data
+
 
 if __name__ == '__main__':
     dicio_resample = {"resample_1min":
@@ -7,11 +16,28 @@ if __name__ == '__main__':
                            "base_pump_23042023_A_resampled_1min.csv", "base_pump_23042023_A_resampled_1min"],
                       "resample_10min":
                           ["../../Datasets/dataset_TPV/base_pump_23042023_A_resampled_10min",
-                           "base_pump_23042023_A_resampled_10min.csv", "base_pump_23042023_A_resampled_1min"]}
+                           "base_pump_23042023_A_resampled_10min.csv", "base_pump_23042023_A_resampled_10min"]}
 
-    key = 'resample_1min'
+    # key = 'resample_1min'
+    key = 'resample_10min'
 
     df = pd.read_csv(f"{dicio_resample[key][0]}/{dicio_resample[key][1]}")
+
+    # Filter features.
+    df = df[['InletPressure',
+             'OutletPressure',
+             'OutletTemperature',
+             'InverterSpeed',
+             'phaseA_active',
+             'phaseB_active',
+             'phaseC_active',
+             'phaseA_current',
+             'phaseB_current',
+             'phaseC_current',
+             'Time',
+             'OAVelocity_y',
+             'OAVelocity_x',
+             'OAVelocity_z']]
 
     vector_auto_regression_model = VectorAutoRegressionModel()
 
