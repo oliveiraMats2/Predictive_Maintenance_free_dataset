@@ -1,29 +1,39 @@
-from metrics import avaliable_vector_auto_regressive_model
-from trainer_auto_regression import vector_autoRegressive_model_sintetic, vector_autoRegressive_model_real
+from trainer_auto_regression import VectorAutoRegressionModel
 import pandas as pd
 
 if __name__ == '__main__':
-    data_ite = "/mnt/arquivos_linux/wile_C/Predictive_Maintenance_free_dataset/Datasets/dataset_TPV/base_17032023_A/ite"
-    # data_hex = "/mnt/arquivos_linux/wile_C/Predictive_Maintenance_free_dataset/Datasets/dataset_TPV/base_17032023_A/hex"
-    # data_wise = "/mnt/arquivos_linux/wile_C/Predictive_Maintenance_free_dataset/Datasets/dataset_TPV/base_17032023_A/wise"
+    dicio_resample = {"resample_1min":
+                          ["../../Datasets/dataset_TPV/base_pump_23042023_A_resampled_1min",
+                           "base_pump_23042023_A_resampled_1min.csv", "base_pump_23042023_A_resampled_1min"],
+                      "resample_10min":
+                          ["../../Datasets/dataset_TPV/base_pump_23042023_A_resampled_10min",
+                           "base_pump_23042023_A_resampled_10min.csv", "base_pump_23042023_A_resampled_1min"]}
 
-    # ground_truth, pred = vector_autoRegressive_model_sintetic()
+    key = 'resample_1min'
 
-    name = "payloadITE.csv"
-    # name = "payloadHex.csv"
-    # name = "x.csv"
-    ground_truth, pred = vector_autoRegressive_model_real(f"{data_ite}/{name}",
-                                                          # ground_truth, pred = vector_autoRegressive_model_real(f"{data_hex}/{name}",
-                                                          window=50,
-                                                          steps=200,
-                                                          order=9,
-                                                          calcs_range_model=10,
-                                                          first_limiar=100,
-                                                          sub_path="payloadHex")
+    df = pd.read_csv(f"{dicio_resample[key][0]}/{dicio_resample[key][1]}")
 
-    mean_abs, smape_loss, mean_square_error = avaliable_vector_auto_regressive_model(ground_truth,
-                                                                                     pred,
-                                                                                     "multiple")
+    vector_auto_regression_model = VectorAutoRegressionModel()
+
+    df_train, df_test = vector_auto_regression_model.train_test_split_hold_out(df)
+
+    vector_auto_regression_model.fit(df, order=9)
+
+    # df_train, df_test, window, steps, first_limiar, sub_path
+    ground_truth, pred = vector_auto_regression_model.predict(df_train,
+                                                              df_test,
+                                                              window_input=50,
+                                                              steps=200,
+                                                              first_limiar=100,
+                                                              sub_path=dicio_resample[key][2])
+
+    # df_train, window_input, steps
+    inference_for_microservice = vector_auto_regression_model.inference_for_microservice(df_train,
+                                                                                         window_input=50,
+                                                                                         steps=200)
+
+    mean_abs, smape_loss, mean_square_error = vector_auto_regression_model.generate_metrics(ground_truth,
+                                                                                            pred)
 
     df = pd.DataFrame([mean_abs, smape_loss, mean_square_error], index=["mean_abs",
                                                                         "smape_loss",
@@ -31,6 +41,4 @@ if __name__ == '__main__':
 
     df.index.name = "variables"
 
-    df.to_csv(f"result_multi_sensor_{name}")
-
-
+    df.to_csv(f"result_multi_sensor_{dicio_resample[key][1]}")

@@ -11,7 +11,8 @@ def plot_frequency(indices: list, frequencias: list, name: str, color: str) -> N
     plt.title(f'Frequência de Diferenças de Tempo {name}')
     plt.xticks(rotation=45)
     plt.grid(True)
-
+    for i, v in enumerate(frequencias):
+        plt.text(i, v, str(v), ha='center', va='bottom', fontweight='bold')
     # Exibir o gráfico
     plt.show()
     return None

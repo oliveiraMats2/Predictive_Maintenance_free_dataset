@@ -1,125 +1,94 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 from utils.read_dataset import ReadDatasets
+from statsmodels.iolib.smpickle import load_pickle
 import numpy as np
 from statsmodels.tsa.vector_ar.var_model import VAR
 from figures_save import SaveFigures
+from metrics import avaliable_vector_auto_regressive_model
 
 
 class VectorAutoRegressionModel:
 
-    def __init__(self):
-        pass
+    def __init__(self, name_model="vector_auto_regressive"):
+        self.name_model = name_model
 
     def define_df(self, vector_series):
         return pd.DataFrame({"temp_series": np.array(vector_series).astype(np.float),  # )
                              "ds": np.arange(len(vector_series))})
 
-    def train_test_split_
-
-    def vector_autoRegressive_model_real(self, data_,
-                                         window=3000,
-                                         steps=200,
-                                         order=50,
-                                         calcs_range_model=10,
-                                         first_limiar=2000,
-                                         sub_path="payloadITE"):
-        df = pd.read_csv(data_)
-
+    def train_test_split_hold_out(self, df):
         print(f"samples: {df.shape[0]}, begin: {df.Time[0]}, end: {df.Time[df.shape[0] - 1]}")
         print(f"samples test: {df.shape[0] // 4} | samples train: {3 * (df.shape[0] // 4)}")
-        raise ("error")
 
         df = df.drop('Time', axis=1)
 
-        just_temperature = df  # [["temperature", "phaseA_voltage"]]
+        one_quarter_base = len(df) // 4
+        inv_one_quarter_base = len(df) - len(df) // 4
 
-        one_quarter_base = len(just_temperature) // 4
-        inv_one_quarter_base = len(just_temperature) - len(just_temperature) // 4
+        df_train = df[:inv_one_quarter_base]
+        df_test = df[inv_one_quarter_base:]
 
-        just_temperature_train = just_temperature[:inv_one_quarter_base]
-        just_temperature_test = just_temperature[inv_one_quarter_base:]
+        return df_train, df_test
 
-        result = model.fit(order)
+    def inference_for_microservice(self, df_train, window_input, steps):
 
-        lagged_Values = just_temperature_train.values[-window:]
-        pred = result.forecast(y=lagged_Values, steps=steps)
+        lagged_Values = df_train.values[-window_input:]
+        pred = self.result.forecast(y=lagged_Values, steps=steps)
 
-        # feature = 'phaseA_voltage'
-
-        col_predicted = [f"{x}_forecast" for x in just_temperature_train.keys()]
+        col_predicted = [f"{x}_forecast" for x in df_train.keys()]
 
         df_forecast = pd.DataFrame(data=pred, columns=col_predicted)
 
-        just_temperature_test.index = pd.to_datetime(just_temperature_test.index)
+        return df_forecast
 
-        # print((just_temperature_test[feature].shape,
-        #        df_forecast[f'{feature}_forecast'].shape))
+    def predict(self, df_train, df_test, window_input, steps, first_limiar, sub_path):
+        lagged_Values = df_train.values[-window_input:]
+        pred = self.result.forecast(y=lagged_Values, steps=steps)
 
-        SaveFigures.save(df_test=just_temperature_test,
+        col_predicted = [f"{x}_forecast" for x in df_train.keys()]
+
+        df_forecast = pd.DataFrame(data=pred, columns=col_predicted)
+
+        df_test.index = pd.to_datetime(df_test.index)
+
+        SaveFigures.save(df_test=df_test,
                          df_pred=df_forecast,
                          lim_end=steps,
                          first_limiar=first_limiar,
                          sub_path=sub_path)
 
-        ground_truth, pred = just_temperature_test, df_forecast
+        ground_truth, pred = df_test, df_forecast
 
         pred_slice = pred.shape[0]
         ground_truth = ground_truth[:pred_slice]
 
         return ground_truth, pred
 
-    def vector_autoRegressive_model_sintetic(self,
-                                             abs_path_train="../../../Datasets/sintetic_dataset/train_compressor_data.h5",
-                                             abs_path_test="../../../Datasets/sintetic_dataset/test_compressor_data.h5"):
-        vector_series = ReadDatasets.read_h5(abs_path_train)
+    def fit(self, df, order=50):
 
-        df_train = self.define_df(vector_series)
+        df_train, df_test = self.train_test_split_hold_out(df)
 
-        vector_series = ReadDatasets.read_h5(abs_path_test)
+        model = VAR(df_train)
 
-        df_test = self.define_df(vector_series)
+        self.result = model.fit(order)
+        self.__save_model()
 
-        split_test = 5000
-        split_test_end = 16000
+    def __save_model(self):
+        self.result.save(f"{self.name_model}.pickle")
 
-        steps = split_test_end - split_test
+    def load_model(self, dir_model=None):
+        if dir_model is None:
+            results = load_pickle(f"{self.name_model}.pickle")
 
-        steps = 26000
+        else:
+            results = load_pickle(dir_model)
 
-        # df = df.drop(labels=["Time"], axis=1)
+        return results
 
-        # 'temperature', 'frequency'
-        temp_series = df_train["temp_series"].tolist()
+    def generate_metrics(self, ground_truth, pred):
+        mean_abs, smape_loss, mean_square_error = avaliable_vector_auto_regressive_model(ground_truth,
+                                                                                         pred,
+                                                                                         "multiple")
 
-        fs = len(temp_series)
-
-        # filters_avoid_low_freq = FiltersAvoidLowFreq(fs, value_cutoff_freq=0.05)
-
-        for i in range(5):
-            model = VAR(df_train)
-            results = model.fit(i)
-            print('Order =', i)
-            print('AIC: ', results.aic)
-            print('BIC: ', results.bic)
-            print()
-
-        window = 50
-        result = model.fit(window)
-
-        lagged_Values = df_test.values[-window:]
-        pred = result.forecast(y=lagged_Values, steps=steps)
-
-        df_forecast = pd.DataFrame(data=pred, columns=["temp_series_forecast", 'ds_forecast'])
-
-        df_test.index = pd.to_datetime(df_test.index)
-
-        feature = 'temp_series'
-
-        print((df_test[feature].shape,
-               df_forecast[f'{feature}_forecast'].shape))
-
-        ground_truth = np.array(df_test["temp_series"].tolist())
-        pred = np.array(df_forecast[f'{feature}_forecast'].tolist())
-
-        return ground_truth, pred
+        return mean_abs, smape_loss, mean_square_error
