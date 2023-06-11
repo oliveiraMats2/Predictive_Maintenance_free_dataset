@@ -1,37 +1,25 @@
-import pandas as pd
+from greykite.common.data_loader import DataLoader
 from greykite.framework.templates.autogen.forecast_config import ForecastConfig
 from greykite.framework.templates.autogen.forecast_config import MetadataParam
 from greykite.framework.templates.forecaster import Forecaster
+from greykite.framework.templates.model_templates import ModelTemplateEnum
 
-# Cria um DataFrame de exemplo com variáveis independentes (X) e a variável alvo (y)
-data = {
-    'Data': pd.date_range(start='2023-01-01', periods=10),
-    'X1': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-    'X2': [11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
-    'y': [21, 22, 23, 24, 25, 26, 27, 28, 29, 30]
-}
-df = pd.DataFrame(data)
-
-# Define as configurações de previsão
-forecast_horizon = 3  # Horizonte de previsão
+# Defines inputs
+df = DataLoader().load_bikesharing().tail(24*90)  # Input time series (pandas.DataFrame)
 config = ForecastConfig(
-    model_template="SILVERKITE",
-    forecast_horizon=forecast_horizon,
-    coverage=0.95,
-    metadata_param=MetadataParam(
-        time_col="Data",  # Coluna de data/hora
-        value_col="y",  # Coluna da variável alvo
-        freq="D"  # Frequência dos dados (no exemplo, diário)
-    )
-)
+     metadata_param=MetadataParam(time_col="ts", value_col="count"),  # Column names in `df`
+     model_template=ModelTemplateEnum.AUTO.name,  # AUTO model configuration
+     forecast_horizon=24,   # Forecasts 24 steps ahead
+     coverage=0.95,         # 95% prediction intervals
+ )
 
-# Cria um objeto Forecaster e realiza a previsão
+# Creates forecasts
 forecaster = Forecaster()
-result = forecaster.run_forecast_config(
-    df=df,
-    config=config
-)
+result = forecaster.run_forecast_config(df=df, config=config)
 
-# Obtém os resultados da previsão
-forecast = result.forecast
-print(forecast)
+# Accesses results
+result.forecast     # Forecast with metrics, diagnostics
+result.backtest     # Backtest with metrics, diagnostics
+result.grid_search  # Time series CV result
+result.model        # Trained model
+result.timeseries   # Processed time series with plotting functions

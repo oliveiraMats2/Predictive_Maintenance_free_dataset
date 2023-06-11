@@ -1,5 +1,6 @@
 import numpy as np
 
+
 def smape_loss(y_pred, target):
     # y_pred = y_pred.squeeze(2)
     loss = 2 * abs((y_pred - target)) / (abs(y_pred) + abs(target) + 1e-8)
@@ -40,7 +41,7 @@ class MeasureMultiSensors:
         dict_result = {}
         features = list(df_truth.keys())
         for idx, feature in enumerate(features):
-            #truth, pred = df_truth[feature].tolist(), df_prediction[f'{feature}_forecast'].tolist()
+            # truth, pred = df_truth[feature].tolist(), df_prediction[f'{feature}_forecast'].tolist()
             truth, pred = df_truth[feature].tolist(), df_prediction[f'{feature}'].tolist()
             dict_result[feature] = smape_loss(np.array(truth), np.array(pred))
 
@@ -51,7 +52,7 @@ class MeasureMultiSensors:
         dict_result = {}
         features = list(df_truth.keys())
         for idx, feature in enumerate(features):
-            #truth, pred = df_truth[feature].tolist(), df_prediction[f'{feature}_forecast'].tolist()
+            # truth, pred = df_truth[feature].tolist(), df_prediction[f'{feature}_forecast'].tolist()
             truth, pred = df_truth[feature].tolist(), df_prediction[f'{feature}'].tolist()
             dict_result[feature] = mean_square_error(np.array(truth), np.array(pred))
 
@@ -76,4 +77,3 @@ def avaliable_vector_auto_regressive_model(truth, prediction, type_model="single
         dict_mse = MeasureMultiSensors.mean_square_error(truth, prediction)
 
         return dict_mae, dict_smape, dict_mse
-
