@@ -27,7 +27,19 @@ df['timestamp'] = pd.to_datetime(df['ds'])
 df.set_index('timestamp', inplace=True)
 df = df[["OAVelocity_x", "OAVelocity_y", "OAVelocity_z"]]
 
-df = pd.read_csv("/mnt/arquivos_linux/download/base_23042023_A_multisensors_first_11365_samples.csv")
+# df = pd.read_csv("/mnt/arquivos_linux/download/base_23042023_A_multisensors_first_11365_samples.csv")
+
+dicio_resample = {"resample_1min":
+                          ["../../Datasets/dataset_TPV/base_pump_23042023_A_resampled_1min",
+                           "base_pump_23042023_A_resampled_1min.csv", "base_pump_23042023_A_resampled_1min"],
+                      "resample_10min":
+                          ["../../Datasets/dataset_TPV/base_pump_23042023_A_resampled_10min",
+                           "base_pump_23042023_A_resampled_10min.csv", "base_pump_23042023_A_resampled_10min"]}
+
+# key = 'resample_1min'
+key = 'resample_10min'
+
+df = pd.read_csv(f"{dicio_resample[key][0]}/{dicio_resample[key][1]}")
 
 df = df[['InletPressure',
          'OutletPressure',
@@ -39,12 +51,12 @@ df = df[['InletPressure',
          'phaseA_current',
          'phaseB_current',
          'phaseC_current',
-         'Time_ite',
+         'Time',
          'OAVelocity_y',
          'OAVelocity_x',
          'OAVelocity_z']]
 
-df['timestamp'] = pd.to_datetime(df['Time_ite'])
+df['timestamp'] = pd.to_datetime(df['Time'])
 df.set_index('timestamp', inplace=True)
 
 df = df[['InletPressure',

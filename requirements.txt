@@ -1,4 +1,5 @@
 torch
+statsmodels
 timm
 scikit-learn
 h5py
@@ -17,7 +18,6 @@ nibabel
 qtpy
 neuralprophet
 dvc
-qt
 torchvision
 scikit-learn
 seaborn

@@ -1,0 +1,7 @@
+version: '3'
+services:
+  container_deploy_wilec_ml:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: wilec_ml
