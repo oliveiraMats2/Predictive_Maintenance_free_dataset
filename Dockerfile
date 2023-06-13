@@ -27,6 +27,9 @@ RUN apt-get update && apt-get install -y \
     qtbase5-dev \
     libqt5svg5-dev
 
+
+export PYTHONPATH="/app/Predictive_Maintenance_free_dataset/"
+
 WORKDIR /app
 # Clone o repositório
 RUN git clone https://github.com/oliveiraMats2/Predictive_Maintenance_free_dataset.git
