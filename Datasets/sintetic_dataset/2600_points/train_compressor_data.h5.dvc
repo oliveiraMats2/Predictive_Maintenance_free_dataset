@@ -1,4 +1,0 @@
-outs:
-- md5: 02918586e5bc05d2ca237b3d8fafe31d
-  size: 22848
-  path: train_compressor_data.h5

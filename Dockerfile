@@ -34,6 +34,8 @@ WORKDIR /app
 # Clone o repositório
 RUN git clone https://github.com/oliveiraMats2/Predictive_Maintenance_free_dataset.git
 
+RUN git checkout inference
+
 RUN pip3 install -r Predictive_Maintenance_free_dataset/requirements.txt
 
 EXPOSE 5300
