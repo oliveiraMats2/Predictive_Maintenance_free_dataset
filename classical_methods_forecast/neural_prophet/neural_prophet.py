@@ -1,36 +1,65 @@
-from neuralprophet import NeuralProphet
+from utils_neural_prophet import AdjustDataFrameForTrain
+from train_neural_prophet import TrainNeuralProphet
 import pandas as pd
+from utils.utils import read_yaml
+import argparse
+import matplotlib.pyplot as plt
 
-# Cria um DataFrame de exemplo com variáveis independentes (X1, X2) e a variável alvo (y)
-from neuralprophet import NeuralProphet
-import pandas as pd
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description="neuralProphet main WileC")
 
-# Cria um DataFrame de exemplo com variáveis independentes (X1, X2) e a variável alvo (y)
-data = {
-    'ds': pd.date_range(start='2023-01-01', periods=10),
-    'X1': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-    'X2': [11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
-    'y': [21, 22, 23, 24, 25, 26, 27, 28, 29, 30]
-}
-df = pd.DataFrame(data)
+    parser.add_argument(
+        "config_file", type=str, help="Path to YAML configuration file"
+    )
 
-# Renomeia as colunas independentes para 'regressor1' e 'regressor2'
-df.rename(columns={'X1': 'regressor1', 'X2': 'regressor2'}, inplace=True)
+    args = parser.parse_args()
 
-# Cria o modelo NeuralProphet
-model = NeuralProphet(
-    n_forecasts=3,  # Horizonte de previsão
-    n_lags=3  # Número de lags (atrasos) a serem considerados nas variáveis independentes
-)
+    configs = read_yaml(args.config_file)
 
-# Treina o modelo com os dados
-model.fit(df, freq='D')
+    df = pd.read_csv(f"{configs['base_dataset']}/base_pump_23042023_A_resampled_10min.csv")
 
-# Gera as previsões para o horizonte especificado
-future = model.make_future_dataframe(df, periods=3)
-forecast = model.predict(future)
+    adjust_dataframe_for_train = AdjustDataFrameForTrain(df, **configs)
 
-# Imprime as previsões
+    df_ = adjust_dataframe_for_train.get_data_frame()
 
-# Imprime as previsões
-print(forecast[['ds', 'yhat', 'yhat1_lower', 'yhat1_upper', 'yhat2_lower', 'yhat2_upper', 'yhat3_lower', 'yhat3_upper']])
+
+#write algorithm--------------------------------------------
+    df_train = df_[:3016]
+    df_test = df_[7881:]
+# ----------------------------------------------------------------
+    # m = NeuralProphet(**configs["parameters_model"])
+    train_model = TrainNeuralProphet(**configs["parameters_model"])
+
+    train_model.save()
+    train_model.load()
+
+    metrics = train_model.neural_prophet.fit(df_train)
+
+    forecast = train_model.neural_prophet.predict(df_test)
+
+    x = forecast["y"].tolist()
+    x_arange = list(range(len(x)))
+
+    x_truth = forecast["yhat1"].tolist()
+    x_arange_truth = list(range(len(x)))
+
+    plt.scatter(x_arange_truth, x_truth)
+    plt.scatter(x_arange, x)
+
+    fig_forecast = train_model.neural_prophet.plot(forecast)
+    fig_components = train_model.neural_prophet.plot_components(forecast)
+    fig_model = train_model.neural_prophet.plot_parameters()
+
+
+    future = train_model.neural_prophet.make_future_dataframe(df_,
+                                                              periods=6,
+                                                              n_historic_predictions=len(df))
+
+    # forecast = m.predict(future)
+    #
+    # # plotar pontos na previsão.
+    # fig_forecast = m.plot(forecast)
+    # fig_forecast
+    #
+    # fig_components = m.plot_components(forecast)
+    # fig_components
