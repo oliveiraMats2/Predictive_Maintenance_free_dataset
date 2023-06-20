@@ -12,9 +12,15 @@ parameters_model:
   accelerator: "cuda"
   batch_size: 1024
 
-name: "temperature_neural_prophet_20_june_backup.pkl"
+name: "temperature_neural_prophet_20_june_best.pkl"
 base_dataset: "../../Datasets/dataset_TPV/base_pump_23042023_A_resampled_10min"
 select_feature: "temperature"
 time: "Time"
 
-predict_in_the_future: 5118 # 3000
+predict_in_the_future: 2869 # 3000
+
+plot_config:
+  x_axis: "x_axis"
+  y_axis: "y_axis"
+  title: "forecast"
+  length_circle: 0.5

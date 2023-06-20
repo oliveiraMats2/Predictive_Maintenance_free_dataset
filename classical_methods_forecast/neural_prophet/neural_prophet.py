@@ -3,7 +3,7 @@ from train_neural_prophet import TrainNeuralProphet
 import pandas as pd
 from utils.utils import read_yaml
 import argparse
-import matplotlib.pyplot as plt
+from save_fig_forecast import SaveFigForecast
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="neuralProphet main WileC")
@@ -22,16 +22,15 @@ if __name__ == '__main__':
 
     df_ = adjust_dataframe_for_train.get_data_frame()
 
-
-#write algorithm--------------------------------------------
+    # write algorithm--------------------------------------------
     df_train = df_[:3016]
     df_test = df_[7881:]
-# ----------------------------------------------------------------
+    # ----------------------------------------------------------------
     # m = NeuralProphet(**configs["parameters_model"])
     train_model = TrainNeuralProphet(**configs["parameters_model"])
 
-    metrics = train_model.neural_prophet.fit(df_train)
-    train_model.save(configs["name"])
+    # metrics = train_model.neural_prophet.fit(df_train)
+    # train_model.save(configs["name"])
 
     train_model.load(configs["name"])
 
@@ -47,11 +46,5 @@ if __name__ == '__main__':
     y_hat = forecast["yhat1"].tolist()
     ds = forecast["ds"]
 
-    length_cicle = 0.5
-
-    plt.scatter(ds, y_hat, s=length_cicle, color="cornflowerblue")
-    plt.scatter(ds, y_truth, s=length_cicle, color="black")
-    plt.show()
-    # plotar pontos na previsão.
-    # fig_forecast = m.plot(forecast)
-    #fig_forecast
+    save_fig_forecast = SaveFigForecast()
+    save_fig_forecast(ds, y_truth, y_hat, **configs["plot_config"])
