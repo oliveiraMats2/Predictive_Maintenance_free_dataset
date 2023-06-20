@@ -30,36 +30,28 @@ if __name__ == '__main__':
     # m = NeuralProphet(**configs["parameters_model"])
     train_model = TrainNeuralProphet(**configs["parameters_model"])
 
-    train_model.save()
-    train_model.load()
-
     metrics = train_model.neural_prophet.fit(df_train)
+    train_model.save(configs["name"])
 
-    forecast = train_model.neural_prophet.predict(df_test)
+    train_model.load(configs["name"])
 
-    x = forecast["y"].tolist()
-    x_arange = list(range(len(x)))
+    m = train_model.neural_prophet
+    # forecast = m.predict(df_)
+    future = m.make_future_dataframe(df_train,
+                                     periods=configs["predict_in_the_future"],
+                                     n_historic_predictions=len(df))
 
-    x_truth = forecast["yhat1"].tolist()
-    x_arange_truth = list(range(len(x)))
+    forecast = m.predict(df=future)
 
-    plt.scatter(x_arange_truth, x_truth)
-    plt.scatter(x_arange, x)
+    y_truth = df_["y"].tolist()
+    y_hat = forecast["yhat1"].tolist()
+    ds = forecast["ds"]
 
-    fig_forecast = train_model.neural_prophet.plot(forecast)
-    fig_components = train_model.neural_prophet.plot_components(forecast)
-    fig_model = train_model.neural_prophet.plot_parameters()
+    length_cicle = 0.5
 
-
-    future = train_model.neural_prophet.make_future_dataframe(df_,
-                                                              periods=6,
-                                                              n_historic_predictions=len(df))
-
-    # forecast = m.predict(future)
-    #
-    # # plotar pontos na previsão.
+    plt.scatter(ds, y_hat, s=length_cicle, color="cornflowerblue")
+    plt.scatter(ds, y_truth, s=length_cicle, color="black")
+    plt.show()
+    # plotar pontos na previsão.
     # fig_forecast = m.plot(forecast)
-    # fig_forecast
-    #
-    # fig_components = m.plot_components(forecast)
-    # fig_components
+    #fig_forecast
