@@ -14,9 +14,11 @@ class SaveFigForecast:
 
         plt.scatter(ds, y_hat, s=configs["length_circle"], color="cornflowerblue", label="Regression")
         plt.scatter(ds, y_truth, s=configs["length_circle"], color="black", label="Real")
+        plt.legend()
         plt.xlabel(x_axis)
         plt.ylabel(y_axis)
         plt.title(title)
         plt.grid(True)
-        plt.show()
         plt.savefig(f'preview_save_neural_prophet_/forecast_{configs["select_feature"]}.png')
+        plt.show()
+

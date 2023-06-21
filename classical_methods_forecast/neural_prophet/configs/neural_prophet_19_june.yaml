@@ -24,3 +24,4 @@ plot_config:
   y_axis: "y_axis"
   title: "forecast"
   length_circle: 0.5
+  select_feature: "temperature"
