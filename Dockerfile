@@ -14,7 +14,7 @@ RUN apt-get update && apt-get install -y \
     libxmlsec1-dev \
     python3-dev \
     sox \
-    ffmpeg \
+    ffmpeg \docker run -d --name my-mysql-container -p 3360:3306 my-mysql-image
     libcairo2 \
     libcairo2-dev \
     git \

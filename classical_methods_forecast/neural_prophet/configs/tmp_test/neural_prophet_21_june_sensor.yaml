@@ -1,5 +1,6 @@
 #Data neural Prophet
 parameters_model:
+  train: True
   growth: "linear"
   n_changepoints: 10
   seasonality_mode: "additive"
@@ -12,7 +13,7 @@ parameters_model:
   accelerator: "cuda"
   batch_size: 1024
 
-name: "temperature_neural_prophet_20_june_best.pkl"
+name: "temperature_neural_prophet_21_june_sensor.pkl"
 base_dataset: "../../Datasets/dataset_TPV/base_pump_23042023_A_resampled_10min"
 select_feature: "temperature"
 time: "Time"
