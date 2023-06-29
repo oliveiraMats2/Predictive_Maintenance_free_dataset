@@ -61,6 +61,10 @@ class MeasureMultiSensors:
 
 def avaliable_vector_auto_regressive_model(truth, prediction, type_model="single"):
     if type_model == "single":
+
+        truth = np.array(truth)
+        prediction = np.array(prediction)
+
         mae = mean_absolute_error(truth, prediction)
         smape = smape_loss(prediction, truth)
         mse = mean_square_error(truth, prediction)

@@ -3,12 +3,12 @@ parameters_model:
   growth: "linear"
   n_changepoints: 10
   seasonality_mode: "additive"
-  loss_func: "MSE"
+  loss_func: "MAE"
   trend_reg_threshold: True
   yearly_seasonality: "auto"
   weekly_seasonality: "auto"
   daily_seasonality: "auto"
-  epochs: 500
+  epochs: 1000
   accelerator: "cuda"
   batch_size: 2048
 
@@ -17,7 +17,21 @@ base_dataset: "../../Datasets/dataset_TPV/base_pump_23042023_A_resampled_10min"
 select_feature: "OAVelocity_x"
 time: "Time"
 
-predict_in_the_future: 1335 #2869 # 3000
+eliminate_range_outliers:
+  lower_bound: 0
+  upper_bound: 10
+
+eliminate_outliers:
+  apply: true
+  inferior: 0.05
+  superior: 0.95
+
+predict_in_the_future: 500 #2869 # 3000
+
+type:
+  train: False
+
+train_test_split: 0.35
 
 plot_config:
   x_axis: "timestamp"
