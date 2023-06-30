@@ -40,9 +40,10 @@ class SaveFigForecast:
         x_axis: str = configs["x_axis"]
         y_axis: str = configs["y_axis"]
         title: str = configs["title"]
-        y_lim: int = configs["y_lim"]
+        if "y_lim" in configs.keys():
+            y_lim: int = configs["y_lim"]
+            plt.ylim((y_lim[0], y_lim[1]))
 
-        plt.ylim((y_lim[0], y_lim[1]))
         plt.scatter(ds_test, y_hat, s=configs["length_circle"], color="cornflowerblue", label="Regression")
         plt.scatter(ds_train, y_truth, s=configs["length_circle"], color="black", label="Real")
         plt.legend()

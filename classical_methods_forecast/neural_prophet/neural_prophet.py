@@ -4,6 +4,23 @@ import pandas as pd
 from utils.utils import read_yaml
 import argparse
 from save_fig_forecast import SaveFigForecast
+from classical_methods_forecast.statistics_methods.metrics import avaliable_vector_auto_regressive_model
+
+
+def find_value_lower(a, b):
+    if a < b:
+        return a
+    else:
+        return b
+
+
+def truncate_values(y_truth, yhat):
+    truncate_value = find_value_lower(len(y_truth), len(yhat))
+    y_truth = y_truth[:truncate_value]
+    yhat = yhat[:truncate_value]
+
+    return y_truth, yhat
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="neuralProphet main WileC")
@@ -20,14 +37,16 @@ if __name__ == '__main__':
 
     adjust_dataframe_for_train = AdjustDataFrameForTrain(df, **configs)
 
-    df_ = adjust_dataframe_for_train.eliminate_outliers(**configs["eliminate_outliers"])
+    adjust_dataframe_for_train.eliminate_outliers(**configs["eliminate_outliers"])
+
+    adjust_dataframe_for_train.eliminate_range_values(**configs["eliminate_range_outliers"])
 
     df_ = adjust_dataframe_for_train.get_data_frame(drop_zeros=True,
                                                     drop_constant=True)
 
     save_fig_forecast = SaveFigForecast()
 
-    df_train, df_test = adjust_dataframe_for_train.dataset_split(df_, split=0.8)
+    df_train, df_test = adjust_dataframe_for_train.dataset_split(df_, split=configs["train_test_split"])
 
     df_ = pd.concat([df_train, df_test], ignore_index=True)
 
@@ -51,6 +70,10 @@ if __name__ == '__main__':
     y_hat = forecast["yhat1"].tolist()
     ds_test = forecast["ds"]
     ds_train = df_train["ds"]
+
+    # y_truth, y_hat = truncate_values(y_truth, y_hat)
+    #
+    # avaliable_vector_auto_regressive_model(y_truth, y_hat, type_model="single")
 
     print(len(y_truth), len(y_hat), abs(len(y_truth) - len(y_hat)))
 

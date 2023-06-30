@@ -67,3 +67,6 @@ class AdjustDataFrameForTrain:
             return metrics
         else:
             train_model.load(f'weighted_history/{configs["name"]}_{configs["select_feature"]}.np')
+
+    def eliminate_range_values(self, lower_bound=5, upper_bound=15):
+        self.df_ = self.df_.drop(self.df_[(self.df_['y'] >= lower_bound) & (self.df_['y'] <= upper_bound)].index)

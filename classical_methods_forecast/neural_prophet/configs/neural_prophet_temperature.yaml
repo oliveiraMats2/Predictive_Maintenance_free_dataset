@@ -17,12 +17,21 @@ base_dataset: "../../Datasets/dataset_TPV/base_pump_23042023_A_resampled_10min"
 select_feature: "temperature"
 time: "Time"
 
+eliminate_outliers:
+  apply: False
+  inferior: 0.05
+  superior: 0.95
+
+type:
+  train: False
+
 predict_in_the_future: 1335 #2869 # 3000
 
 plot_config:
   x_axis: "timestamp"
   y_axis: "temperature C"
   title: "Forecast temperature"
+  # y_lim: !!python/list [-10, 200]
   length_circle: 0.5
   select_feature: "temperature"
 

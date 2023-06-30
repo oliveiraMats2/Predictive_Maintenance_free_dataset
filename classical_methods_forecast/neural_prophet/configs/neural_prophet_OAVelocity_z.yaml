@@ -17,7 +17,16 @@ base_dataset: "../../Datasets/dataset_TPV/base_pump_23042023_A_resampled_10min"
 select_feature: "OAVelocity_z"
 time: "Time"
 
+eliminate_outliers:
+  apply: False
+  inferior: 0.05
+  superior: 0.95
+
 predict_in_the_future: 1335 #2869 # 3000
+type:
+  train: True
+
+train_test_split: 0.35
 
 plot_config:
   x_axis: "timestamp"
