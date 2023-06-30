@@ -1,0 +1,41 @@
+#Data neural Prophet
+parameters_model:
+  growth: "linear"
+  n_changepoints: 10
+  seasonality_mode: "additive"
+  loss_func: "MSE"
+  trend_reg_threshold: True
+  yearly_seasonality: "auto"
+  weekly_seasonality: "auto"
+  daily_seasonality: "auto"
+  epochs: 500
+  accelerator: "cuda"
+  batch_size: 2048
+
+name: "neural_prophet" # será adicionado no futuro o name
+base_dataset: "../../Datasets/dataset_TPV/base_pump_23042023_A_resampled_10min"
+select_feature: "phaseB_current"
+time: "Time"
+
+predict_in_the_future: 1335 #2869 # 3000
+
+plot_config:
+  x_axis: "timestamp"
+  y_axis: "phaseB_current"
+  title: "Forecast phaseB_current"
+  length_circle: 0.5
+  select_feature: "phaseB_current"
+
+#  'Time', 'InletPressure', 'OutletPressure', 'OutletTemperature',
+#  'InverterSpeed', 'temperature', 'frequency', 'phaseA_voltage',
+#  'phaseA_current', 'phaseA_pwr_factor', 'phaseA_active',
+#  'phaseA_reactive', 'phaseB_voltage', 'phaseB_current',
+#  'phaseB_pwr_factor', 'phaseB_active', 'phaseB_reactive',
+#  'phaseC_voltage', 'phaseC_current', 'phaseC_pwr_factor',
+#  'phaseC_active', 'phaseC_reactive', 'OAVelocity_x', 'Peakmg_x',
+#  'RMSmg_x', 'Kurtosis_x', 'CrestFactor_x', 'Skewness_x', 'Deviation_x',
+#  'Peak-to-Peak Displacement_x', 'OAVelocity_y', 'Peakmg_y', 'RMSmg_y',
+#  'Kurtosis_y', 'CrestFactor_y', 'Skewness_y', 'Deviation_y',
+#  'Peak-to-Peak Displacement_y', 'OAVelocity_z', 'Peakmg_z', 'RMSmg_z',
+#  'Kurtosis_z', 'CrestFactor_z', 'Skewness_z', 'Deviation_z',
+#  'Peak-to-Peak Displacement_z'
