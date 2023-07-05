@@ -32,3 +32,9 @@ Datasets/sintetic_dataset/2600_points/train_compressor_data.h5
 vector_auto_regression/result_multi_sensor_base_pump_23042023_A_resampled_10min.csv
 /vector_auto_regression/base_pump_23042023_A_resampled_1min/
 /tmp.csv
+/src/neural_prophet/weighted_history/
+/src/neural_prophet/preview_save_neural_prophet_/
+/src/neural_prophet/preview_plots_inference/
+/src/neural_prophet/preview_plots_inference/
+/src/neural_prophet/weighted_history/
+/src/neural_prophet/preview_save_neural_prophet_/
