@@ -71,11 +71,13 @@ if __name__ == '__main__':
     ds_test = forecast["ds"]
     ds_train = df_train["ds"]
 
-    # y_truth, y_hat = truncate_values(y_truth, y_hat)
-    #
-    # avaliable_vector_auto_regressive_model(y_truth, y_hat, type_model="single")
+    if configs["metrics"]:
+        y_truth, y_hat = truncate_values(y_truth, y_hat)
 
-    print(len(y_truth), len(y_hat), abs(len(y_truth) - len(y_hat)))
+        avaliable_vector_auto_regressive_model(y_truth, y_hat, type_model="single")
 
-    save_fig_forecast.plot_presentation(ds_train, ds_test,
-                                        y_truth, y_hat, **configs["plot_config"])
+    else:
+        print(len(y_truth), len(y_hat), abs(len(y_truth) - len(y_hat)))
+
+        save_fig_forecast.plot_presentation(ds_train, ds_test,
+                                            y_truth, y_hat, **configs["plot_config"])

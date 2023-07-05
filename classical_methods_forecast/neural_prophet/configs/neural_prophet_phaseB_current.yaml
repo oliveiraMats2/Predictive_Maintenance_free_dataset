@@ -17,7 +17,24 @@ base_dataset: "../../Datasets/dataset_TPV/base_pump_23042023_A_resampled_10min"
 select_feature: "phaseB_current"
 time: "Time"
 
+eliminate_outliers:
+  apply: False
+  inferior: 0.05
+  superior: 0.95
+
 predict_in_the_future: 1335 #2869 # 3000
+
+type:
+  train: False
+
+metrics: True
+
+train_test_split: 0.80
+
+eliminate_range_outliers:
+  apply: False
+  lower_bound: 0
+  upper_bound: 10
 
 plot_config:
   x_axis: "timestamp"

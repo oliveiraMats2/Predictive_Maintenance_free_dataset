@@ -17,9 +17,10 @@ eliminate_outliers:
   inferior: 0.05
   superior: 0.95
 
-train_test_split: 0.35
+train_test_split: 0.80
 
 eliminate_range_outliers:
+  apply: False
   lower_bound: 0
   upper_bound: 10
 
@@ -30,7 +31,7 @@ time: "Time"
 
 predict_in_the_future: 1335 #2869 # 3000
 type:
-  train: True
+  train: False
 
 plot_config:
   x_axis: "timestamp"
