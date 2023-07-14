@@ -50,6 +50,19 @@ if __name__ == '__main__':
         df['Time'] = pd.to_datetime(df['Time'])
         df = df[df['Time'] < pd.Timestamp(day=6, month=3, year=2023)]
 
+    # just for payload.airms COMPRESSOR
+    if 'payload.airms' in configs["select_feature"]:
+        df['Time'] = pd.to_datetime(df['Time'])
+
+        # print('Pegando apenas dados antes de 08/06/2023... Corrente compressor')
+        # df = df[df['Time'] < pd.Timestamp(day=8, month=6, year=2023)]
+
+        print('Pegando apenas dados depois de 10/06/2023... Corrente compressor')
+        df = df[df['Time'] > pd.Timestamp(day=10, month=6, year=2023)]
+        
+        print('Pegando dados antes de 12/06/2023... Corrente compressor')
+        df = df[df['Time'] < pd.Timestamp(day=12, month=6, year=2023)]
+
     adjust_dataframe_for_train = AdjustDataFrameForTrain(df, **configs)
     
     if 'eliminate_outliers' in configs.keys():
