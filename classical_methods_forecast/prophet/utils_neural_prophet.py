@@ -16,7 +16,7 @@ class AdjustDataFrameForTrain:
         self.df_ = pd.DataFrame({'ds': self.x_time, 'y': self.y})
 
     def eliminate_outliers(self, apply=False, inferior=0.05, superior=0.95):
-        if apply:
+        if not(apply):
             return None
 
         # Define a threshold for outlier detection (e.g., z-score > 3)
