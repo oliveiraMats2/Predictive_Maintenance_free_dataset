@@ -43,7 +43,7 @@ if __name__ == '__main__':
 
     configs = read_yaml(args.config_file)
 
-    df = pd.read_csv(f"{configs['base_dataset']}/base_pump_23042023_A_resampled_10min.csv")
+    df = pd.read_csv(f"{configs['base_dataset']}")
     
     # just for WISE
     if 'OAVelocity' in configs["select_feature"]:
