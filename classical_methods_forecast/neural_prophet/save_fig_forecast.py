@@ -51,5 +51,5 @@ class SaveFigForecast:
         plt.ylabel(y_axis)
         plt.title(title)
         plt.grid(True)
-        plt.savefig(f'preview_save_neural_prophet_/forecast_{configs["select_feature"]}_just_blue.png', dpi=800)
+        plt.savefig(f'preview_plots_inference/forecast_{configs["select_feature"]}_just_blue.png', dpi=800)
         plt.show()

@@ -36,12 +36,17 @@ eliminate_range_outliers:
   lower_bound: 0
   upper_bound: 10
 
+drop:
+  drop_zeros: False
+  drop_constant: False
+
 plot_config:
   x_axis: "timestamp"
-  y_axis: "phaseA_current"
-  title: "Forecast phaseA_current"
+  y_axis: "temperature C"
+  title: "Forecast temperature"
+  # y_lim: !!python/list [-10, 200]
   length_circle: 0.5
-  select_feature: "phaseA_current"
+  select_feature: "temperature"
 
 #  'Time', 'InletPressure', 'OutletPressure', 'OutletTemperature',
 #  'InverterSpeed', 'temperature', 'frequency', 'phaseA_voltage',

@@ -6,10 +6,10 @@ import pickle
 class TrainNeuralProphet:
     __instance = None
 
-    def __new__(cls, *args, **kwargs):
-        if not TrainNeuralProphet.__instance:
-            TrainNeuralProphet.__instance = super(TrainNeuralProphet, cls).__new__(cls)
-            return TrainNeuralProphet.__instance
+    # def __new__(cls, *args, **kwargs):
+    #     if not TrainNeuralProphet.__instance:
+    #         TrainNeuralProphet.__instance = super(TrainNeuralProphet, cls).__new__(cls)
+    #         return TrainNeuralProphet.__instance
 
     def __init__(self, **configs) -> None:
         self.neural_prophet = NeuralProphet(**configs)

@@ -41,8 +41,7 @@ if __name__ == '__main__':
 
     adjust_dataframe_for_train.eliminate_range_values(**configs["eliminate_range_outliers"])
 
-    df_ = adjust_dataframe_for_train.get_data_frame(drop_zeros=True,
-                                                    drop_constant=True)
+    df_ = adjust_dataframe_for_train.get_data_frame(**configs["drop"])
 
     save_fig_forecast = SaveFigForecast()
 
@@ -60,9 +59,13 @@ if __name__ == '__main__':
 
     m = train_model.neural_prophet
 
-    future = m.make_future_dataframe(df_test,
+    df_test["y"] = 0
+
+    df_eixo_time = df_test
+
+    future = m.make_future_dataframe(df_eixo_time,
                                      periods=configs["predict_in_the_future"],
-                                     n_historic_predictions=len(df_test))
+                                     n_historic_predictions=len(df_eixo_time))
 
     forecast = m.predict(df=future)
 

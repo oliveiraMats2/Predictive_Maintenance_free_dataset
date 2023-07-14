@@ -25,5 +25,6 @@ pytorch-forecasting
 pytorch-lightning
 pynvim
 pymysql
+keras
 keras-preprocessing
 scipy
