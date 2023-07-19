@@ -4,8 +4,7 @@ import pandas as pd
 from utils.utils import read_yaml
 import argparse
 from save_fig_forecast import SaveFigForecast
-from classical_methods_forecast.statistics_methods.metrics import avaliable_vector_auto_regressive_model
-from classical_methods_forecast.neural_prophet.upcua_instants_value import UpcuaInstantValues
+from upcua_instants_value import UpcuaInstantValues
 from generate_timestamp import GenerateTimestamp
 def find_value_lower(a, b):
     if a < b:
@@ -84,14 +83,3 @@ if __name__ == '__main__':
     y_hat = forecast["yhat1"].tolist()
     ds_test = forecast["ds"]
     ds_train = df_train["ds"]
-
-    # if configs["metrics"]:
-    #     y_truth, y_hat = truncate_values(y_truth, y_hat)
-    #
-    #     avaliable_vector_auto_regressive_model(y_truth, y_hat, type_model="single")
-    #
-    # else:
-    #     print(len(y_truth), len(y_hat), abs(len(y_truth) - len(y_hat)))
-    #
-    #     save_fig_forecast.plot_presentation(ds_train, ds_test,
-    #                                         y_truth, y_hat, **configs["plot_config"])

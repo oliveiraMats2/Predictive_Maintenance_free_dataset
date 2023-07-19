@@ -19,6 +19,7 @@ qtpy
 neuralprophet
 dvc
 torchvision
+opcua
 scikit-learn
 seaborn
 pytorch-forecasting

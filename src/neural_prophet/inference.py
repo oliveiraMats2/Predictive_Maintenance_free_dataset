@@ -4,7 +4,6 @@ import pandas as pd
 from utils.utils import read_yaml
 import argparse
 from save_fig_forecast import SaveFigForecast
-from classical_methods_forecast.statistics_methods.metrics import avaliable_vector_auto_regressive_model
 
 
 def find_value_lower(a, b):
