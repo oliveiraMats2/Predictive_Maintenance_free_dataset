@@ -1,6 +1,6 @@
 import time
 import pandas as pd
-from src.utils import opcua_tools as op
+import opcua_tools as op
 
 
 class UpcuaInstantValues:

@@ -36,6 +36,12 @@ metrics: False
 
 train_test_split: 0.80
 
+collect_data_opcua:
+  quantity: 2
+
+prediction_for_future:
+  end: "2023-08-10"
+
 eliminate_range_outliers:
   apply: False
   lower_bound: 0

@@ -36,7 +36,7 @@ if __name__ == '__main__':
 
     save_fig_forecast = SaveFigForecast()
 
-    df = upcua_instant_values.actual_dataframe(2)
+    df = upcua_instant_values.actual_dataframe(configs["collect_data_opcua"]["quantity"])
 
     feature_ = configs["select_feature"]
 
@@ -69,7 +69,7 @@ if __name__ == '__main__':
     df_test["y"] = 0
 
     df_test = GenerateTimestamp.generate_timestamps_delimiter(start=df["Time"].tolist()[-1],
-                                                              end="2023-08-10")
+                                                              end=configs["prediction_for_future"]["end"])
 
     df_eixo_time = df_test
 
@@ -79,7 +79,6 @@ if __name__ == '__main__':
 
     forecast = m.predict(df=future)
 
-    y_truth = df_train["y"].tolist()
+
     y_hat = forecast["yhat1"].tolist()
     ds_test = forecast["ds"]
-    ds_train = df_train["ds"]
