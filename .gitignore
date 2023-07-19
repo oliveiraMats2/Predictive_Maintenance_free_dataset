@@ -38,3 +38,8 @@ vector_auto_regression/result_multi_sensor_base_pump_23042023_A_resampled_10min.
 /src/neural_prophet/preview_plots_inference/
 /src/neural_prophet/weighted_history/
 /src/neural_prophet/preview_save_neural_prophet_/
+/classical_methods_forecast/neural_prophet/lightning_logs/
+/src/neural_prophet/lightning_logs/
+/src/neural_prophet/configs/
+/Datasets/dataset_TPV/base_comp_15062023_A/
+/Datasets/dataset_TPV/base_comp_15062023_raw/

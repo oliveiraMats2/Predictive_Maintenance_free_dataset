@@ -4,6 +4,7 @@ import pandas as pd
 from utils.utils import read_yaml
 import argparse
 from save_fig_forecast import SaveFigForecast
+from classical_methods_forecast.statistics_methods.metrics import avaliable_vector_auto_regressive_model
 
 
 def find_value_lower(a, b):
@@ -32,7 +33,7 @@ if __name__ == '__main__':
 
     configs = read_yaml(args.config_file)
 
-    df = pd.read_csv(f"{configs['base_dataset']}/base_pump_23042023_A_resampled_10min.csv")
+    df = pd.read_csv(f"{configs['base_dataset']}")
 
     adjust_dataframe_for_train = AdjustDataFrameForTrain(df, **configs)
 
@@ -59,6 +60,10 @@ if __name__ == '__main__':
 
     m = train_model.neural_prophet
 
+    df_test["ds"] = df_test["ds"].drop_duplicates()
+    df_test["y"] = df_test["y"].drop_duplicates()
+    df_test = df_test.dropna()
+
     future = m.make_future_dataframe(df_test,
                                      periods=configs["predict_in_the_future"],
                                      n_historic_predictions=len(df_test))
@@ -70,7 +75,13 @@ if __name__ == '__main__':
     ds_test = forecast["ds"]
     ds_train = df_train["ds"]
 
-    print(len(y_truth), len(y_hat), abs(len(y_truth) - len(y_hat)))
+    if configs["metrics"]:
+        y_truth, y_hat = truncate_values(y_truth, y_hat)
 
-    save_fig_forecast.plot_presentation(ds_train, ds_test,
-                                        y_truth, y_hat, **configs["plot_config"])
+        avaliable_vector_auto_regressive_model(y_truth, y_hat, type_model="single")
+
+    else:
+        print(len(y_truth), len(y_hat), abs(len(y_truth) - len(y_hat)))
+
+        save_fig_forecast.plot_presentation(ds_train, ds_test,
+                                            y_truth, y_hat, **configs["plot_config"])
