@@ -18,7 +18,7 @@ class UpcuaInstantValues:
 
             print(f"Cycle {i}: value {output[0]} at {output[1]}")
 
-            # Wait for 1 minute
+            # Wait for 1 second
             time.sleep(1)
 
         return results, date_time
