@@ -1,6 +1,6 @@
 import time
 import pandas as pd
-from utils import opcua_tools as op
+from src.utils import opcua_tools as op
 
 
 # Execute the function 10 times

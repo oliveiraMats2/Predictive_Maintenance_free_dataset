@@ -33,7 +33,7 @@ if __name__ == '__main__':
 
     configs = read_yaml(args.config_file)
 
-    df = pd.read_csv(f"{configs['base_dataset']}/base_pump_23042023_A_resampled_10min.csv")
+    df = pd.read_csv(f"{configs['base_dataset']}")
 
     adjust_dataframe_for_train = AdjustDataFrameForTrain(df, **configs)
 
@@ -59,6 +59,10 @@ if __name__ == '__main__':
     train_model.load(f'weighted_history/{configs["name"]}_{configs["select_feature"]}.np')
 
     m = train_model.neural_prophet
+
+    df_test["ds"] = df_test["ds"].drop_duplicates()
+    df_test["y"] = df_test["y"].drop_duplicates()
+    df_test = df_test.dropna()
 
     future = m.make_future_dataframe(df_test,
                                      periods=configs["predict_in_the_future"],

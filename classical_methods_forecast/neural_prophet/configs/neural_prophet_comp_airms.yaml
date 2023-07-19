@@ -10,7 +10,17 @@ parameters_model:
   daily_seasonality: "auto"
   epochs: 100
   accelerator: "cuda"
-  batch_size: 2048
+  batch_size: 10000
+
+eliminate_range_outliers:
+  apply: False
+  lower_bound: 0
+  upper_bound: 10
+
+train_test_split: 0.30
+
+type:
+  train: False
 
 eliminate_outliers:
   apply: True
@@ -18,18 +28,20 @@ eliminate_outliers:
   superior: 0.95
 
 name: "neural_prophet" # será adicionado no futuro o name
-base_dataset: "../../Datasets/dataset_TPV/base_comp_15062023_A/base_comp_15062023_A.csv"
-select_feature: "payload.avrms"
+base_dataset: "../../Datasets/dataset_TPV/base_pump_23042023_A_resampled_10min/base_comp_15062023_A.csv"
+select_feature: "payload.airms"
 time: "Time"
 
 predict_in_the_future: 1335 #2869 # 3000
 
+metrics: True
+
 plot_config:
   x_axis: "timestamp"
-  y_axis: "avrms"
-  title: "Forecast avrms"
+  y_axis: "airms"
+  title: "Forecast airms"
   length_circle: 0.5
-  select_feature: "payload.avrms"
+  select_feature: "payload.airms"
 
 #  'Time', 'InletPressure', 'OutletPressure', 'OutletTemperature',
 #  'InverterSpeed', 'temperature', 'frequency', 'phaseA_voltage',

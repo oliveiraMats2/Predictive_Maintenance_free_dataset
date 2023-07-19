@@ -15,7 +15,7 @@ class AdjustDataFrameForTrain:
         self.df_ = pd.DataFrame({'ds': self.x_time, 'y': self.y})
 
     def eliminate_outliers(self, apply=False, inferior=0.05, superior=0.95):
-        if apply:
+        if not(apply):
             return None
 
         # Define a threshold for outlier detection (e.g., z-score > 3)
@@ -61,6 +61,11 @@ class AdjustDataFrameForTrain:
 
     @staticmethod
     def train_or_test(df_train, train_model, **configs):
+
+        df_train["ds"] = df_train["ds"].drop_duplicates()
+        df_train["y"] = df_train["y"].drop_duplicates()
+        df_train = df_train.dropna()
+
         if configs["type"]["train"]:
             metrics = train_model.neural_prophet.fit(df_train)
             train_model.save(f'weighted_history/{configs["name"]}_{configs["select_feature"]}.np')
