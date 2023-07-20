@@ -23,36 +23,19 @@ def generate_json(property_list, df_true_list, df_pred_list):
             value = df[4]       # Get prediction yhat value
             prevision_data.append({'timestamp': timestamp, 'value': value})
         
-        # properties.append()
-        # print('current_data')
-        # print(current_data)
-        # print('prevision_data')
-        # print(prevision_data)
+        content = {
+            "property":property,
+            "value":100,
+            "current_data": current_data,
+            "prevision_data": prevision_data
+        }
+        properties.append(content)
 
-    # Define the minimum JSON for a notification
+    # Define the JSON header and properties
     data = {
         "equipment_id": "648a15197e30d0e3725d9a6b",
         "origin_field": "predictive",
-        "properties": [
-            {
-                "property": "Temperature.InletTemperature",
-                "value": 100,
-                "current_data": current_data,
-                "prevision_data": prevision_data
-            },
-            {
-                "property": "Temperature.OutletTemperature",
-                "value": 10,
-                "current_data": current_data,
-                "prevision_data": prevision_data
-            },
-            {
-                "property": "Pressure.InletPressure",
-                "value": 1,
-                "current_data": current_data,
-                "prevision_data": prevision_data
-            }
-        ]
+        "properties": properties
     }
 
     # Convert the JSON data to a string
@@ -61,7 +44,6 @@ def generate_json(property_list, df_true_list, df_pred_list):
     return json_data
 
 if __name__ == '__main__':
-
     # Test json generation script
 
     # Load 
@@ -73,9 +55,9 @@ if __name__ == '__main__':
     df_true_list = [df_true, df_true, df_true]
 
     json_data = generate_json(property_list=property_list, df_true_list=df_true_list, df_pred_list=df_pred_list)
-    print(json_data)
-    # json.save()
-    with open('json_data.json', 'w') as f:
+
+    # Save JSON file
+    with open('json_data_v2.json', 'w') as f:
         json.dump(json_data, f)
 
     # Read JSON file
@@ -83,4 +65,4 @@ if __name__ == '__main__':
     #     data_loaded = json.load(data_file)
 
     # print(json_data == data_loaded)
-    # print(data_loaded)
+    print(json_data)
