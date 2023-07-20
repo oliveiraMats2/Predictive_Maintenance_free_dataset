@@ -15,7 +15,13 @@ parameters_model:
 name: "neural_prophet" # será adicionado no futuro o name
 base_dataset: "../../Datasets/dataset_TPV/base_pump_23042023_A_resampled_10min"
 select_feature: "phaseA_voltage"
+select_feature_upcua: "PhaseA-voltage"
+# select_feature: "PhaseA-voltage"
 time: "Time"
+
+drop:
+  drop_zeros: False
+  drop_constant: False
 
 eliminate_outliers:
   apply: True

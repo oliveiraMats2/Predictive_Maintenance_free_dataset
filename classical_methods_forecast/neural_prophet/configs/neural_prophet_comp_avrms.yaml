@@ -8,9 +8,19 @@ parameters_model:
   yearly_seasonality: "auto"
   weekly_seasonality: "auto"
   daily_seasonality: "auto"
-  epochs: 100
+  epochs: 500
   accelerator: "cuda"
-  batch_size: 2048
+  batch_size: 20048
+
+eliminate_range_outliers:
+  apply: False
+  lower_bound: 0
+  upper_bound: 10
+
+train_test_split: 0.30
+
+type:
+  train: True
 
 eliminate_outliers:
   apply: True
@@ -18,7 +28,7 @@ eliminate_outliers:
   superior: 0.95
 
 name: "neural_prophet" # será adicionado no futuro o name
-base_dataset: "../../Datasets/dataset_TPV/base_comp_15062023_A/base_comp_15062023_A.csv"
+base_dataset:  "../../Datasets/dataset_TPV/base_comp_15062023_A/base_comp_15062023_A.csv"
 select_feature: "payload.avrms"
 time: "Time"
 
