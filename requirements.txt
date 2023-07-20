@@ -1,9 +1,7 @@
 torch
 statsmodels
-timm
 scikit-learn
 h5py
-wandb
 torch_snippets
 tqdm
 matplotlib
@@ -11,7 +9,6 @@ scipy
 pandas
 einops
 keras
-dipy
 tensorflow
 pyyaml
 nibabel
@@ -25,6 +22,5 @@ pytorch-forecasting
 pytorch-lightning
 pynvim
 pymysql
-keras
 keras-preprocessing
 scipy
