@@ -43,7 +43,7 @@ if __name__ == '__main__':
 
     configs = read_yaml(args.config_file)
 
-    df = pd.read_csv(f"{configs['base_dataset']}")
+    df = pd.read_csv(f"{configs['base_dataset']}/base_pump_23042023_A_resampled_10min.csv")
     
     # just for WISE
     if 'OAVelocity' in configs["select_feature"]:
@@ -59,7 +59,7 @@ if __name__ == '__main__':
 
         print('Pegando apenas dados depois de 10/06/2023... Corrente compressor')
         df = df[df['Time'] > pd.Timestamp(day=10, month=6, year=2023)]
-        
+
         print('Pegando dados antes de 12/06/2023... Corrente compressor')
         df = df[df['Time'] < pd.Timestamp(day=12, month=6, year=2023)]
 

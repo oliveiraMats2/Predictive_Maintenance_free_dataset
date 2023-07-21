@@ -24,3 +24,5 @@ pynvim
 pymysql
 keras-preprocessing
 scipy
+requests
+opcua
