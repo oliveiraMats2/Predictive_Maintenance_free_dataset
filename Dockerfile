@@ -37,12 +37,12 @@ RUN git clone https://github.com/oliveiraMats2/Predictive_Maintenance_free_datas
 
 WORKDIR /app/Predictive_Maintenance_free_dataset
 
+RUN git checkout inference
+
 RUN pip3 install -r requirements.txt
 
 RUN dvc remote add --default gdrive gdrive:1mmU4ARXPrB0_h_TCvTx3S5bO2uxS1rwy --force
 
 RUN export PYTHONPATH="/app/Predictive_Maintenance_free_dataset/"
-
-RUN git checkout inference
 
 EXPOSE 5300
