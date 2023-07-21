@@ -1,9 +1,7 @@
 torch
 statsmodels
-timm
 scikit-learn
 h5py
-wandb
 torch_snippets
 tqdm
 matplotlib
@@ -21,10 +19,6 @@ dvc
 torchvision
 opcua
 scikit-learn
-seaborn
 pytorch-forecasting
 pytorch-lightning
-pynvim
-pymysql
-keras-preprocessing
 scipy
