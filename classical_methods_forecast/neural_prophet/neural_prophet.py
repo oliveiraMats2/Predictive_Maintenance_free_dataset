@@ -60,10 +60,6 @@ if __name__ == '__main__':
 
     m = train_model.neural_prophet
 
-    df_test["ds"] = df_test["ds"].drop_duplicates()
-    df_test["y"] = df_test["y"].drop_duplicates()
-    df_test = df_test.dropna()
-
     future = m.make_future_dataframe(df_test,
                                      periods=configs["predict_in_the_future"],
                                      n_historic_predictions=len(df_test))
