@@ -7,19 +7,37 @@ def generate_json_current_anomaly(name_model, feature_name, detect_time, anomaly
     current_timestamp = list(np.array(df_current['ds']))
     current_values = list(np.array(df_current['y']))
 
+    # Process dataframes to pattern
+    current_data = []
+    df_current = np.array(df_current)
+
+    for df in df_current[:, :]:
+        timestamp = df[1]   # Get timestamp
+        value = df[2]       # Get real value
+        current_data.append({'timestamp': timestamp, 'value': value})
+
     # Define the JSON header and properties
     data = {
-        "Name_model": name_model,
-        "Feature_name": feature_name,
-        "Detect_time": detect_time,
-        "Anomaly_type": anomaly_type,
-        "Input_vector": {
-            "Timestamp": current_timestamp,
-            "Window_input": current_values
+        "equipment_id": "648a15197e30d0e3725d9a6b",
+        "origin_field": "predictive",
+        "properties": {     # De acordo com o padrão do Jean
+            "property": feature_name,
+            "current_data": current_data,
+            "prevision_data": []
         },
-        "Detection": {
-            "Timestamp": detection_timestamp,
-            "Detection": detection
+        "messages": {       # De acordo com PDF
+            "Name_model": name_model,
+            "Feature_name": feature_name,
+            "Detect_time": detect_time,
+            "Anomaly_type": anomaly_type,
+            "Input_vector": {
+                "Timestamp": current_timestamp,
+                "Window_input": current_values
+            },
+            "Detection": {
+                "Timestamp": detection_timestamp,
+                "Detection": detection
+            }
         }
     }
 
@@ -36,23 +54,48 @@ def generate_json_future_anomaly(name_model, feature_name, detect_time, anomaly_
     prevision_timestamp = list(np.array(df_prevision['ds']))
     prevision_values = list(np.array(df_prevision['yhat']))
 
+    # Process dataframes to pattern
+    current_data = []
+    prevision_data = []
+    df_current = np.array(df_current)
+    df_prevision = np.array(df_prevision)
+
+    for df in df_current[:, :]:
+        timestamp = df[1]   # Get timestamp
+        value = df[2]       # Get real value
+        current_data.append({'timestamp': timestamp, 'value': value})
+
+    for df in df_prevision[:, :]:
+        timestamp = df[1]   # Get timestamp
+        value = df[4]       # Get prediction yhat value
+        prevision_data.append({'timestamp': timestamp, 'value': value})
+
     # Define the JSON header and properties
     data = {
-        "Name_model": name_model,
-        "Feature_name": feature_name,
-        "Detect_time": detect_time,
-        "Anomaly_type": anomaly_type,
-        "Input_vector": {
-            "Timestamp": current_timestamp,
-            "Window_input": current_values
+        "equipment_id": "648a15197e30d0e3725d9a6b",
+        "origin_field": "predictive",
+        "properties": {     # De acordo com o padrão do Jean
+            "property": feature_name,
+            "current_data": current_data,
+            "prevision_data": prevision_data
         },
-        "Prevision": {
-            "Timestamp": prevision_timestamp,
-            "Prevision": prevision_values
-        },
-        "Detection": {
-            "Timestamp": detection_timestamp,
-            "Detection": detection
+        "messages": {       # De acordo com PDF
+            "Name_model": name_model,
+            "Feature_name": feature_name,
+            "Detect_time": detect_time,
+            "Anomaly_type": anomaly_type,
+            "Input_vector": {
+                "Timestamp": current_timestamp,
+                "Window_input": current_values
+            },
+            "Prevision": {
+                "Timestamp": prevision_timestamp,
+                "Prevision": prevision_values
+            },
+            "Detection": {
+                "Timestamp": detection_timestamp,
+                "Detection": detection
+            }
         }
     }
 
@@ -70,9 +113,9 @@ if __name__ == '__main__':
     feature_name = 'Temperature.InletTemperature'
     df_true = pd.read_csv('/home/gustavo/Documents/WileC/Predictive_Maintenance_free_dataset/src/utils/df_train.csv')
     df_pred = pd.read_csv('/home/gustavo/Documents/WileC/Predictive_Maintenance_free_dataset/src/utils/df_pred.csv')
-    detection_timestamp = df_true['ds'][500]
+    detection_timestamp = df_true['ds'][500]        # Choose timestamp for test
     json_data_current = generate_json_current_anomaly(name_model, feature_name, 'current', 'severe', detection_timestamp, 1, df_true)
-    json_data_future = generate_json_future_anomaly(name_model, feature_name, 'current', 'severe', detection_timestamp, 1, df_true, df_pred)
+    json_data_future = generate_json_future_anomaly(name_model, feature_name, 'future', 'severe', detection_timestamp, 1, df_true, df_pred)
 
     # Save JSON file
     with open('json_data_current.json', 'w') as f:
