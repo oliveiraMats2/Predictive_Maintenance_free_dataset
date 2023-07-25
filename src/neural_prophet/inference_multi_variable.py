@@ -1,11 +1,12 @@
 from utils_neural_prophet import AdjustDataFrameForTrain
 from train_neural_prophet import TrainNeuralProphet
 import pandas as pd
+from datetime import datetime
 from utils.utils import read_yaml
 import argparse
 from save_fig_forecast import SaveFigForecast
-from upcua_instants_value import UpcuaInstantValues
 from generate_timestamp import GenerateTimestamp
+import opcua_tools as op
 
 
 def mono_variable_execute(feature="PhaseA-voltage"):
@@ -19,15 +20,15 @@ def mono_variable_execute(feature="PhaseA-voltage"):
 
     configs = read_yaml(args.config_file)
 
-    upcua_instant_values = UpcuaInstantValues("PhaseA-voltage")
+    start_date = datetime(2023, 1, 1, 0, 0, 0)
+    end_date = datetime(2023, 7, 24, 23, 59, 59)
 
-    save_fig_forecast = SaveFigForecast()
+    machine = "compressor"
 
-    df = upcua_instant_values.actual_dataframe(configs["collect_data_opcua"]["quantity"])
+    df = op.get_historized_values(machine, feature, start_date, end_date)
+    # save_fig_forecast = SaveFigForecast()
 
-    feature_ = configs["select_feature"]
-
-    configs["select_feature"] = configs["select_feature_upcua"]
+    configs["select_feature"] = feature
 
     adjust_dataframe_for_train = AdjustDataFrameForTrain(df, **configs)
 
@@ -42,9 +43,6 @@ def mono_variable_execute(feature="PhaseA-voltage"):
     df_ = pd.concat([df_train, df_test], ignore_index=True)
 
     # ----------------------------------------------------------------
-
-    configs["select_feature"] = feature_
-
     train_model = TrainNeuralProphet(**configs["parameters_model"])
 
     metrics = adjust_dataframe_for_train.train_or_test(df_train, train_model, **configs)
@@ -68,8 +66,17 @@ def mono_variable_execute(feature="PhaseA-voltage"):
 
     y_hat = forecast["yhat1"].tolist()
     ds_test = forecast["ds"]
-    print(y_hat[:10])
+    # print(y_hat[:10])
+    return y_hat
 
 
-if __name__ == "__main__":
-    mono_variable_execute()
+features = ["InletPressure", "InverterSpeed", "OAVelocity_x", "OAVelocity_y", "OAVelocity_z", "OutletPressure",
+            "OutletTemperature", "phaseA_current", "phaseB_current", "phaseC_current", "phaseA_voltage",
+            "phaseB_voltage", "phaseC_voltage"]
+
+result = {}
+
+for idx, feature in enumerate(features):
+    result[feature] = mono_variable_execute(feature)
+    print(feature)
+
