@@ -6,7 +6,13 @@ from utils.utils import read_yaml
 import argparse
 from save_fig_forecast import SaveFigForecast
 from generate_timestamp import GenerateTimestamp
-import opcua_tools as op
+import opcua_tools as op, requests
+from front_tools import generate_json_future_anomaly
+import json
+
+
+def transform_result_df_prevision(vet_future):
+    return pd.DataFrame({"ds": ds, "yhat": vet_future})
 
 
 def mono_variable_execute(feature="PhaseA-voltage"):
@@ -67,16 +73,54 @@ def mono_variable_execute(feature="PhaseA-voltage"):
     y_hat = forecast["yhat1"].tolist()
     ds_test = forecast["ds"]
     # print(y_hat[:10])
-    return y_hat
+    return adjust_dataframe_for_train.df_, ds_test, y_hat
 
 
-features = ["InletPressure", "InverterSpeed", "OAVelocity_x", "OAVelocity_y", "OAVelocity_z", "OutletPressure",
-            "OutletTemperature", "phaseA_current", "phaseB_current", "phaseC_current", "phaseA_voltage",
-            "phaseB_voltage", "phaseC_voltage"]
+features = ["InletPressure"]
+# , "InverterSpeed", "OAVelocity_x", "OAVelocity_y", "OAVelocity_z", "OutletPressure",
+#         "OutletTemperature", "phaseA_current", "phaseB_current", "phaseC_current", "phaseA_voltage",
+#         "phaseB_voltage", "phaseC_voltage"]
 
 result = {}
 
 for idx, feature in enumerate(features):
-    result[feature] = mono_variable_execute(feature)
-    print(feature)
+    df, ds, result[feature] = mono_variable_execute(feature)
+
+    df_truth, detection_timestamp = df, ds
+
+    dict_details_json = {
+        "name_model": "neural_prophet",
+        "feature_name": feature,
+        "detect_time": "future",
+        "anomaly_type": "severe",
+        "detection_timestamp": detection_timestamp,
+        "detection": 1,
+        "df_current": df_truth,
+        "df_prevision": transform_result_df_prevision(result[feature])
+
+    }
+
+    json_data_future = generate_json_future_anomaly(**dict_details_json)
+
+    with open('json_data_future.json', 'w') as f:
+        json.dump(json_data_future, f)
+
+    with open("json_data_future.json") as r:
+        json_data = json.load(r)
+
+    # Define the IP address and port of the server
+    ip_address = "172.31.111.103"
+    port = 447
+
+    # Define the URL to send the POST request to
+    url = f"http://{ip_address}:{port}/api/predictive-event"
+
+    # Send the JSON data to the server
+    response = requests.post(url, data=json_data, headers={'Content-Type': 'application/json'})
+
+    # Check the response status
+    if response.status_code == 201:
+        print("JSON data sent successfully!")
+    else:
+        print("Error sending JSON data:", response.text)
 
