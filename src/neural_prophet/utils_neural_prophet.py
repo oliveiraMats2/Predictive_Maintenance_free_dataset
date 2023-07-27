@@ -54,8 +54,8 @@ class AdjustDataFrameForTrain:
         df_train = df_[:slice_choose]
         df_test = df_[slice_choose:]
 
-        print(f"length train: {df_train.shape[0]}")
-        print(f"length test: {df_test.shape[0]}")
+        # print(f"length train: {df_train.shape[0]}")
+        # print(f"length test: {df_test.shape[0]}")
 
         return df_train, df_test
 
