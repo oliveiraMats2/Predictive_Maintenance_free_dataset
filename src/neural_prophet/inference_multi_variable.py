@@ -11,6 +11,7 @@ import tqdm
 import json
 from functools import wraps
 import time
+import numpy as np
 
 
 def timeit(func):
@@ -85,9 +86,11 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    features = ["InletPressure", "OAVelocity_x" , "InverterSpeed", "OAVelocity_x", "OAVelocity_y", "OAVelocity_z",
-                "OutletPressure", "OutletTemperature", "phaseA_current", "phaseB_current", "phaseC_current",
-                "phaseA_voltage", "phaseB_voltage", "phaseC_voltage"]
+    features = ["InletPressure"]
+                #, "OAVelocity_x"
+                # , "InverterSpeed", "OAVelocity_x", "OAVelocity_y", "OAVelocity_z",)
+                # "OutletPressure", "OutletTemperature", "phaseA_current", "phaseB_current", "phaseC_current",
+                # "phaseA_voltage", "phaseB_voltage", "phaseC_voltage"]
 
     dict_multi_variate_models = {}
     result_multi_variate_models = {}
@@ -116,8 +119,8 @@ if __name__ == "__main__":
             "feature_name": feature,
             "detect_time": "future",
             "anomaly_type": "severe",
-            "detection_timestamp": detection_timestamp,
-            "detection": 1,
+            "detection_timestamp_list": detection_timestamp,
+            "detection_value_list": np.zeros(len(detection_timestamp)),
             "df_current": df_truth,
             "df_prevision": transform_result_df_prevision(ds, result)
 
