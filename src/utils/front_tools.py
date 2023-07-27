@@ -3,15 +3,42 @@ import json
 import numpy as np
 
 
-def generate_json_current_anomaly(name_model, feature_name, detect_time, anomaly_type, detection_timestamp, detection, df_current):
+def generate_json_current_anomaly(name_model, feature_name, detect_time, anomaly_type, detection_timestamp_list, detection_value_list, df_current):
+    '''
+    Returns the formatted JSON string.
+
+            Parameters:
+                    name_model (string): Name of the ML model
+                    feature_name (string): Name of the feature analysed
+                    detect_time (string): Detection time <current|future>
+                    anomaly_type (string): Anomaly type <none|light|medium|severe>
+                    detection_timestamp_list (array [timestamp]): Array containing the detection timestamp
+                    detection_value_list (array [int]): Array containing the detection values <0: normal|1: anomaly>
+                    df_current (Dataframe): Dataframe containing the input data
+
+            Returns:
+                    json_data (string): formatted JSON string
+    '''
+    
     # Process dataframes to pattern
     current_data = []
+    detection_data = []
     df_current = np.array(df_current)
 
+    # Formats current_data to pattern
     for df in df_current[:, :]:
         timestamp = df[1]   # Get timestamp
         value = df[2]       # Get real value
         current_data.append({'timestamp': timestamp, 'value': value})
+
+    # Formats Detection to pattern
+    if len(detection_value_list) == len(detection_value_list):
+        for index, _ in enumerate(detection_timestamp_list):
+            timestamp = detection_timestamp_list[index]   # Get timestamp
+            value = detection_value_list[index]       # Get prediction yhat value
+            detection_data.append({'Timestamp': timestamp, 'Detection': value})
+    else:
+        detection_data.append({'Timestamp': 'Timestamp and Detection value array size mismatch', 'Detection': 'Timestamp and Detection value array size mismatch'})
 
     # Define the JSON header and properties
     data = {
@@ -28,10 +55,7 @@ def generate_json_current_anomaly(name_model, feature_name, detect_time, anomaly
                     "Feature_name": feature_name,
                     "Detect_time": detect_time,
                     "Anomaly_type": anomaly_type,
-                    "Detection": {
-                        "Timestamp": detection_timestamp,
-                        "Detection": detection
-                    },
+                    "Detection": detection_data
                 },
             },
         ],
@@ -43,22 +67,52 @@ def generate_json_current_anomaly(name_model, feature_name, detect_time, anomaly
     return json_data
 
 
-def generate_json_future_anomaly(name_model, feature_name, detect_time, anomaly_type, detection_timestamp, detection, df_current, df_prevision):
+def generate_json_future_anomaly(name_model, feature_name, detect_time, anomaly_type, detection_timestamp_list, detection_value_list, df_current, df_prevision):
+    '''
+    Returns the formatted JSON string.
+
+            Parameters:
+                    name_model (string): Name of the ML model
+                    feature_name (string): Name of the feature analysed
+                    detect_time (string): Detection time <current|future>
+                    anomaly_type (string): Anomaly type <none|light|medium|severe>
+                    detection_timestamp_list (array [timestamp]): Array containing the detection timestamp
+                    detection_value_list (array [int]): Array containing the detection values <0: normal|1: anomaly>
+                    df_current (Dataframe): Dataframe containing the input data
+                    df_prevision (Dataframe): Dataframe containing the prevision data
+
+            Returns:
+                    json_data (string): formatted JSON string
+    '''
+    
     # Process dataframes to pattern
     current_data = []
     prevision_data = []
+    detection_data = []
     df_current = np.array(df_current)
     df_prevision = np.array(df_prevision)
 
+    # Formats current_data to pattern
     for df in df_current[:, :]:
         timestamp = df[1]   # Get timestamp
         value = df[2]       # Get real value
         current_data.append({'timestamp': timestamp, 'value': value})
 
+    # Formats prevision_data to pattern
     for df in df_prevision[:, :]:
         timestamp = df[1]   # Get timestamp
         value = df[4]       # Get prediction yhat value
         prevision_data.append({'timestamp': timestamp, 'value': value})
+
+    # Formats Detection to pattern
+    if len(detection_value_list) == len(detection_value_list):
+        for index, _ in enumerate(detection_timestamp_list):
+            timestamp = detection_timestamp_list[index]   # Get timestamp
+            value = detection_value_list[index]       # Get prediction yhat value
+            detection_data.append({'Timestamp': timestamp, 'Detection': value})
+    else:
+        detection_data.append({'Timestamp': 'Timestamp and Detection value array size mismatch', 'Detection': 'Timestamp and Detection value array size mismatch'})
+
 
     # Define the JSON header and properties
     data = {
@@ -76,10 +130,7 @@ def generate_json_future_anomaly(name_model, feature_name, detect_time, anomaly_
                     "Feature_name": feature_name,
                     "Detect_time": detect_time,
                     "Anomaly_type": anomaly_type,
-                    "Detection": {
-                        "Timestamp": detection_timestamp,
-                        "Detection": detection
-                    },
+                    "Detection": detection_data
                 },
             },
         ],
@@ -100,9 +151,15 @@ if __name__ == '__main__':
     feature_name = 'Temperature.InletTemperature'
     df_true = pd.read_csv('/media/antonio/AllData/Workspace/git/general/ufam/Predictive_Maintenance_free_dataset/src/utils/df_train.csv')
     df_pred = pd.read_csv('/media/antonio/AllData/Workspace/git/general/ufam/Predictive_Maintenance_free_dataset/src/utils/df_pred.csv')
-    detection_timestamp = df_true['ds'][500]        # Choose timestamp for test
-    json_data_current = generate_json_current_anomaly(name_model, feature_name, 'current', 'severe', detection_timestamp, 1, df_true)
-    json_data_future = generate_json_future_anomaly(name_model, feature_name, 'future', 'severe', detection_timestamp, 1, df_true, df_pred)
+    
+    # Test generate json function
+    detection_timestamps = df_true['ds']
+    detection_values = np.zeros(shape=detection_timestamps.size)
+    json_data_current = generate_json_current_anomaly(name_model, feature_name, 'current', 'severe', detection_timestamps, detection_values, df_true)
+
+    detection_timestamps = df_pred['ds']
+    detection_values = np.zeros(shape=detection_timestamps.size)
+    json_data_future = generate_json_future_anomaly(name_model, feature_name, 'future', 'severe', detection_timestamps, detection_values, df_true, df_pred)
 
     # Save JSON file
     with open('json_data_current.json', 'w') as f:
