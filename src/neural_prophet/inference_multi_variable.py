@@ -38,7 +38,9 @@ def mono_variable_execute(model, feature, **configs):
 
     machine = "compressor"
 
-    df = op.get_historized_values(machine, feature, start_date, end_date)
+    # df = op.get_historized_values(machine, feature, start_date, end_date)
+    #df de teste rapido
+    df = pd.DataFrame({configs["select_feature"]:  [12, 13], configs["time"]: [start_date, end_date]})
     # save_fig_forecast = SaveFigForecast()
 
     configs["select_feature"] = feature
