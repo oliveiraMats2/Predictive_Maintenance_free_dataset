@@ -86,11 +86,11 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    features = ["InletPressure"]
-                #, "OAVelocity_x"
-                # , "InverterSpeed", "OAVelocity_x", "OAVelocity_y", "OAVelocity_z",)
-                # "OutletPressure", "OutletTemperature", "phaseA_current", "phaseB_current", "phaseC_current",
-                # "phaseA_voltage", "phaseB_voltage", "phaseC_voltage"]
+    features = ["InletPressure"
+                , "OAVelocity_x"
+                , "InverterSpeed", "OAVelocity_x", "OAVelocity_y", "OAVelocity_z",
+                "OutletPressure", "OutletTemperature", "phaseA_current", "phaseB_current", "phaseC_current",
+                "phaseA_voltage", "phaseB_voltage", "phaseC_voltage"]
 
     dict_multi_variate_models = {}
     result_multi_variate_models = {}
@@ -128,10 +128,10 @@ if __name__ == "__main__":
 
         json_data_future = generate_json_future_anomaly(**dict_details_json)
 
-        with open('json_data_future.json', 'w') as f:
+        with open(f'json_data_future_{feature}.json', 'w') as f:
             json.dump(json_data_future, f)
 
-        with open("json_data_future.json") as r:
+        with open(f"json_data_future_{feature}.json") as r:
             json_data = json.load(r)
 
         # Define the IP address and port of the server

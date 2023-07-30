@@ -8,3 +8,4 @@ neuralprophet
 opcua
 scikit-learn
 scipy
+asyncua

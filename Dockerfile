@@ -1,4 +1,4 @@
-FROM ubuntu:20.04
+FROM oliveiramats/micro_service_math
 
 LABEL maintainer="Mateus Oliveira da Silva <oliveira.mats.oo@gmail.com>"
 ENV TZ=America/Sao_Paulo
@@ -6,47 +6,22 @@ ENV TZ=America/Sao_Paulo
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 RUN apt-get update && apt-get install -y \
-    zip \
-    python3-pip \
-    libxml2-dev \
-    libxmlsec1-dev \
-    python3-dev \
-    sox \
-    ffmpeg \
-    libcairo2 \
-    libcairo2-dev \
-    git \
-    g++ \
-    python \
-    libeigen3-dev \
-    zlib1g-dev \
-    libgl1-mesa-dev \
-    qt5-qmake \
-    qtbase5-dev \
-    libqt5svg5-dev \
-    curl  # Adiciona o pacote 'curl' para instalar o Miniconda
-
-# Instala o Miniconda
-RUN curl -LO https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh
-RUN bash Miniconda3-latest-Linux-x86_64.sh -b -p /opt/miniconda
-RUN rm Miniconda3-latest-Linux-x86_64.sh
-
-# Adiciona o Miniconda ao PATH
-ENV PATH=/opt/miniconda/bin:$PATH
-
-# Cria o ambiente 'wilec' com o Python 3.9
-RUN conda create -n wilec python=3.9 -y
+    cron \
+    curl
 
 # Ativa o ambiente 'wilec'
-SHELL ["conda", "run", "-n", "wilec", "/bin/bash", "-c"]
+RUN source activate wilec
 
-
-
-# Clone o repositório
-WORKDIR /app
-RUN git clone https://github.com/oliveiraMats2/Predictive_Maintenance_free_dataset.git
 WORKDIR /app/Predictive_Maintenance_free_dataset
 RUN git checkout inference
-RUN pip install -r requirements.txt
+
+# Rode o comando: git pull --rebase
+RUN git pull --rebase
+
+# Rode o comando: pip install asyncua.
+RUN pip install asyncua
+
+# Instale o crontab e configure para rodar a cada 1 minuto
+RUN echo '* * * * * root conda run -n wilec python3 src/neural_prophet/inference_multi_variable.py src/neural_prophet/configs/inference_multi_variate.yaml' >> /etc/crontab
 
 EXPOSE 5300
