@@ -44,7 +44,7 @@ collect_data_opcua:
 select_feature: None
 
 prediction_for_future:
-  end: "2023-07-22"
+  end: "2023-07-26"
 
 eliminate_range_outliers:
   apply: False

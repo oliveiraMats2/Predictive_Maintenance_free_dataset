@@ -40,10 +40,9 @@ def mono_variable_execute(model, feature, **configs):
 
     # df = op.get_historized_values(machine, feature, start_date, end_date)
     #df de teste rapido
-    df = pd.DataFrame({configs["select_feature"]:  [12, 13], configs["time"]: [start_date, end_date]})
-    # save_fig_forecast = SaveFigForecast()
-
     configs["select_feature"] = feature
+    df = pd.DataFrame({feature:  [12, 13], configs["time"]: [start_date, end_date]})
+    # save_fig_forecast = SaveFigForecast()
 
     adjust_dataframe_for_train = AdjustDataFrameForTrain(df, **configs)
 
@@ -62,7 +61,7 @@ def mono_variable_execute(model, feature, **configs):
     df_test["y"] = 0
 
     df_test = GenerateTimestamp.generate_timestamps_delimiter(start=df["Time"].tolist()[-1],
-                                                              end=configs["prediction_for_future"]["end"])
+                                                                   end=configs["prediction_for_future"]["end"])
 
     df_eixo_time = df_test
 
@@ -89,10 +88,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     features = ["InletPressure"
-                , "OAVelocity_x"
-                , "InverterSpeed", "OAVelocity_x", "OAVelocity_y", "OAVelocity_z",
-                "OutletPressure", "OutletTemperature", "phaseA_current", "phaseB_current", "phaseC_current",
-                "phaseA_voltage", "phaseB_voltage", "phaseC_voltage"]
+                , "OAVelocity_x"]
 
     dict_multi_variate_models = {}
     result_multi_variate_models = {}
@@ -102,7 +98,8 @@ if __name__ == "__main__":
     for idx, feature in enumerate(features):
         dict_multi_variate_models[feature] = TrainNeuralProphet(**configs["parameters_model"])
 
-        dict_multi_variate_models[feature].load(f'src/neural_prophet/weighted_history/{configs["name"]}_{feature}.np')
+        # dict_multi_variate_models[feature].load(f'src/neural_prophet/weighted_history/{configs["name"]}_{feature}.np')
+        dict_multi_variate_models[feature].load(f'weighted_history/{configs["name"]}_{feature}.np')
 
     with tqdm.trange(len(features), desc='features') as progress_bar:
         for idx, feature in zip(progress_bar, features):
