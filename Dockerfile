@@ -9,8 +9,7 @@ RUN apt-get update && apt-get install -y \
     cron \
     curl
 
-# Ativa o ambiente 'wilec'
-RUN source activate wilec
+RUN conda init bash
 
 WORKDIR /app/Predictive_Maintenance_free_dataset
 RUN git checkout inference
@@ -20,6 +19,8 @@ RUN git pull --rebase
 
 # Rode o comando: pip install asyncua.
 RUN pip install asyncua
+
+RUN conda run -n wilec /bin/bash -c conda activate wilec
 
 # Instale o crontab e configure para rodar a cada 1 minuto
 RUN echo '* * * * * root conda run -n wilec python3 src/neural_prophet/inference_multi_variable.py src/neural_prophet/configs/inference_multi_variate.yaml' >> /etc/crontab
