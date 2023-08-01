@@ -39,6 +39,7 @@ def mono_variable_execute(model, feature, **configs):
     machine = "compressor"
 
     # df = op.get_historized_values(machine, feature, start_date, end_date)
+
     #df de teste rapido
     configs["select_feature"] = feature
     df = pd.DataFrame({feature:  [12, 13], configs["time"]: [start_date, end_date]})
@@ -77,8 +78,7 @@ def mono_variable_execute(model, feature, **configs):
     return adjust_dataframe_for_train.df_, ds_test, y_hat
 
 
-if __name__ == "__main__":
-
+def multivariate_main():
     parser = argparse.ArgumentParser(description="neuralProphet main WileC")
 
     parser.add_argument(
@@ -87,8 +87,9 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    features = ["InletPressure"
-                , "OAVelocity_x"]
+    features = ["InletPressure"]#, "InverterSpeed", "OAVelocity_x", "OAVelocity_y", "OAVelocity_z",
+    #                "OutletPressure", "OutletTemperature", "phaseA_current", "phaseB_current", "phaseC_current",
+    #                "phaseA_Voltage", "phaseB_Voltage", "phaseC_Voltage"]
 
     dict_multi_variate_models = {}
     result_multi_variate_models = {}
@@ -98,12 +99,17 @@ if __name__ == "__main__":
     for idx, feature in enumerate(features):
         dict_multi_variate_models[feature] = TrainNeuralProphet(**configs["parameters_model"])
 
-        dict_multi_variate_models[feature].load(f'src/neural_prophet/weighted_history/{configs["name"]}_{feature}.np')
-        # dict_multi_variate_models[feature].load(f'weighted_history/{configs["name"]}_{feature}.np')
+        # dict_multi_variate_models[feature].load(f'src/neural_prophet/weighted_history/{configs["name"]}_{feature}.np')
+        dict_multi_variate_models[feature].load(f'weighted_history/{configs["name"]}_{feature}.np')
 
     with tqdm.trange(len(features), desc='features') as progress_bar:
         for idx, feature in zip(progress_bar, features):
-            result_multi_variate_models[feature] = mono_variable_execute(dict_multi_variate_models[feature], feature, **configs)
+
+            try:
+                result_multi_variate_models[feature] = mono_variable_execute(dict_multi_variate_models[feature], feature, **configs)
+            except:
+                print("consulta retornou vazia")
+
             progress_bar.set_postfix(
                 desc=f"Prevision - [{feature}]"
             )
@@ -124,7 +130,7 @@ if __name__ == "__main__":
             "df_prevision": transform_result_df_prevision(ds, result)
 
         }
-
+        return
         json_data_future = generate_json_future_anomaly(**dict_details_json)
 
         with open(f'json_data_future_{feature}.json', 'w') as f:

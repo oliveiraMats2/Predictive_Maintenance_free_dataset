@@ -5,3 +5,4 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: wilec_ml
+    command: bash -c "conda activate wilec"
