@@ -1,8 +1,11 @@
 version: '3'
+
 services:
-  container_deploy_wilec_ml:
+  microservice:
+
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: wilec_ml
-    command: bash -c "conda activate wilec"
+    container_name: wilec_ml_service
+    command: python3 src/neural_prophet/cron_execute_model.py src/neural_prophet/configs/inference_multi_variate.yaml
+    # conda run -n wilec python3 src/neural_prophet/cron_execute_model.py src/neural_prophet/configs/inference_multi_variate.yaml
