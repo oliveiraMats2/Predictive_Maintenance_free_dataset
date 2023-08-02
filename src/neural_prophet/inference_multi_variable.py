@@ -130,7 +130,7 @@ def multivariate_main():
             "df_prevision": transform_result_df_prevision(ds, result)
 
         }
-        return
+
         json_data_future = generate_json_future_anomaly(**dict_details_json)
 
         with open(f'json_data_future_{feature}.json', 'w') as f:
