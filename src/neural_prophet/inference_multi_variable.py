@@ -92,7 +92,7 @@ def multivariate_main(init_data):
 
     features = ["InletPressure", "InverterSpeed", "OAVelocity_x", "OAVelocity_y", "OAVelocity_z",
                     "OutletPressure", "OutletTemperature", "phaseA_current", "phaseB_current", "phaseC_current",
-                    "phaseA_Voltage", "phaseB_Voltage", "phaseC_Voltage"]
+                    "phaseA_voltage", "phaseB_voltage", "phaseC_voltage"]
 
     dict_multi_variate_models = {}
     result_multi_variate_models = {}
