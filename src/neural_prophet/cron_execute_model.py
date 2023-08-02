@@ -49,6 +49,6 @@ if __name__ == "__main__":
     multivariate_main()
 
     while True:
-        now_incremented = scheduler_task.increment_actual_data(now_, dias=1, mins=0)
+        now_ = scheduler_task.increment_actual_data(now_, dias=0, mins=1)
 
-        scheduler_task.call_scheduler(now_incremented)
+        scheduler_task.call_scheduler(now_)
