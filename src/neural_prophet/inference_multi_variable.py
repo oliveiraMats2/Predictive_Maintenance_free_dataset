@@ -32,17 +32,19 @@ def transform_result_df_prevision(ds, vet_future):
 
 
 @timeit
-def mono_variable_execute(model, feature, **configs):
-    start_date = datetime(2023, 1, 1, 0, 0, 0)
-    end_date = datetime(2023, 7, 24, 23, 59, 59)
+def mono_variable_execute(init_data, model, feature, **configs):
+    start_date = init_data
+    end_date = start_date + datetime.timedelta(days=1, minutes=0)
 
     machine = "compressor"
 
-    # df = op.get_historized_values(machine, feature, start_date, end_date)
+    df = op.get_historized_values(machine, feature, start_date, end_date)
 
-    #df de teste rapido
+    if df is pd.DataFrame():
+        df = pd.DataFrame({feature: [12, 13], configs["time"]: [start_date, end_date]})
+
     configs["select_feature"] = feature
-    df = pd.DataFrame({feature:  [12, 13], configs["time"]: [start_date, end_date]})
+    #
     # save_fig_forecast = SaveFigForecast()
 
     adjust_dataframe_for_train = AdjustDataFrameForTrain(df, **configs)
@@ -61,8 +63,8 @@ def mono_variable_execute(model, feature, **configs):
 
     df_test["y"] = 0
 
-    df_test = GenerateTimestamp.generate_timestamps_delimiter(start=df["Time"].tolist()[-1],
-                                                                   end=configs["prediction_for_future"]["end"])
+    df_test = GenerateTimestamp.generate_timestamps_delimiter(start=start_date,
+                                                              end=end_date)
 
     df_eixo_time = df_test
 
@@ -87,7 +89,7 @@ def multivariate_main():
 
     args = parser.parse_args()
 
-    features = ["InletPressure"]#, "InverterSpeed", "OAVelocity_x", "OAVelocity_y", "OAVelocity_z",
+    features = ["InletPressure"]  # , "InverterSpeed", "OAVelocity_x", "OAVelocity_y", "OAVelocity_z",
     #                "OutletPressure", "OutletTemperature", "phaseA_current", "phaseB_current", "phaseC_current",
     #                "phaseA_Voltage", "phaseB_Voltage", "phaseC_Voltage"]
 
@@ -106,7 +108,9 @@ def multivariate_main():
         for idx, feature in zip(progress_bar, features):
 
             try:
-                result_multi_variate_models[feature] = mono_variable_execute(dict_multi_variate_models[feature], feature, **configs)
+                result_multi_variate_models[feature] = mono_variable_execute(init_data,
+                                                                             dict_multi_variate_models[feature],
+                                                                             feature, **configs)
             except:
                 print("consulta retornou vazia")
 
