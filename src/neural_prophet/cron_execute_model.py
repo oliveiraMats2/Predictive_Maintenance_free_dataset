@@ -6,10 +6,10 @@ from inference_multi_variable import multivariate_main
 class SchedulerTask:
     def day_task(self):
         now = datetime.datetime.now()
-        print(f"Tarefa executada em {now}")
+        print(f"Result time execute: {now_}")
 
-    def task_exec(self):
-        multivariate_main()
+    def task_exec(self, init_data):
+        multivariate_main(init_data)
 
     def call_scheduler(self, scheduler):
 
@@ -22,8 +22,7 @@ class SchedulerTask:
             now_day = now.day
 
             if now_year == scheduler.year and now_month == scheduler.month and now_day == scheduler.day and now_hour == scheduler.hour and now_min == scheduler.minute:
-                self.task_exec()
-                print(datetime.datetime.now())
+                self.task_exec(scheduler)
                 break
 
             time.sleep(1)
@@ -46,7 +45,9 @@ if __name__ == "__main__":
 
     scheduler_task = SchedulerTask()
 
-    multivariate_main()
+    print(f"Result time execute: {now_}")
+
+    multivariate_main(now_)
 
     while True:
         now_ = scheduler_task.increment_actual_data(now_, dias=0, mins=1)

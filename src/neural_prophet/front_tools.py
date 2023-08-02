@@ -119,22 +119,22 @@ def generate_json_future_anomaly(name_model, feature_name, detect_time, anomaly_
 
     # Define the JSON header and properties
     data = {
-        "equipment_id": "648a15197e30d0e3725d9a6b",
+        "equipment_id": "64909fc47e30d0e3725d9a9a",
         "origin_field": "predictive",
         "evaluation_criticality": True,
         "properties": [
             {
-                "property": feature_name,
+                "property": f"Temperature.InletTemperature",
                 "value": 8,
                 "current_data": current_data,
                 "prevision_data": prevision_data,
-                "prevision_description": {
-                    "Name_model": name_model,
-                    "Feature_name": feature_name,
-                    "Detect_time": detect_time,
-                    "Anomaly_type": anomaly_type,
-                    "Detection": detection_data
-                },
+                # "prevision_description": {
+                #     "Name_model": name_model,
+                #     "Feature_name": feature_name,
+                #     "Detect_time": detect_time,
+                #     "Anomaly_type": anomaly_type,
+                #     "Detection": detection_data
+                # },
             },
         ],
     }

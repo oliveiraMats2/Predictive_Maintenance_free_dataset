@@ -4,6 +4,7 @@ import pandas as pd
 from datetime import datetime
 from utils.utils import read_yaml
 import argparse
+import datetime as dp
 from generate_timestamp import GenerateTimestamp
 import opcua_tools as op, requests
 from front_tools import generate_json_future_anomaly
@@ -21,7 +22,7 @@ def timeit(func):
         result = func(*args, **kwargs)
         end_time = time.perf_counter()
         total_time = end_time - start_time
-        print(f'{total_time:.4f} seconds')
+        print(f'{total_time:.4f} seconds execution microservice')
         return result
 
     return timeit_wrapper
@@ -34,13 +35,13 @@ def transform_result_df_prevision(ds, vet_future):
 @timeit
 def mono_variable_execute(init_data, model, feature, **configs):
     start_date = init_data
-    end_date = start_date + datetime.timedelta(days=1, minutes=0)
+    end_date = start_date + dp.timedelta(days=1, minutes=0)
 
     machine = "compressor"
 
     df = op.get_historized_values(machine, feature, start_date, end_date)
 
-    if df is pd.DataFrame():
+    if df.empty:
         df = pd.DataFrame({feature: [12, 13], configs["time"]: [start_date, end_date]})
 
     configs["select_feature"] = feature
@@ -80,7 +81,7 @@ def mono_variable_execute(init_data, model, feature, **configs):
     return adjust_dataframe_for_train.df_, ds_test, y_hat
 
 
-def multivariate_main():
+def multivariate_main(init_data):
     parser = argparse.ArgumentParser(description="neuralProphet main WileC")
 
     parser.add_argument(
@@ -89,9 +90,9 @@ def multivariate_main():
 
     args = parser.parse_args()
 
-    features = ["InletPressure"]  # , "InverterSpeed", "OAVelocity_x", "OAVelocity_y", "OAVelocity_z",
-    #                "OutletPressure", "OutletTemperature", "phaseA_current", "phaseB_current", "phaseC_current",
-    #                "phaseA_Voltage", "phaseB_Voltage", "phaseC_Voltage"]
+    features = ["InletPressure", "InverterSpeed", "OAVelocity_x", "OAVelocity_y", "OAVelocity_z",
+                    "OutletPressure", "OutletTemperature", "phaseA_current", "phaseB_current", "phaseC_current",
+                    "phaseA_Voltage", "phaseB_Voltage", "phaseC_Voltage"]
 
     dict_multi_variate_models = {}
     result_multi_variate_models = {}
@@ -101,18 +102,19 @@ def multivariate_main():
     for idx, feature in enumerate(features):
         dict_multi_variate_models[feature] = TrainNeuralProphet(**configs["parameters_model"])
 
-        dict_multi_variate_models[feature].load(f'src/neural_prophet/weighted_history/{configs["name"]}_{feature}.np')
-        # dict_multi_variate_models[feature].load(f'weighted_history/{configs["name"]}_{feature}.np')
+        # dict_multi_variate_models[feature].load(f'src/neural_prophet/weighted_history/{configs["name"]}_{feature}.np')
+        dict_multi_variate_models[feature].load(f'weighted_history/{configs["name"]}_{feature}.np')
 
     with tqdm.trange(len(features), desc='features') as progress_bar:
         for idx, feature in zip(progress_bar, features):
 
             try:
                 result_multi_variate_models[feature] = mono_variable_execute(init_data,
-                                                                             dict_multi_variate_models[feature],
-                                                                             feature, **configs)
+                                                                                 dict_multi_variate_models[feature],
+                                                                                 feature, **configs)
             except:
-                print("consulta retornou vazia")
+                print("========================Consulta retornou vazia========================")
+                return
 
             progress_bar.set_postfix(
                 desc=f"Prevision - [{feature}]"
