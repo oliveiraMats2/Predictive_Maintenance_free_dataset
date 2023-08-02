@@ -21,7 +21,7 @@ class SchedulerTask:
             now_month = now.month
             now_day = now.day
 
-            if now_year == scheduler.year and now_month == scheduler.month and now_day == scheduler.day and now_hour == scheduler.hour and now_min <= scheduler.minute:
+            if now_year == scheduler.year and now_month == scheduler.month and now_day == scheduler.day and now_hour == scheduler.hour and now_min == scheduler.minute:
                 self.task_exec()
                 print(datetime.datetime.now())
                 break
