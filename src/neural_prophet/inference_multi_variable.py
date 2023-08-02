@@ -102,8 +102,8 @@ def multivariate_main(init_data):
     for idx, feature in enumerate(features):
         dict_multi_variate_models[feature] = TrainNeuralProphet(**configs["parameters_model"])
 
-        # dict_multi_variate_models[feature].load(f'src/neural_prophet/weighted_history/{configs["name"]}_{feature}.np')
-        dict_multi_variate_models[feature].load(f'weighted_history/{configs["name"]}_{feature}.np')
+        dict_multi_variate_models[feature].load(f'src/neural_prophet/weighted_history/{configs["name"]}_{feature}.np')
+        # dict_multi_variate_models[feature].load(f'weighted_history/{configs["name"]}_{feature}.np')
 
     with tqdm.trange(len(features), desc='features') as progress_bar:
         for idx, feature in zip(progress_bar, features):
