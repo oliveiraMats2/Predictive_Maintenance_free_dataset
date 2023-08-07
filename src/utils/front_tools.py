@@ -2,6 +2,41 @@ import pandas as pd
 import json
 import numpy as np
 
+def feature_name_parser(old_feature_name):
+    '''
+    Returns the parsed feature name according to Front-end pattern.
+
+            Parameters:
+                    feature_name (string): Name of the old feature name
+
+            Returns:
+                    new_feature_name (string): parsed feature name according to feature name mapping
+    '''
+
+    feature_name_map = {
+        "InletPressure": "pressure.inletpressure",
+        "OutletPressure": "pressure.outletpressure",
+        "phaseA_voltage": "phasea.voltage",
+        "phaseB_voltage": "phaseb.voltage",
+        "phaseC_voltage": "phasec.voltage",
+        "phaseA_current": "phasea.current",
+        "phaseB_current": "phaseb.current",
+        "phaseC_current": "phasec.current",
+        "OAVelocity_x": "horizontalvibration.xvibrationaccelerationvelocityoa",
+        "OAVelocity_y": "verticalvibration.yvibrationaccelerationvelocityoa",
+        "OAVelocity_z": "axialvibration.zvibrationaccelerationvelocityoa",
+        "temperature": "temperature.outlettemperature"
+    }
+
+    new_feature_name = ""
+
+    if old_feature_name in feature_name_map:
+        new_feature_name = feature_name_map[old_feature_name]
+    else:
+        new_feature_name = old_feature_name
+
+    return new_feature_name
+   
 
 def generate_json_current_anomaly(name_model, feature_name, detect_time, anomaly_type, detection_timestamp_list, detection_value_list, df_current):
     '''
@@ -47,12 +82,12 @@ def generate_json_current_anomaly(name_model, feature_name, detect_time, anomaly
         "evaluation_criticality": True,
         "properties": [
             {
-                "property": feature_name,
+                "property": feature_name_parser(feature_name),
                 "value": 8,
                 "current_data": current_data,
                 "prevision_description": {
                     "Name_model": name_model,
-                    "Feature_name": feature_name,
+                    "Feature_name": feature_name_parser(feature_name),
                     "Detect_time": detect_time,
                     "Anomaly_type": anomaly_type,
                     "Detection": detection_data
@@ -121,13 +156,13 @@ def generate_json_future_anomaly(name_model, feature_name, detect_time, anomaly_
         "evaluation_criticality": True,
         "properties": [
             {
-                "property": feature_name,
+                "property": feature_name_parser(feature_name),
                 "value": 8,
                 "current_data": current_data,
                 "prevision_data": prevision_data,
                 "prevision_description": {
                     "Name_model": name_model,
-                    "Feature_name": feature_name,
+                    "Feature_name": feature_name_parser(feature_name),
                     "Detect_time": detect_time,
                     "Anomaly_type": anomaly_type,
                     "Detection": detection_data
@@ -148,7 +183,7 @@ if __name__ == '__main__':
     # Load
     # name_model, feature_name, detect_time, anomaly_type, detection_timestamp, detection, df_current, df_prevision
     name_model = 'modelo1'
-    feature_name = 'Temperature.InletTemperature'
+    feature_name = 'OAVelocity_x'
     df_true = pd.read_csv('/media/antonio/AllData/Workspace/git/general/ufam/Predictive_Maintenance_free_dataset/src/utils/df_train.csv')
     df_pred = pd.read_csv('/media/antonio/AllData/Workspace/git/general/ufam/Predictive_Maintenance_free_dataset/src/utils/df_pred.csv')
     
