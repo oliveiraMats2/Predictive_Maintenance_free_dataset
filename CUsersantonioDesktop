@@ -1,0 +1,343 @@
+    1  cd Workspace/git/EFRConnect-android/
+    2  git remote update orign --prune
+    3  git
+    4  git branch
+    5  git fetch
+    6  python
+    7  conda activate
+    8  conda init bash
+    9  python -m pip install regex
+   10  python -m pip install pyyaml
+   11  python -m pip install compiledb
+   12  cd Workspace/git/mot-sw/
+   13  make generate-compilerdb
+   14  mingw-get.exe install mingw32-make
+   15  cd Workspace/mingw/bin/
+   16  ls
+   17  mklink
+   18  cd ..
+   19  cd ..
+   20  cd git/mot-sw/
+   21  make generate-compilerdb
+   22  cd Workspace/git/
+   23  ls
+   24  cd Workspace/git
+   25  git@github.com:dong-higenis/flutter_ble_scan_example.git
+   26  git@github.com:dong-higenis/flutter_ble_scan_example.git
+   27  git clone git@github.com:dong-higenis/flutter_ble_scan_example.git
+   28  git clone https://github.com/dong-higenis/flutter_ble_scan_example.git
+   29  git clone https://github.com/dong-higenis/flutter_ble_scan_example.git
+   30  git clone https://github.com/dong-higenis/flutter_ble_scan_example.git
+   31  git clone git@github.com:dong-higenis/flutter_ble_scan_example.git
+   32  git config user.name
+   33  git config user.email
+   34  git clone git@github.com:dong-higenis/flutter_ble_scan_example.git
+   35  cat id_rsa.pub | clip
+   36  cat *.pub | clip
+   37  cat id_rsa.pub | clip
+   38  cd ~
+   39  cat id_rsa.pub | clip
+   40  cat .ssh\id_rsa.pub | clip
+   41  cat .ssh/id_rsa.pub | clip
+   42  cd Workspace/git/
+   43  git clone git@github.com:dong-higenis/flutter_ble_scan_example.git
+   44  ssh-add ~/.ssh/id_rsa
+   45  eval
+   46  eval $(ssh-agent -s)
+   47  ssh-add ~/.ssh/id_rsa
+   48  git clone git@github.com:dong-higenis/flutter_ble_scan_example.git
+   49  git clone git@github.com:dong-higenis/flutter_ble_scan_example.git
+   50  cd Workspace/git/
+   51  ls
+   52  cd mot-sw/
+   53  git reset --hard origin/master 
+   54  git pull origin master 
+   55  cd ..
+   56  git clone --recurse-submodules git@bitbucket.org:eldoradocorp/mot-sw.git
+   57  cd mot-sw/
+   58  git submodule update --init
+   59  cd Workspace/git/mot-sw
+   60  git fetch 
+   61  git reset --hard origin/master 
+   62  cd Workspace/git/mot-sw/
+   63  cd Workspace/
+   64  ls
+   65  cd git/
+   66  ls
+   67  config --list
+   68  git config --list
+   69  git config --global user.name "Antonio Pereira"
+   70  git config --global user.email "antonio.tech@yahoo.com"
+   71  git config --list
+   72  git clone git@rd-git-i40.aoc.com.br:wilec/ufam/sensores-e-aquisicao.git
+   73  git clone git@rd-git-i40.aoc.com.br:wilec/ufam/sensores-e-aquisicao.git
+   74  cd Workspace/git/
+   75  http://rd-git-i40.aoc.com.br:9088/nimrod/firmware/nimrod_sensor_firmware.git
+   76  cls
+   77  clear
+   78  git clone http://rd-git-i40.aoc.com.br:9088/wilec/ufam/sensores-e-aquisicao.git
+   79  git clone http://rd-git-i40.aoc.com.br:9088/wilec/ufam/sensores-e-aquisicao.git
+   80  git clone http://rd-git-i40.aoc.com.br:9088/wilec/ufam/sensores-e-aquisicao.git
+   81  git clone http://rd-git-i40.aoc.com.br:9088/wilec/ufam/asset-administration-shell.git
+   82  git clone http://rd-git-i40.aoc.com.br:9088/wilec/ufam/machine-learning.git
+   83  cd machine-learning/
+   84  touch README.md
+   85  ls
+   86  git add README.md 
+   87  git commit -m "add README"
+   88  git push -u origin master
+   89  cd ..
+   90  cd asset-administration-shell/
+   91  touch README.md
+   92  git commit -m "add README"
+   93  la
+   94  ls
+   95  git add README.md 
+   96  git commit -m "add README"
+   97  git push -u origin master
+   98  cd ..
+   99  cd sensores-e-aquisicao/
+  100  touch README.md
+  101  git add README.md 
+  102  git commit -m "add README"
+  103  git push -u origin master
+  104  cd Workspace/git/eld
+  105  cd ..
+  106  cd ..
+  107  cd ..
+  108  nano
+  109  nano .gitconfig 
+  110  cp .gitconfig .gitconfig_bkp
+  111  nano .gitconfig 
+  112  nano .gitconfig-eld
+  113  nano .gitconfig 
+  114  nano .gitconfig-eld
+  115  nano .gitconfig-eld
+  116  nano .gitconfig_bkp 
+  117  cp .gitconfig_bkp .gitconfig-general
+  118  nano .gitconfig-general 
+  119  cd Workspace/git/eld/
+  120  mkdir test
+  121  cd test/
+  122  git init
+  123  nano ~/.gitconfig-eld 
+  124  git init
+  125  git config -l
+  126  cd ..
+  127  cd ..
+  128  cd general/
+  129  git clone http://rd-git-i40.aoc.com.br:9088/wilec/ufam/documentation.git
+  130  cd documentation/
+  131  touch README.md
+  132  git add README.md 
+  133  git commit -m "add README"
+  134  git push -u origin master
+  135  cd Workspace/git/eld/exg-128-veri-ecp5/
+  136  git config -l
+  137  git commit -m "BIOS-357 First Hands-on commit"
+  138  git push
+  139  cd Workspace/git/eld/
+  140  git clone git@bitbucket.org:eldoradocorp/exg-128-sw-aduc.git
+  141  cd exg-128-sw-aduc/
+  142  git branch BIOS-366-hands-on
+  143  git checkout BIOS-366-hands-on 
+  144  ls
+  145  cd ..
+  146  git clone git@bitbucket.org:eldoradocorp/exg-128-sw-aduc.git
+  147  git clone git@bitbucket.org:eldoradocorp/exg-128-sw-aduc.git
+  148  cd exg-128-sw-aduc/
+  149  git checkout BIOS-366-hands-on 
+  150  ls
+  151  cd Workspace/git/eld/
+  152  git clone git@bitbucket.org:eldoradocorp/exg-128-sw-aduc.git
+  153  cd exg-128-sw-aduc/
+  154  git checkout BIOS-366-hands-on 
+  155  ssh pi@192.168.1.23
+  156  ls
+  157  cd Downloads/
+  158  ls
+  159  scp sharedevents.json pi@192.168.1.23:/home/pi
+  160  scp pylon_6.2.0.21487_armhf_setup.tar.gz pi@192.168.1.23:/home/pi
+  161  ssh pi@192.168.1.23
+  162  conda activate pyLearn
+  163  pip install wandb
+  164  wandb.exe login
+  165  wandb login f7d48e8610b09904c62622e139337e5872225906
+  166  pip install pydot
+  167  pip install neptune
+  168  pip install neptune-client
+  169  pip uninstall neptune-client
+  170  conda activate pyLearn
+  171  pip install neptune-client
+  172  conda activate pyLearn
+  173  pip install neptune-sklearn
+  174  winget
+  175  ipconfig
+  176  cd Workspace/python/pyAcqParkinson/
+  177  scp acquisition_v2.py pi@192.168.1.22:/home/pi/
+  178  scp -r workspace1/ pi@192.168.1.22:/home/pi/
+  179  scp -r workspace1/ pi@192.168.1.22:/home/pi/
+  180  ipconfig
+  181  ipconfig
+  182  ssh teju@192.168.3.100
+  183  ssh teju@192.168.3.100
+  184  ssh teju@192.168.3.100
+  185  ssh teju@192.168.3.100
+  186  ssh teju@192.168.3.100
+  187  ssh teju@192.168.3.100
+  188  ssh teju@192.168.3.100
+  189  ssh teju@192.168.3.100
+  190  IPCONFIG
+  191  IPCONFIG
+  192  ipconfig
+  193  ipconfig
+  194  ls
+  195  ls
+  196  copy > ~/.bashrc
+  197  cp > ~/.bashrc
+  198  code .bash_profile 
+  199  notepad .bash_profile 
+  200  ssh pi@192.168.1.24
+  201  ccd Workspace/python/pyViewTest/
+  202  cd Workspace/python/pyViewTest/
+  203  scp *.py pi@192.168.1.24:/home/pi/workspace/python
+  204  ssh pi@192.168.1.24
+  205  python socket_functions.py socket_receive()
+  206  python socket_functions.py socket_receive
+  207  python
+  208  git config --global core.preloadIndex true
+  209  git config --global core.fscache true
+  210  git config --global gc.auto 256
+  211  cd Workspace/python/pyViewTest/
+  212  python]
+  213  python
+  214  git config --global core.preloadIndex true
+  215  git config --global core.fscache true
+  216  git config --global gc.auto 256
+  217  conda activate pyVision
+  218  pip -version
+  219  pip --version
+  220  pip install pypylon
+  221  cd Workspace/python/pyViewTest/
+  222  scp *.py pi@192.168.1.24:/home/pi/workspace/python
+  223  ssh pi@192.168.1.24
+  224  ssh pi@192.168.1.24
+  225  ipxonfig
+  226  ipconfig
+  227  ping 192.168.56.1
+  228  ping 192.168.56.2
+  229  ping 192.168.56.3
+  230  arp -a
+  231  ping 192.168.56.155
+  232  ping 192.168.56.255
+  233  ping 192.168.56.2
+  234  ipconfig
+  235  ping 169.254.64.144
+  236  arp -a
+  237  ping 169.254.255.255
+  238  arp -a
+  239  arp -a
+  240  arp -a
+  241  ssh pi@rPI3
+  242  scp Downloads/CH341SER-master.zip pi@rPI3:/home/pi/
+  243  ssh pi@rPI3
+  244  ssh pi@rPI3
+  245  ssh pi@rPI3
+  246  ssh pi@rPI3
+  247  ssh pi@rPI3
+  248  ssh pi@rPI3
+  249  ssh pi@rPI3
+  250  ssh pi@rPI3
+  251  ssh pi@rPI3
+  252  ssh pi@piSOCKET
+  253  ssh pi@rpiSocket
+  254  ssh pi@192.168.1.24
+  255  cd Workspace/python/pyViewTest/
+  256  scp *.py pi@192.168.1.24:/home/pi/
+  257  ssh pi@192.168.1.24
+  258  cd Workspace/python/pyViewTest/
+  259  scp *.py pi@192.168.1.24:/home/pi/workspace/python
+  260  ssh pi@192.168.1.24
+  261  ssh pi@192.168.1.24
+  262  cd Workspace/python/pyViewTest/
+  263  scp *.py pi@192.168.1.24:/home/pi/workspace/python
+  264  ssh pi@192.168.1.24
+  265  cd Workspace/python/pyViewTest/
+  266  scp *.py pi@192.168.1.24:/home/pi/workspace/python
+  267  scp *.py pi@192.168.1.24:/home/pi/workspace/python
+  268  scp *.py pi@192.168.1.24:/home/pi/workspace/python
+  269  scp *.py pi@192.168.1.24:/home/pi/workspace/python
+  270  scp *.py pi@192.168.1.24:/home/pi/workspace/python
+  271  scp *.py pi@192.168.1.24:/home/pi/workspace/python
+  272  scp *.py pi@192.168.1.24:/home/pi/workspace/python
+  273  scp *.py pi@192.168.1.24:/home/pi/workspace/python
+  274  scp *.py pi@192.168.1.24:/home/pi/workspace/python
+  275  scp *.py pi@192.168.1.24:/home/pi/workspace/python
+  276  scp *.py pi@192.168.1.24:/home/pi/workspace/python
+  277  ssh pi@192.168.1.24
+  278  clear
+  279  ssh pi@192.168.1.24
+  280  cd Workspace/python/pyViewTest/
+  281  scp *.py pi@192.168.1.24:/home/pi/workspace/python
+  282  config --list
+  283  git config --list
+  284  conda activate pyVision
+  285  pip install netifaces
+  286  ipconfig
+  287  conda activa pyVision
+  288  conda activate pyVision
+  289  pip install netifaces
+  290  ifconfig
+  291  ipconfig
+  292  cat .bashrc 
+  293  alias 
+  294  ls
+  295  ls 
+  296  cd Workspace/hacks/
+  297  ls
+  298  ./TimeAdj.bat
+  299  cd ~
+  300  cd ~/Workspace/hacks/ && ./TimeAdj.bat
+  301  alias 
+  302  adj-time 
+  303  winget update
+  304  winget upgrade
+  305  winget help
+  306  winget upgrade
+  307  winget upgrade --all
+  308  winget upgrade
+  309  winget upgrade --all
+  310  winget upgrade
+  311  cd Documents/Projetos/
+  312  mklink --h
+  313  mklink /?
+  314  mklink.exe /?
+  315  cd Workspace/git/eld/mot-app/
+  316  fullter -h
+  317  fluttter -h
+  318  echo $PATH
+  319  dir
+  320  flutter
+  321  mkdir
+  322  mklink
+  323  mklink
+  324  nano .bashrc 
+  325  git config --get core.symlinks
+  326  ipconfig
+  327  conda acivate pyLearn
+  328  conda activate pyLearn
+  329  java --version
+  330  java --version
+  331  exit
+  332  adj_time 
+  333  exit
+  334  go_work 
+  335  cd git/general/ufam/
+  336  ls
+  337  git clone https://github.com/oliveiraMats2/Predictive_Maintenance_free_dataset
+  338  cd Predictive_Maintenance_free_dataset/
+  339  dvc status
+  340  conda activate pyAuto
+  341  dvc status
+  342  history | grep dvc
+  343  history > C:\Users\antonio\Desktop
