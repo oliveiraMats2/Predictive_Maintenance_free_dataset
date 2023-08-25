@@ -9,7 +9,7 @@ parameters_model:
   weekly_seasonality: "auto"
   daily_seasonality: "auto"
   epochs: 500
-  accelerator: "cuda"
+  accelerator: "cpu"
   batch_size: 20048
 
 eliminate_range_outliers:
