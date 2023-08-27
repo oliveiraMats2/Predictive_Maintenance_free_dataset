@@ -9,7 +9,7 @@ parameters_model:
   weekly_seasonality: "auto"
   daily_seasonality: "auto"
   epochs: 1000
-  accelerator: "cpu"
+  # accelerator: None
   batch_size: 2048
 
 name: "neural_prophet" # será adicionado no futuro o name

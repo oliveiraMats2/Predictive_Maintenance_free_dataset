@@ -90,9 +90,7 @@ def multivariate_main(init_data):
 
     args = parser.parse_args()
 
-    features = ["InletPressure", "InverterSpeed", "OAVelocity_x", "OAVelocity_y", "OAVelocity_z",
-                    "OutletPressure", "OutletTemperature", "phaseA_current", "phaseB_current", "phaseC_current",
-                    "phaseA_voltage", "phaseB_voltage", "phaseC_voltage"]
+    features = ["InletPressure"]
 
     dict_multi_variate_models = {}
     result_multi_variate_models = {}
