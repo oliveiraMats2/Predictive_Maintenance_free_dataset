@@ -19,6 +19,6 @@ class TrainNeuralProphet:
 
     def load(self, name: str = "temperature_neural_prophet.np") -> None:
         # self.neural_prophet = load(name)
-        self.neural_prophet = torch.load(name)
+        self.neural_prophet = torch.load(name, map_location=torch.device('cpu'))
         self.neural_prophet.accelerator = None
         self.neural_prophet.restore_trainer()
