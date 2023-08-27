@@ -1,7 +1,7 @@
 from neuralprophet import NeuralProphet
 from neuralprophet import save, load
 import pickle
-
+import torch
 
 class TrainNeuralProphet:
     __instance = None
@@ -18,5 +18,7 @@ class TrainNeuralProphet:
         save(self.neural_prophet, name)
 
     def load(self, name: str = "temperature_neural_prophet.np") -> None:
-        self.neural_prophet = load(name)
+        # self.neural_prophet = load(name)
+        self.neural_prophet = torch.load(name)
         self.neural_prophet.accelerator = None
+        self.neural_prophet.restore_trainer()
