@@ -1,7 +1,7 @@
 import pandas as pd
 import json
 import numpy as np
-
+import os
 
 def generate_json_current_anomaly(
     name_model,
@@ -27,6 +27,9 @@ def generate_json_current_anomaly(
             Returns:
                     json_data (string): formatted JSON string
     """
+    # Constants
+    OUTPUT_FOLDER_NAME = 'output/'
+    SAVE_JSON_FILE = True
 
     # Process dataframes to pattern
     current_data = []
@@ -40,7 +43,7 @@ def generate_json_current_anomaly(
         current_data.append({"timestamp": timestamp, "value": value})
 
     # Formats detection to pattern
-    if len(detection_value_list) == len(detection_value_list):
+    if len(detection_value_list) == len(detection_timestamp_list):
         for index, _ in enumerate(detection_timestamp_list):
             timestamp = detection_timestamp_list[index]  # Get timestamp
             value = detection_value_list[index]  # Get prediction yhat value
@@ -75,7 +78,21 @@ def generate_json_current_anomaly(
     }
 
     # Convert the JSON data to a string
-    json_data = json.dumps(eval(data))
+    json_data = json.dumps(data)
+
+    # Save JSON file
+    if SAVE_JSON_FILE:
+        # Check if folder exists, then create it if needed
+        if not(os.path.exists(os.path.join(OUTPUT_FOLDER_NAME))):
+            os.mkdir(os.path.join(OUTPUT_FOLDER_NAME))
+
+        first_timestamp = str(df_current[:, :][0][0])
+        first_timestamp = "".join(ch for ch in first_timestamp if ch.isalnum())
+        filename = f"{feature_name}_{first_timestamp}.json"
+        filename = os.path.join(OUTPUT_FOLDER_NAME, filename)
+
+        with open(filename, "w") as f:
+            json.dump(json_data, f)
 
     return json_data
 
@@ -106,6 +123,9 @@ def generate_json_future_anomaly(
             Returns:
                     json_data (string): formatted JSON string
     """
+    # Constants
+    OUTPUT_FOLDER_NAME = 'output/'
+    SAVE_JSON_FILE = True
 
     # Process dataframes to pattern
     current_data = []
@@ -127,7 +147,7 @@ def generate_json_future_anomaly(
         prevision_data.append({"timestamp": timestamp, "value": value})
 
     # Formats detection to pattern
-    if len(detection_value_list) == len(detection_value_list):
+    if len(detection_value_list) == len(detection_timestamp_list):
         for index, _ in enumerate(detection_timestamp_list):
             timestamp = str(detection_timestamp_list[index])  # Get timestamp
             value = detection_value_list[index]  # Get prediction yhat value
@@ -163,7 +183,21 @@ def generate_json_future_anomaly(
     }
 
     # Convert the JSON data to a string
-    json_data = json.dumps(eval(data))
+    json_data = json.dumps(data)
+
+    # Save JSON file
+    if SAVE_JSON_FILE:
+        # Check if folder exists, then create it if needed
+        if not(os.path.exists(os.path.join(OUTPUT_FOLDER_NAME))):
+            os.mkdir(os.path.join(OUTPUT_FOLDER_NAME))
+
+        first_timestamp = str(df_prevision[:, :][0][0])
+        first_timestamp = "".join(ch for ch in first_timestamp if ch.isalnum())
+        filename = f"{feature_name}_{first_timestamp}.json"
+        filename = os.path.join(OUTPUT_FOLDER_NAME, filename)
+
+        with open(filename, "w") as f:
+            json.dump(json_data, f)
 
     return json_data
 
