@@ -16,9 +16,11 @@ RUN git checkout inference
 
 RUN git pull --rebase
 
+RUN conda run -n wilec /bin/bash -c conda activate wilec
+
 RUN pip install asyncua
 
-RUN conda run -n wilec /bin/bash -c conda activate wilec
+RUN pip install netifaces
 
 # RUN echo '* * * * * conda run -n wilec python3 src/neural_prophet/inference_multi_variable.py src/neural_prophet/configs/inference_multi_variate.yaml' >> log.txt 2>&1
 
