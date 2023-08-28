@@ -113,7 +113,7 @@ def generate_json_current_anomaly(
     }
 
     # Convert the JSON data to a string
-    json_data = json.dumps(data)
+    json_data = json.dumps(eval(data))
 
     # Save JSON file
     if SAVE_JSON_FILE:
@@ -217,7 +217,7 @@ def generate_json_future_anomaly(
     }
 
     # Convert the JSON data to a string
-    json_data = json.dumps(data)
+    json_data = json.dumps(eval(data))
 
     # Save JSON file
     if SAVE_JSON_FILE:

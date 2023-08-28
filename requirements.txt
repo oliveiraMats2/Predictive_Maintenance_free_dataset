@@ -9,3 +9,4 @@ opcua
 scikit-learn
 scipy
 asyncua
+netifaces
