@@ -3,6 +3,41 @@ import json
 import numpy as np
 import os
 
+def feature_name_parser(old_feature_name):
+    """
+    Returns the parsed feature name according to Front-end pattern.
+
+            Parameters:
+                    feature_name (string): Name of the old feature name
+
+            Returns:
+                    new_feature_name (string): parsed feature name according to feature name mapping
+    """
+
+    feature_name_map = {
+        "InletPressure": "pressure.inletpressure",
+        "OutletPressure": "pressure.outletpressure",
+        "phaseA_voltage": "phasea.voltage",
+        "phaseB_voltage": "phaseb.voltage",
+        "phaseC_voltage": "phasec.voltage",
+        "phaseA_current": "phasea.current",
+        "phaseB_current": "phaseb.current",
+        "phaseC_current": "phasec.current",
+        "OAVelocity_x": "horizontalvibration.xvibrationaccelerationvelocityoa",
+        "OAVelocity_y": "verticalvibration.yvibrationaccelerationvelocityoa",
+        "OAVelocity_z": "axialvibration.zvibrationaccelerationvelocityoa",
+        "temperature": "temperature.outlettemperature",
+    }
+
+    new_feature_name = ""
+
+    if old_feature_name in feature_name_map:
+        new_feature_name = feature_name_map[old_feature_name]
+    else:
+        new_feature_name = old_feature_name
+
+    return new_feature_name
+
 def generate_json_current_anomaly(
     name_model,
     feature_name,
@@ -63,12 +98,12 @@ def generate_json_current_anomaly(
         "evaluation_criticality": True,
         "properties": [
             {
-                "property": feature_name,
+                "property": feature_name_parser(feature_name),
                 # "value": 8,
                 "current_data": current_data,
                 "prevision_description": {
                     "name_model": name_model,
-                    "feature_name": feature_name,
+                    "feature_name": feature_name_parser(feature_name),
                     "detect_time": detect_time,
                     "anomaly_type": anomaly_type,
                     "detection": detection_data,
@@ -167,13 +202,12 @@ def generate_json_future_anomaly(
         "evaluation_criticality": True,
         "properties": [
             {
-                "property": feature_name,  # f"Temperature.InletTemperature",
-                # "value": 8,
+                "property": feature_name_parser(feature_name),
                 "current_data": current_data,
                 "prevision_data": prevision_data,
                 "prevision_description": {
                     "name_model": name_model,
-                    "feature_name": feature_name,
+                    "feature_name": feature_name_parser(feature_name),
                     "detect_time": detect_time,
                     "anomaly_type": anomaly_type,
                     "detection": detection_data
