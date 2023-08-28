@@ -75,7 +75,7 @@ def generate_json_current_anomaly(
     }
 
     # Convert the JSON data to a string
-    json_data = json.dumps(data)
+    json_data = json.dumps(eval(data))
 
     return json_data
 
@@ -151,19 +151,19 @@ def generate_json_future_anomaly(
                 # "value": 8,
                 "current_data": current_data,
                 "prevision_data": prevision_data,
-                # "prevision_description": {
-                #     "name_model": name_model,
-                #     "feature_name": feature_name,
-                #     "detect_time": detect_time,
-                #     "anomaly_type": anomaly_type,
-                #     "detection": detection_data
-                # },
+                "prevision_description": {
+                    "name_model": name_model,
+                    "feature_name": feature_name,
+                    "detect_time": detect_time,
+                    "anomaly_type": anomaly_type,
+                    "detection": detection_data
+                },
             },
         ],
     }
 
     # Convert the JSON data to a string
-    json_data = json.dumps(data)
+    json_data = json.dumps(eval(data))
 
     return json_data
 
