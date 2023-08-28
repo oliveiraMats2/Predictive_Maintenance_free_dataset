@@ -71,9 +71,9 @@ def generate_json_current_anomaly(
 
     # Formats current_data to pattern
     for df in df_current[:, :]:
-        timestamp = df[1]  # Get timestamp
-        value = df[2]  # Get real value
-        current_data.append({"timestamp": timestamp, "value": value})
+        timestamp = str(df[0])  # Get timestamp
+        value = df[1]  # Get real value
+        current_data.append({'timestamp': timestamp, 'value': value})
 
     # Formats Detection to pattern
     if len(detection_value_list) == len(detection_value_list):
@@ -152,20 +152,20 @@ def generate_json_future_anomaly(
 
     # Formats current_data to pattern
     for df in df_current[:, :]:
-        timestamp = df[1]  # Get timestamp
-        value = df[2]  # Get real value
+        timestamp = df[0]  # Get timestamp
+        value = df[1]  # Get real value
         current_data.append({"timestamp": timestamp, "value": value})
 
     # Formats prevision_data to pattern
     for df in df_prevision[:, :]:
-        timestamp = df[1]  # Get timestamp
-        value = df[4]  # Get prediction yhat value
-        prevision_data.append({"timestamp": timestamp, "value": value})
+        timestamp = str(df[0])  # Get timestamp
+        value = df[1]  # Get prediction yhat value
+        prevision_data.append({'timestamp': timestamp, 'value': value})
 
     # Formats Detection to pattern
     if len(detection_value_list) == len(detection_value_list):
         for index, _ in enumerate(detection_timestamp_list):
-            timestamp = detection_timestamp_list[index]  # Get timestamp
+            timestamp = str(detection_timestamp_list[index])
             value = detection_value_list[index]  # Get prediction yhat value
             detection_data.append({"timestamp": timestamp, "detection": value})
     else:
