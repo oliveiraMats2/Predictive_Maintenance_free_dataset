@@ -12,7 +12,6 @@ class SchedulerTask:
         multivariate_main(init_data)
 
     def call_scheduler(self, scheduler):
-
         while True:
             now = datetime.datetime.now()
             now_hour = now.hour
@@ -21,12 +20,17 @@ class SchedulerTask:
             now_month = now.month
             now_day = now.day
 
-            if now_year == scheduler.year and now_month == scheduler.month and now_day == scheduler.day and now_hour == scheduler.hour and now_min == scheduler.minute:
+            if (
+                now_year == scheduler.year
+                and now_month == scheduler.month
+                and now_day == scheduler.day
+                and now_hour == scheduler.hour
+                and now_min == scheduler.minute
+            ):
                 self.task_exec(scheduler)
                 break
 
             time.sleep(1)
-
 
     @staticmethod
     def increment_actual_data(data, dias=1, mins=0):
@@ -50,6 +54,6 @@ if __name__ == "__main__":
     multivariate_main(now_)
 
     while True:
-        now_ = scheduler_task.increment_actual_data(now_, dias=0, mins=1)
+        now_ = scheduler_task.increment_actual_data(now_, dias=0, mins=60)
 
         scheduler_task.call_scheduler(now_)

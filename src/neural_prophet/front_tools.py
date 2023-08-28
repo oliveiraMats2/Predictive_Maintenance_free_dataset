@@ -61,7 +61,7 @@ def generate_json_current_anomaly(
         "properties": [
             {
                 "property": feature_name,
-                "value": 8,
+                # "value": 8,
                 "current_data": current_data,
                 "prevision_description": {
                     "name_model": name_model,
@@ -147,8 +147,8 @@ def generate_json_future_anomaly(
         "evaluation_criticality": True,
         "properties": [
             {
-                "property": f"Temperature.InletTemperature",
-                "value": 8,
+                "property": feature_name,  # f"Temperature.InletTemperature",
+                # "value": 8,
                 "current_data": current_data,
                 "prevision_data": prevision_data,
                 # "prevision_description": {
