@@ -16,7 +16,8 @@ from sys import platform
 def check_ip():
     if platform == "linux" or platform == "linux2":
         # port = 'eth0'
-        port = 'wlp0s20f3'
+        # port = 'wlp0s20f3'
+        port = ni.interfaces()[1]  # [1] VMNet, [4] Wi-Fi [6] ethernet?
     elif platform == "win32":
         port = ni.interfaces()[2]  # [1] VMNet, [4] Wi-Fi [6] ethernet?
         # in my windows the answer is 2, other is 6

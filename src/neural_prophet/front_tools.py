@@ -15,18 +15,18 @@ def feature_name_parser(old_feature_name):
     """
 
     feature_name_map = {
-        "InletPressure": "pressure.inletpressure",
-        "OutletPressure": "pressure.outletpressure",
-        "phaseA_voltage": "phasea.voltage",
-        "phaseB_voltage": "phaseb.voltage",
-        "phaseC_voltage": "phasec.voltage",
-        "phaseA_current": "phasea.current",
-        "phaseB_current": "phaseb.current",
-        "phaseC_current": "phasec.current",
-        "OAVelocity_x": "horizontalvibration.xvibrationaccelerationvelocityoa",
-        "OAVelocity_y": "verticalvibration.yvibrationaccelerationvelocityoa",
-        "OAVelocity_z": "axialvibration.zvibrationaccelerationvelocityoa",
-        "temperature": "temperature.outlettemperature",
+        "InletPressure": "Pressure.InletPressure",
+        "OutletPressure": "Pressure.OutletPressure",
+        "phaseA_voltage": "PhaseA.Voltage",
+        "phaseB_voltage": "PhaseB.Voltage",
+        "phaseC_voltage": "PhaseC.Voltage",
+        "phaseA_current": "PhaseA.Current",
+        "phaseB_current": "PhaseB.Current",
+        "phaseC_current": "PhaseC.Current",
+        "OAVelocity_x": "HorizontalVibration.XVibrationAccelerationVelocityOa",
+        "OAVelocity_y": "VerticalVibration.YVibrationAccelerationVelocityOa",
+        "OAVelocity_z": "AxialVibration.ZVibrationAccelerationVelocityOa",
+        "temperature": "Temperature.OutletTemperature",
     }
 
     new_feature_name = ""
@@ -217,7 +217,10 @@ def generate_json_future_anomaly(
     }
 
     # Convert the JSON data to a string
-    json_data = json.dumps(eval(data))
+    # json_data = json.dumps(eval(data))
+    json_data = json.dumps(data)
+    json_data = json_data.replace('"evaluation_criticality": true,', '"evaluation_criticality": True,')
+
 
     # Save JSON file
     if SAVE_JSON_FILE:
