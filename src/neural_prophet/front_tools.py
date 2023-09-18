@@ -195,6 +195,7 @@ def generate_json_future_anomaly(
             }
         )
 
+    feature_new_name = feature_name_parser(feature_name)
     # Define the JSON header and properties
     data = {
         "equipment_id": "64909fc47e30d0e3725d9a9a",
@@ -202,12 +203,12 @@ def generate_json_future_anomaly(
         "evaluation_criticality": True,
         "properties": [
             {
-                "property": feature_name_parser(feature_name),
+                "property": feature_new_name,
                 "current_data": current_data,
                 "prevision_data": prevision_data,
                 "prevision_description": {
                     "name_model": name_model,
-                    "feature_name": feature_name_parser(feature_name),
+                    "feature_name": feature_new_name,
                     "detect_time": detect_time,
                     "anomaly_type": anomaly_type,
                     "detection": detection_data
@@ -219,7 +220,8 @@ def generate_json_future_anomaly(
     # Convert the JSON data to a string
     # json_data = json.dumps(eval(data))
     json_data = json.dumps(data)
-    json_data = json_data.replace('"evaluation_criticality": true,', '"evaluation_criticality": True,')
+    # json_data = json.dumps(eval(json.loads(data)))
+    # json_data = json_data.replace('"evaluation_criticality": true,', '"evaluation_criticality": True,')
 
 
     # Save JSON file
