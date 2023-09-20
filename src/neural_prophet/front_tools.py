@@ -5,7 +5,7 @@ import os
 
 def feature_name_parser(old_feature_name):
     """
-    Returns the parsed feature name according to Front-end pattern.
+    Returns the parsed feature name according to Front-end pattern or Internal pattern.
 
             Parameters:
                     feature_name (string): Name of the old feature name
@@ -14,6 +14,7 @@ def feature_name_parser(old_feature_name):
                     new_feature_name (string): parsed feature name according to feature name mapping
     """
 
+    # Converts feature name (Internal > Frontend)
     feature_name_map = {
         "InletPressure": "Pressure.InletPressure",
         "OutletPressure": "Pressure.OutletPressure",
@@ -29,10 +30,28 @@ def feature_name_parser(old_feature_name):
         "temperature": "Temperature.OutletTemperature",
     }
 
+    # Converts feature name (Frontend > Internal)
+    feature_name_map_reversed = {
+        "Pressure.InletPressure": "InletPressure",
+        "Pressure.OutletPressure": "OutletPressure",
+        "PhaseA.Voltage": "phaseA_voltage",
+        "PhaseB.Voltage": "phaseB_voltage",
+        "PhaseC.Voltage": "phaseC_voltage",
+        "PhaseA.Current": "phaseA_current",
+        "PhaseB.Current": "phaseB_current",
+        "PhaseC.Current": "phaseC_current",
+        "HorizontalVibration.XVibrationAccelerationVelocityOa": "OAVelocity_x",
+        "VerticalVibration.YVibrationAccelerationVelocityOa": "OAVelocity_y",
+        "AxialVibration.ZVibrationAccelerationVelocityOa": "OAVelocity_z",
+        "Temperature.OutletTemperature": "temperature",
+    }
+
     new_feature_name = ""
 
     if old_feature_name in feature_name_map:
-        new_feature_name = feature_name_map[old_feature_name]
+        new_feature_name = feature_name_map[old_feature_name]           # Converts feature name (Internal > Frontend)
+    elif old_feature_name in feature_name_map_reversed:
+        new_feature_name = feature_name_map_reversed[old_feature_name]  # Converts feature name (Frontend > Internal)
     else:
         new_feature_name = old_feature_name
 
