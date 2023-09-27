@@ -159,6 +159,6 @@ def multivariate_main(init_data):
 
         # Check the response status
         if response.status_code == 201:
-            print("JSON data sent successfully!")
+            print(f"Feature: {feature} - JSON data sent successfully!")
         else:
-            print("Error sending JSON data:", response.text)
+            print(f"Feature: {feature} - Error sending JSON data.\n Detail:{response.text}")
