@@ -1,5 +1,7 @@
 import datetime
 import time
+import threading
+import socket_tools as ws
 from inference_multi_variable import multivariate_main
 
 
@@ -38,6 +40,15 @@ class SchedulerTask:
         return nova_data
 
 
+def keep_server():
+    print('System has started websocket')
+    while True:
+        ws.socket_receive(ws.check_ip()[0])
+        print('System wait some time before restart websocket')
+        time.sleep(5)
+    return
+
+
 if __name__ == "__main__":
     # schedule_multi_variable = datetime.datetime(year=2023,
     #                                             month=8,
@@ -50,10 +61,11 @@ if __name__ == "__main__":
     scheduler_task = SchedulerTask()
 
     print(f"Result time execute: {now_}")
-
     multivariate_main(now_)
+
+    t = threading.Thread(target=keep_server)
+    t.start()
 
     while True:
         now_ = scheduler_task.increment_actual_data(now_, dias=0, mins=60)
-
         scheduler_task.call_scheduler(now_)

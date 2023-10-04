@@ -27,7 +27,7 @@ def feature_name_parser(old_feature_name):
         "OAVelocity_x": "HorizontalVibration.XVibrationAccelerationVelocityOa",
         "OAVelocity_y": "VerticalVibration.YVibrationAccelerationVelocityOa",
         "OAVelocity_z": "AxialVibration.ZVibrationAccelerationVelocityOa",
-        "temperature": "Temperature.OutletTemperature",
+        "OutletTemperature": "Temperature.OutletTemperature",
     }
 
     # Converts feature name (Frontend > Internal)
