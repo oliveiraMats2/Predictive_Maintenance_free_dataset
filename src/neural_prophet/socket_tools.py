@@ -10,7 +10,7 @@ import time
 import json
 import requests
 import netifaces as ni
-import src.neural_prophet.front_test as frt
+import front_test as frt
 from sys import platform
 
 

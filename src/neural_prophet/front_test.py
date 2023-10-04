@@ -23,7 +23,7 @@ def send_test():
     print(response.status_code)
     # Check the response status
     if response.status_code == 201:
-        print("JSON data sent successfully!")
+        print("JSON data sent to front-end successfully!")
     else:
         print("Error sending JSON data:", response.text)
 
