@@ -10,6 +10,7 @@ import time
 import json
 import requests
 import netifaces as ni
+import src.neural_prophet.front_test as frt
 from sys import platform
 
 
@@ -259,6 +260,7 @@ def socket_receive(selected_host):
             f.write(bytes_read)
             progress.update(len(bytes_read))
 
+    frt.send_test()
     client_socket.close()
     s.close()
 
